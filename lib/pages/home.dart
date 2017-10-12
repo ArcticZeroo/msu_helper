@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../util/TextUtil.dart';
 
-class HelperHomepage extends StatefulWidget {
-  createState() => new _HelperHomepageState();
+class Homepage extends StatefulWidget {
+  createState() => new _HomepageState();
 }
 
-class _HelperHomepageState extends State<HelperHomepage> {
+class _HomepageState extends State<Homepage> {
   Map<double, Widget> infoWidgets = new Map();
 
   Widget build(BuildContext context) {

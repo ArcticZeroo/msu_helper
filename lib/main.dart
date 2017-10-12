@@ -18,8 +18,8 @@ class MsuHelperApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       routes: {
-        '/': (BuildContext context) => new HelperHomepage(),
-        '/foodtruck': (BuildContext context) => new HelperHomepage()
+        '/': (BuildContext context) => new Homepage(),
+        '/foodtruck': (BuildContext context) => new Homepage()
       }
     );
   }
