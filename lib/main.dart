@@ -12,10 +12,11 @@ class MsuHelperApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      color: Colors.blue,
+      color: Colors.green,
       title: APP_TITLE,
       theme: new ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
+        accentColor: Colors.greenAccent
       ),
       routes: {
         '/': (BuildContext context) => new Homepage(),
