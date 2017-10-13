@@ -2,14 +2,18 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-Future toUTF8(HttpClientResponse res) {
-  Completer completer = new Completer();
+Future toUTF8(HttpClientResponse res) async {
+  Stream stream = res.transform(UTF8.decoder);
 
-  res.transform(UTF8.decoder).listen((str) {
-    completer.complete(str);
-  });
+  String responseText = "";
 
-  return completer.future;
+  await for (var str in stream) {
+    responseText += str;
+  }
+
+  print(responseText);
+
+  return responseText;
 }
 
 Future makeRestRequest(String url) async {
