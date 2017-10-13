@@ -1,5 +1,5 @@
 import '../util/TextUtil.dart';
-import '../config/pages.dart';
+import '../config/Pages.dart';
 import './request.dart';
 
 class FoodTruckStop {
@@ -9,10 +9,10 @@ class FoodTruckStop {
   final DateTime end;
 
   FoodTruckStop(Map<String, dynamic> jsonObject)
-    : this.location = jsonObject['location'],
-      this.isCancelled = jsonObject['location'].toLowerCase().contains('cancelled'),
+    : this.location = jsonObject['place'],
+      this.isCancelled = jsonObject['place'].toLowerCase().contains('cancelled'),
       this.start = new DateTime.fromMillisecondsSinceEpoch(jsonObject['start']),
-      this.end = new DateTime.fromMicrosecondsSinceEpoch(jsonObject['end']);
+      this.end = new DateTime.fromMillisecondsSinceEpoch(jsonObject['end']);
 }
 
 class FoodTruckResponse {
@@ -20,7 +20,13 @@ class FoodTruckResponse {
 
   FoodTruckResponse(this.stops);
 
-  static make() async {
+  static FoodTruckResponse cached;
+
+  static make([bool refresh = false]) async {
+    if (!refresh && FoodTruckResponse.cached != null) {
+      return cached;
+    }
+
     Map<String, dynamic> jsonObject = await makeRestRequest(Pages.getUrl(Pages.FOOD_TRUCK));
 
     List<FoodTruckStop> stops = new List();
@@ -29,7 +35,9 @@ class FoodTruckResponse {
       stops.add(new FoodTruckStop(entry));
     }
 
-    return new FoodTruckResponse(stops);
+    FoodTruckResponse.cached = new FoodTruckResponse(stops);
+
+    return FoodTruckResponse.cached;
   }
 
   toString() {
