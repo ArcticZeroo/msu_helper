@@ -3,6 +3,7 @@ description: Handy MSU utilities
 
 dependencies:
   flutter_search_bar: any
+  android_intent: any
   flutter:
     sdk: flutter
 
