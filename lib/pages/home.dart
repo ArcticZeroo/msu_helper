@@ -34,8 +34,8 @@ class _HomepageState extends State<Homepage> {
 
         List<Widget> truckWidgets = new List();
 
-        if (timeUntil.inHours == 0 && !timeUntil.isNegative) {
-            String truckText = 'The food truck will be at ${stops[0].location} in ${timeUntil.inMinutes} minute${timeUntil.inMinutes == 1 ? '' : 's'}.';
+        if (timeUntil.inHours <= 3 && !timeUntil.isNegative) {
+            String truckText = 'The food truck will be at ${stops[0].location} in ${timeUntil.inHours}h ${timeUntil.inMinutes % 60}m.';
 
             if (Platform.isAndroid) {
               truckWidgets.add(new Column(
