@@ -1,3 +1,5 @@
+import 'package:msu_helper/util/DateUtil.dart';
+
 import '../util/TextUtil.dart';
 import '../config/Pages.dart';
 import './request.dart';
@@ -49,11 +51,16 @@ class FoodTruckResponse {
       str += 'The ${TextUtil.prettifyNum(i + 1)} stop ';
 
       if (stop.isCancelled) {
-        str += 'has been cancelled.';
+        str += 'has been cancelled. ';
         continue;
       }
 
-      str += 'is at ${stop.location} from ${stop.start.hour}:${stop.start.minute} to ${stop.end.hour}:${stop.end.minute}. ';
+      if (stop.end.isBefore(new DateTime.now())) {
+        str += 'left at ${DateUtil.toTimeString(stop.end)}. ';
+        continue;
+      }
+
+      str += 'is at ${stop.location} from ${DateUtil.toTimeString(stop.start)} to ${DateUtil.toTimeString(stop.end)}. ';
     }
 
     return str;
