@@ -16,7 +16,6 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  Widget bodyChild = new Text('Loading...');
   Map<String, Widget> infoWidgets = new Map();
   Map<String, double> infoWidgetPriorities = new Map();
 
@@ -101,7 +100,16 @@ class _HomepageState extends State<Homepage> {
   Widget getBodyChild() {
     if (this.infoWidgets.length == 0) {
       return new Center(
-        child: new Text('Loading...'),
+        child: new Column(
+          children: <Widget>[
+            new CircularProgressIndicator(),
+            new Container(
+              padding: new EdgeInsets.all(8.0),
+              child: new Text('Loading...'),
+            )
+          ],
+          mainAxisAlignment: MainAxisAlignment.center,
+        )
       );
     } else {
       List<List<dynamic>> entries = MapUtil.getEntries(this.infoWidgetPriorities);
@@ -130,7 +138,7 @@ class _HomepageState extends State<Homepage> {
     return new Scaffold(
         appBar: new AppBar(
             centerTitle: true,
-            title: TextUtil.getAppBarTitle('Home')
+            title: TextUtil.getAppBarTitle('Home'),
         ),
         body: new Container(
             padding: new EdgeInsets.all(8.0),
