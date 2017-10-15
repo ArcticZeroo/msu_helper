@@ -3,6 +3,7 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:android_intent/android_intent.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../util/TextUtil.dart';
 import '../util/MapUtil.dart';
@@ -16,6 +17,8 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+  SharedPreferences sharedPreferences;
+  Widget welcomeWidget;
   Map<String, Widget> infoWidgets = new Map();
   Map<String, double> infoWidgetPriorities = new Map();
 
@@ -75,16 +78,10 @@ class _HomepageState extends State<Homepage> {
           infoWidgetPriorities[Identifiers.FOOD_TRUCK] = Priorities.FOOD_TRUCK * 0.1;
         }
 
-        infoWidgets[Identifiers.FOOD_TRUCK] = new Flex(
-            direction: Axis.horizontal,
-            children: <Widget>[
-              new Container(
-                child: new Text('🚚', style: new TextStyle(fontSize: 48.0)),
-                padding: new EdgeInsets.all(4.0),
-              ),
-              new Expanded(child: new Column(children: truckWidgets))
-            ]
-
+        infoWidgets[Identifiers.FOOD_TRUCK] = new ListTile(
+          leading: new CircleAvatar(child: new Text('🚚'), backgroundColor: Colors.transparent),
+          title: new Text('MSU Food Truck'),
+          subtitle: new Column(children: truckWidgets)
         );
       });
     } catch (e) {
@@ -124,23 +121,59 @@ class _HomepageState extends State<Homepage> {
 
       List<Widget> children = new List();
 
+      children.add(welcomeWidget ?? new Text(''));
+
       for (List<dynamic> entry in entries) {
         children.add(infoWidgets[entry[0]]);
       }
 
-      return new Column(
-          children: children
+      return new ListView(
+        padding: new EdgeInsets.all(16.0),
+        scrollDirection: Axis.vertical,
+        children: children,
+        addRepaintBoundaries: false,
       );
     }
+  }
+
+  void updateName() {
+    if (this.sharedPreferences == null) {
+      return;
+    }
+
+    String userName = this.sharedPreferences.getString(Identifiers.USER_NAME_STORAGE);
+
+    welcomeWidget = new Container(
+      padding: new EdgeInsets.all(12.0),
+      child: new Center(
+        child: new Text(
+          userName == null ? 'You don\'t have a name set. Open the settings to change that!' : 'Welcome, $userName',
+          style: new TextStyle(
+              fontSize: 18.0
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
   }
 
   void initState() {
     super.initState();
 
+    SharedPreferences.getInstance()
+      .then((SharedPreferences preferences) {
+        this.sharedPreferences = preferences;
+
+        setState(() {});
+      })
+      .catchError((e) {});
+
     this.loadTruckInfo();
   }
 
   Widget build(BuildContext context) {
+    updateName();
+
     return new Scaffold(
         appBar: new AppBar(
           centerTitle: true,
@@ -151,10 +184,7 @@ class _HomepageState extends State<Homepage> {
             })
           ],
         ),
-        body: new Container(
-            padding: new EdgeInsets.all(8.0),
-            child: this.getBodyChild()
-        )
+        body: this.getBodyChild()
     );
   }
 }
