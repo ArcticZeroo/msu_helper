@@ -26,14 +26,17 @@ class _HomepageState extends State<Homepage> {
       setState(() {
         List<FoodTruckStop> stops = new List();
 
-        stops.addAll(truckResponse.stops);
-        stops.retainWhere((s) => s.start.difference(new DateTime.now()).inDays == 0);
+        DateTime now = new DateTime.now();
 
-        Duration timeUntil = new DateTime.now().difference(stops[0].start);
+        stops.addAll(truckResponse.stops);
+        stops.retainWhere((s) => s.start.day == now.day);
 
         List<Widget> truckWidgets = new List();
 
-        if (timeUntil.inHours <= 3 && !timeUntil.isNegative) {
+        if (stops.length > 0) {
+          Duration timeUntil = (stops.length > 0) ? new DateTime.now().difference(stops[0].start) : new Duration(days: -1);
+
+          if (timeUntil.inHours <= 3 && !timeUntil.isNegative) {
             String truckText = 'The food truck will be at ${stops[0].location} in ${timeUntil.inHours}h ${timeUntil.inMinutes % 60}m.';
 
             if (Platform.isAndroid) {
@@ -49,8 +52,8 @@ class _HomepageState extends State<Homepage> {
                     ),
                     onPressed: () async {
                       AndroidIntent androidIntent = new AndroidIntent(
-                        action: 'action_view',
-                        data: 'https://www.google.com/maps/search/?api=1&query=${stops[0].location.split(' ').join('+')}'
+                          action: 'action_view',
+                          data: 'https://www.google.com/maps/search/?api=1&query=${stops[0].location.split(' ').join('+')}'
                       );
 
                       await androidIntent.launch();
@@ -61,27 +64,28 @@ class _HomepageState extends State<Homepage> {
             } else {
               truckWidgets.add(new Text(truckText));
             }
+          } else {
+            truckWidgets.add(new Text(truckResponse.toString()));
+          }
+
+          infoWidgetPriorities[Identifiers.FOOD_TRUCK] = computePriority(base: Priorities.FOOD_TRUCK, when: truckResponse.stops[0].start);
         } else {
-          truckWidgets.add(new Text(truckResponse.toString()));
+          truckWidgets.add(new Text('The food truck has no stops listed for today.'));
+
+          infoWidgetPriorities[Identifiers.FOOD_TRUCK] = Priorities.FOOD_TRUCK * 0.1;
         }
 
         infoWidgets[Identifiers.FOOD_TRUCK] = new Flex(
-          direction: Axis.horizontal,
-          children: <Widget>[
-            new Container(
-              child: new Text('🚚', style: new TextStyle(fontSize: 48.0)),
-              padding: new EdgeInsets.all(4.0),
-            ),
-            new Expanded(child: new Column(children: truckWidgets))
-          ]
+            direction: Axis.horizontal,
+            children: <Widget>[
+              new Container(
+                child: new Text('🚚', style: new TextStyle(fontSize: 48.0)),
+                padding: new EdgeInsets.all(4.0),
+              ),
+              new Expanded(child: new Column(children: truckWidgets))
+            ]
 
         );
-
-        if (truckResponse.stops.length == 0) {
-          infoWidgetPriorities[Identifiers.FOOD_TRUCK] = Priorities.FOOD_TRUCK;
-        } else {
-          infoWidgetPriorities[Identifiers.FOOD_TRUCK] = computePriority(base: Priorities.FOOD_TRUCK, when: truckResponse.stops[0].start);
-        }
       });
     } catch (e) {
       setState(() {
@@ -96,6 +100,8 @@ class _HomepageState extends State<Homepage> {
       });
     }
   }
+
+
 
   Widget getBodyChild() {
     if (this.infoWidgets.length == 0) {
@@ -137,8 +143,13 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(
-            centerTitle: true,
-            title: TextUtil.getAppBarTitle('Home'),
+          centerTitle: true,
+          title: TextUtil.getAppBarTitle('Home'),
+          actions: <Widget>[
+            new IconButton(icon: new Icon(Icons.settings), onPressed: () {
+              Navigator.pushNamed(context, '/settings');
+            })
+          ],
         ),
         body: new Container(
             padding: new EdgeInsets.all(8.0),
