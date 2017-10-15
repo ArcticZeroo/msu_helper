@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:msu_helper/config/Identifiers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../util/TextUtil.dart';
@@ -22,7 +23,7 @@ class _SettingsPageState extends State<SettingsPage> {
     SharedPreferences.getInstance()
         .then((SharedPreferences preferences) {
 
-          savedName = preferences.getString('userName');
+          savedName = preferences.getString(Identifiers.USER_NAME_STORAGE);
 
           setState(() {});
         })
@@ -73,7 +74,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         SharedPreferences preferences = await SharedPreferences.getInstance();
 
                         savedName = textController.text;
-                        preferences.setString('userName', textController.text);
+                        preferences.setString(Identifiers.USER_NAME_STORAGE, textController.text);
 
                         await Navigator.maybePop(context);
 
