@@ -56,7 +56,7 @@ class FoodTruckResponse {
       }
 
       if (stop.end.isBefore(new DateTime.now())) {
-        str += 'left at ${DateUtil.toTimeString(stop.end)}. ';
+        str += 'was at ${stop.location}, but left at ${DateUtil.toTimeString(stop.end)}. ';
         continue;
       }
 
