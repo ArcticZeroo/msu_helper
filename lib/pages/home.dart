@@ -25,7 +25,7 @@ class _HomepageState extends State<Homepage> {
   Map<String, Widget> infoWidgets = new Map();
   Map<String, double> infoWidgetPriorities = new Map();
 
-  Future loadTruckInfo([bool refresh]) async {
+  Future loadTruckInfo([bool refresh = false]) async {
     try {
       FoodTruckResponse truckResponse = await FoodTruckResponse.make(refresh);
 
@@ -203,7 +203,7 @@ class _HomepageState extends State<Homepage> {
 
     return new Scaffold(
         appBar: new AppBar(
-          centerTitle: true,
+          leading: new CircleAvatar(),
           title: TextUtil.getAppBarTitle('Home'),
           actions: <Widget>[
             new IconButton(
