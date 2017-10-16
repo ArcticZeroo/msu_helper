@@ -75,7 +75,7 @@ class _HomepageState extends State<Homepage> {
                   title: title,
                   onTap: () async {
                     if (Platform.isAndroid) {
-                      await AndroidUtil.openMaps(stop.location);
+                      await AndroidUtil.openMaps(stop.mapsLocation);
                     }
                   },
                 ));

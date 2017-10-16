@@ -6,12 +6,14 @@ import './request.dart';
 
 class FoodTruckStop {
   final String location;
+  final String mapsLocation;
   final bool isCancelled;
   final DateTime start;
   final DateTime end;
 
   FoodTruckStop(Map<String, dynamic> jsonObject)
     : this.location = jsonObject['place'],
+      this.mapsLocation = (jsonObject['place'].toString().contains(' near ') ? jsonObject['place'].toString().split(' near ')[1].trim() : jsonObject['place']),
       this.isCancelled = jsonObject['place'].toLowerCase().contains('cancelled'),
       this.start = new DateTime.fromMillisecondsSinceEpoch(jsonObject['start']),
       this.end = new DateTime.fromMillisecondsSinceEpoch(jsonObject['end']);
