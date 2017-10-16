@@ -25,9 +25,9 @@ class _HomepageState extends State<Homepage> {
   Map<String, Widget> infoWidgets = new Map();
   Map<String, double> infoWidgetPriorities = new Map();
 
-  Future loadTruckInfo() async {
+  Future loadTruckInfo([bool refresh]) async {
     try {
-      FoodTruckResponse truckResponse = await FoodTruckResponse.make();
+      FoodTruckResponse truckResponse = await FoodTruckResponse.make(refresh);
 
       setState(() {
         List<FoodTruckStop> stops = new List();
@@ -206,6 +206,20 @@ class _HomepageState extends State<Homepage> {
           centerTitle: true,
           title: TextUtil.getAppBarTitle('Home'),
           actions: <Widget>[
+            new IconButton(
+              icon: new Icon(Icons.refresh),
+              onPressed: () async {
+                // Clear all existing widgets
+                this.infoWidgets.clear();
+                this.infoWidgetPriorities.clear();
+
+                // Set state to get loading icon
+                setState(() {});
+
+                // Get food truck info with refresh set to true
+                await loadTruckInfo(true);
+              },
+            ),
             new IconButton(icon: new Icon(Icons.settings), onPressed: () {
               Navigator.pushNamed(context, '/settings');
             })
