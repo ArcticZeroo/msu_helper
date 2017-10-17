@@ -95,7 +95,7 @@ class _HomepageState extends State<Homepage> {
 
       List<Widget> cardChildren = <Widget>[
         new ListTile(
-            leading: new CircleAvatar(child: new Text('🚚'), backgroundColor: Colors.transparent),
+            leading: new Icon(Icons.local_shipping, color: Colors.black87),
             title: new Text('MSU Food Truck'),
             subtitle: new Text('The food truck has ${stops.length == 0 ? 'no' : stops.length} stop${stops.length == 1 ? '' : 's'} today.')
         )
@@ -128,7 +128,7 @@ class _HomepageState extends State<Homepage> {
 
     List<Widget> movieWidgets = <Widget>[
      new ListTile(
-       leading: new Icon(Icons.local_movies),
+       leading: new Icon(Icons.local_movies, color: Colors.black87),
        title: new Text('RHA Movie Night'),
        subtitle: new Text('This week, ${movies.length} movie${movies.length == 1 ? '' : 's'} will be playing at Campus Center Cinemas.')
      )
@@ -226,7 +226,7 @@ class _HomepageState extends State<Homepage> {
     return new Scaffold(
         appBar: new AppBar(
           leading: new CircleAvatar(),
-          title: TextUtil.getAppBarTitle('Home'),
+          title: new Text(APP_TITLE),
           actions: <Widget>[
             new IconButton(
               icon: new Icon(Icons.refresh),
