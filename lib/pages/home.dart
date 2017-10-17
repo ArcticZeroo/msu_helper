@@ -3,6 +3,7 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:android_intent/android_intent.dart';
+import 'package:msu_helper/api/movies.dart';
 import 'package:msu_helper/util/AndroidUtil.dart';
 import 'package:msu_helper/util/DateUtil.dart';
 import 'package:msu_helper/util/WidgetUtil.dart';
@@ -29,104 +30,125 @@ class _HomepageState extends State<Homepage> {
     try {
       FoodTruckResponse truckResponse = await FoodTruckResponse.make(refresh);
 
-      setState(() {
-        List<FoodTruckStop> stops = new List();
+      List<FoodTruckStop> stops = new List();
 
+      DateTime now = new DateTime.now();
+
+      stops.addAll(truckResponse.stops);
+      stops.retainWhere((s) => !s.isCancelled && s.start.day == now.day);
+
+      List<Widget> truckWidgets = new List();
+      List<Widget> truckBadWidgets = new List();
+
+      if (stops.length > 0) {
         DateTime now = new DateTime.now();
 
-        stops.addAll(truckResponse.stops);
-        stops.retainWhere((s) => !s.isCancelled && s.start.day == now.day);
+        for (FoodTruckStop stop in stops) {
+          Widget leading = (Platform.isAndroid)
+              ? new Icon(Icons.location_on)
+              : new Icon(Icons.timer);
 
-        List<Widget> truckWidgets = new List();
-        List<Widget> truckBadWidgets = new List();
+          Widget title;
 
-        if (stops.length > 0) {
-          DateTime now = new DateTime.now();
+          Duration timeUntil = stop.start.difference(now);
 
-          for (FoodTruckStop stop in stops) {
-            Widget leading = (Platform.isAndroid)
-                ? new Icon(Icons.location_on)
-                : new Icon(Icons.timer);
-
-            Widget title;
-
-            Duration timeUntil = stop.start.difference(now);
-
-            // Truck is gone
-            if (timeUntil.isNegative || stop.end.isBefore(now)) {
-              truckBadWidgets.add(new ListTile(
-                leading: new Icon(Icons.mood_bad),
-                title: new Text('It left ${stop.location} at ${DateUtil.toTimeString(stop.end)}.'),
-              ));
-              continue;
+          // Truck is gone
+          if (stop.end.isBefore(now)) {
+            truckBadWidgets.add(new ListTile(
+              leading: new Icon(Icons.mood_bad),
+              title: new Text('It left ${stop.location} at ${DateUtil.toTimeString(stop.end)}.'),
+            ));
+            continue;
+          }
+          // Truck is here now
+          else{
+            if (stop.start.isBefore(now) && stop.end.isAfter(now)) {
+              title = new Text('It is currently at ${stop.location} until ${DateUtil.toTimeString(stop.end)}.');
+            } else {
+              // Truck will be here soon
+              title = new Text('It will be at ${stop.location} from ${DateUtil.toTimeString(stop.start)} until ${DateUtil.toTimeString(stop.end)} (${timeUntil.inHours}h ${timeUntil.inMinutes % 60}m from now).');
             }
-            // Truck is here now
-            else{
-              if (stop.start.isBefore(now) && stop.end.isAfter(now)) {
-                title = new Text('It is currently at ${stop.location} until ${DateUtil.toTimeString(stop.end)}');
-              } else {
-                // Truck will be here soon
-                title = new Text('It will be at ${stop.location} from ${DateUtil.toTimeString(stop.start)} until ${DateUtil.toTimeString(stop.end)} (${timeUntil.inHours}h ${timeUntil.inMinutes % 60}m from now)');
-              }
 
-              if (Platform.isAndroid) {
-                truckWidgets.add(new ListTile(
-                  leading: leading,
-                  title: title,
-                  onTap: () async {
-                    if (Platform.isAndroid) {
-                      await AndroidUtil.openMaps(stop.mapsLocation);
-                    }
-                  },
-                ));
-              } else {
-                truckWidgets.add(new ListTile(
+            if (Platform.isAndroid) {
+              truckWidgets.add(new ListTile(
+                leading: leading,
+                title: title,
+                onTap: () async {
+                  if (Platform.isAndroid) {
+                    await AndroidUtil.openMaps(stop.mapsLocation);
+                  }
+                },
+              ));
+            } else {
+              truckWidgets.add(new ListTile(
                   leading: leading,
                   title: title
-                ));
-              }
+              ));
             }
           }
-
-          infoWidgetPriorities[Identifiers.FOOD_TRUCK] = computePriority(base: Priorities.FOOD_TRUCK, when: stops[0].start);
-        } else {
-          infoWidgetPriorities[Identifiers.FOOD_TRUCK] = Priorities.FOOD_TRUCK * 0.1;
         }
 
-        List<Widget> cardChildren = <Widget>[
-          new ListTile(
-              leading: new CircleAvatar(child: new Text('🚚'), backgroundColor: Colors.transparent),
-              title: new Text('MSU Food Truck'),
-              subtitle: new Text('The food truck has ${stops.length == 0 ? 'no' : stops.length} stop${stops.length == 1 ? '' : 's'} today.')
-          )
-        ];
+        infoWidgetPriorities[Identifiers.FOOD_TRUCK] = computePriority(base: Priorities.FOOD_TRUCK, when: stops[0].start);
+      } else {
+        infoWidgetPriorities[Identifiers.FOOD_TRUCK] = Priorities.FOOD_TRUCK * 0.1;
+      }
 
-        cardChildren.addAll(truckWidgets);
-        cardChildren.addAll(truckBadWidgets);
+      List<Widget> cardChildren = <Widget>[
+        new ListTile(
+            leading: new CircleAvatar(child: new Text('🚚'), backgroundColor: Colors.transparent),
+            title: new Text('MSU Food Truck'),
+            subtitle: new Text('The food truck has ${stops.length == 0 ? 'no' : stops.length} stop${stops.length == 1 ? '' : 's'} today.')
+        )
+      ];
 
-        infoWidgets[Identifiers.FOOD_TRUCK] = new Container(
+      cardChildren.addAll(truckWidgets);
+      cardChildren.addAll(truckBadWidgets);
+
+      infoWidgets[Identifiers.FOOD_TRUCK] = new Container(
           padding: new EdgeInsets.all(16.0),
           child: new Column(children: cardChildren)
-        );
-      });
+      );
     } catch (e) {
-      setState(() {
-        infoWidgets[Identifiers.FOOD_TRUCK] = new Container(
-          padding: new EdgeInsets.all(16.0),
-          child: new Column(
-              children: <Widget>[
-                new Text('Could not load food truck data: ${e.toString()}'),
-                new FlatButton(onPressed: loadTruckInfo, child: new Text('Retry'))
-              ]
-          ),
-        );
+      infoWidgets[Identifiers.FOOD_TRUCK] = new Container(
+        padding: new EdgeInsets.all(16.0),
+        child: new Column(
+            children: <Widget>[
+              new Text('Could not load food truck data: ${e.toString()}'),
+              new FlatButton(onPressed: loadTruckInfo, child: new Text('Retry'))
+            ]
+        ),
+      );
 
-        infoWidgetPriorities[Identifiers.FOOD_TRUCK] = 0.0;
-      });
+      infoWidgetPriorities[Identifiers.FOOD_TRUCK] = 0.0;
     }
   }
 
+  Future loadMovieInfo([bool refresh = false]) async {
+    List<Movie> movies = await MovieNightResponse.get(refresh);
 
+    List<Widget> movieWidgets = <Widget>[
+     new ListTile(
+       leading: new Icon(Icons.local_movies),
+       title: new Text('RHA Movie Night'),
+       subtitle: new Text('This week, ${movies.length} movie${movies.length == 1 ? '' : 's'} will be playing at Campus Center Cinemas.')
+     )
+    ];
+
+    infoWidgets[Identifiers.MOVIE_NIGHT] = new Container(
+      padding: new EdgeInsets.all(16.0),
+      child: new Column(
+        children: movieWidgets,
+      ),
+    );
+
+    infoWidgetPriorities[Identifiers.MOVIE_NIGHT] = 1.0;
+  }
+
+  Future loadPageData([bool refresh = false]) async {
+    await loadTruckInfo(refresh);
+    await loadMovieInfo(refresh);
+    setState(() {});
+  }
 
   Widget getBodyChild() {
     if (this.infoWidgets.length == 0) {
@@ -195,7 +217,7 @@ class _HomepageState extends State<Homepage> {
       })
       .catchError((e) {});
 
-    this.loadTruckInfo();
+    loadPageData();
   }
 
   Widget build(BuildContext context) {
@@ -216,8 +238,8 @@ class _HomepageState extends State<Homepage> {
                 // Set state to get loading icon
                 setState(() {});
 
-                // Get food truck info with refresh set to true
-                await loadTruckInfo(true);
+                // Get page info with refresh set to true
+                await loadPageData(true);
               },
             ),
             new IconButton(icon: new Icon(Icons.settings), onPressed: () {
