@@ -8,7 +8,7 @@ Widget getMovieTimesPage(Movie movie) {
   for (MovieShowing showing in movie.showings) {
     widgets.add(new ListTile(
         leading: new Icon(Icons.local_movies),
-        title: new Text('${showing.location} on ${new DateFormat('EE MMMM d, hh:mm aaa').format(showing.time)}')
+        title: new Text('${showing.location} on ${new DateFormat('EEEE MMMM d, hh:mm aaa').format(showing.time)}')
     ));
   }
 
