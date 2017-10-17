@@ -10,7 +10,7 @@ class MovieShowing {
 
   MovieShowing.fromJson(Map<String, dynamic> jsonObject) :
     this.location = jsonObject['location'],
-    this.time = new DateTime.fromMillisecondsSinceEpoch(jsonObject['time']);
+    this.time = new DateTime.fromMillisecondsSinceEpoch(jsonObject['date']);
 }
 
 class Movie {
