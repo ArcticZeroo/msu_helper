@@ -3,7 +3,9 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:android_intent/android_intent.dart';
+import 'package:intl/intl.dart';
 import 'package:msu_helper/api/movies.dart';
+import 'package:msu_helper/pages/movie_times.dart';
 import 'package:msu_helper/util/AndroidUtil.dart';
 import 'package:msu_helper/util/DateUtil.dart';
 import 'package:msu_helper/util/WidgetUtil.dart';
@@ -25,6 +27,7 @@ class _HomepageState extends State<Homepage> {
   Widget welcomeWidget;
   Map<String, Widget> infoWidgets = new Map();
   Map<String, double> infoWidgetPriorities = new Map();
+  BuildContext buildContext;
 
   Future loadTruckInfo([bool refresh = false]) async {
     try {
@@ -127,12 +130,25 @@ class _HomepageState extends State<Homepage> {
     List<Movie> movies = await MovieNightResponse.get(refresh);
 
     List<Widget> movieWidgets = <Widget>[
-     new ListTile(
-       leading: new Icon(Icons.local_movies, color: Colors.black87),
-       title: new Text('RHA Movie Night'),
-       subtitle: new Text('This week, ${movies.length} movie${movies.length == 1 ? '' : 's'} will be playing at Campus Center Cinemas.')
-     )
+      new ListTile(
+          leading: new Icon(Icons.local_movies, color: Colors.black87),
+          title: new Text('RHA Movie Night'),
+          subtitle: new Text('This week, ${movies.length} movie${movies.length == 1 ? '' : 's'} will be playing at Campus Center Cinemas. Tap a movie to see showtimes.')
+      )
     ];
+
+    for (Movie movie in movies) {
+      movieWidgets.add(new ListTile(
+        leading: new Icon(Icons.movie),
+        title: new Text(movie.title),
+        subtitle: new Text('This movie has ${movie.showings.length} showing${movie.showings.length == 1 ? '' : 's'} this week.'),
+        onTap: () {
+          Navigator.of(buildContext).push(new MaterialPageRoute(builder: (BuildContext context) {
+            return getMovieTimesPage(movie);
+          }));
+        },
+      ));
+    }
 
     infoWidgets[Identifiers.MOVIE_NIGHT] = new Container(
       padding: new EdgeInsets.all(16.0),
@@ -153,16 +169,16 @@ class _HomepageState extends State<Homepage> {
   Widget getBodyChild() {
     if (this.infoWidgets.length == 0) {
       return new Center(
-        child: new Column(
-          children: <Widget>[
-            new CircularProgressIndicator(),
-            new Container(
-              padding: new EdgeInsets.all(8.0),
-              child: new Text('Loading...'),
-            )
-          ],
-          mainAxisAlignment: MainAxisAlignment.center,
-        )
+          child: new Column(
+            children: <Widget>[
+              new CircularProgressIndicator(),
+              new Container(
+                padding: new EdgeInsets.all(8.0),
+                child: new Text('Loading...'),
+              )
+            ],
+            mainAxisAlignment: MainAxisAlignment.center,
+          )
       );
     } else {
       List<List<dynamic>> entries = MapUtil.getEntries(this.infoWidgetPriorities);
@@ -178,9 +194,9 @@ class _HomepageState extends State<Homepage> {
       }
 
       return new ListView(
-        scrollDirection: Axis.vertical,
-        children: ListTile.divideTiles(tiles: children, color: Colors.black45).toList(),
-        addRepaintBoundaries: false
+          scrollDirection: Axis.vertical,
+          children: ListTile.divideTiles(tiles: children, color: Colors.black45).toList(),
+          addRepaintBoundaries: false
       );
     }
   }
@@ -210,18 +226,20 @@ class _HomepageState extends State<Homepage> {
     super.initState();
 
     SharedPreferences.getInstance()
-      .then((SharedPreferences preferences) {
-        this.sharedPreferences = preferences;
+        .then((SharedPreferences preferences) {
+      this.sharedPreferences = preferences;
 
-        setState(() {});
-      })
-      .catchError((e) {});
+      setState(() {});
+    })
+        .catchError((e) {});
 
     loadPageData();
   }
 
   Widget build(BuildContext context) {
     updateName();
+
+    buildContext = context;
 
     return new Scaffold(
         appBar: new AppBar(
