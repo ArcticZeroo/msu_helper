@@ -51,7 +51,8 @@ class _HomepageState extends State<Homepage> {
               ? new Icon(Icons.location_on)
               : new Icon(Icons.timer);
 
-          Widget title;
+          Widget title = new Text(stop.location);
+          Widget subtitle;
 
           Duration timeUntil = stop.start.difference(now);
 
@@ -59,23 +60,25 @@ class _HomepageState extends State<Homepage> {
           if (stop.end.isBefore(now)) {
             truckBadWidgets.add(new ListTile(
               leading: new Icon(Icons.mood_bad),
-              title: new Text('It left ${stop.location} at ${DateUtil.toTimeString(stop.end)}.'),
+              title: title,
+              subtitle: new Text('Left at ${DateUtil.toTimeString(stop.end)}.')
             ));
             continue;
           }
           // Truck is here now
           else{
             if (stop.start.isBefore(now) && stop.end.isAfter(now)) {
-              title = new Text('It is currently at ${stop.location} until ${DateUtil.toTimeString(stop.end)}.');
+              subtitle = new Text('Currently here until ${DateUtil.toTimeString(stop.end)}.');
             } else {
               // Truck will be here soon
-              title = new Text('It will be at ${stop.location} from ${DateUtil.toTimeString(stop.start)} until ${DateUtil.toTimeString(stop.end)} (${timeUntil.inHours}h ${timeUntil.inMinutes % 60}m from now).');
+              subtitle = new Text('Here from ${DateUtil.toTimeString(stop.start)} until ${DateUtil.toTimeString(stop.end)} (${timeUntil.inHours}h ${timeUntil.inMinutes % 60}m from now).');
             }
 
             if (Platform.isAndroid) {
               truckWidgets.add(new ListTile(
                 leading: leading,
                 title: title,
+                subtitle: subtitle,
                 onTap: () async {
                   if (Platform.isAndroid) {
                     await AndroidUtil.openMaps(stop.mapsLocation);
