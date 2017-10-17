@@ -1,4 +1,4 @@
-package com.yourcompany.msuhelper;
+package io.frozor.msuhelper;
 
 import android.os.Bundle;
 

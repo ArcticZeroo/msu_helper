@@ -1,6 +1,6 @@
 # msu_helper
 
-Handy MSU utilities
+MSU Helper application
 
 ## Getting Started
 
