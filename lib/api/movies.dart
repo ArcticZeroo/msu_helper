@@ -16,8 +16,10 @@ class MovieShowing {
 class Movie {
   final String title;
   final List<MovieShowing> showings;
+  final List<String> showingLocations;
+  final Map<String, List<DateTime>> groupedShowings;
 
-  Movie(this.title, this.showings);
+  Movie({this.title, this.showings, this.showingLocations, this.groupedShowings});
 }
 
 class MovieNightResponse {
@@ -41,7 +43,16 @@ class MovieNightResponse {
         showings.add(new MovieShowing.fromJson(showingObject));
       }
 
-      movies.add(new Movie(movieObject['title'], showings));
+      Map<String, List<num>> groupedShowingObjects = movieObject['groupedShowings'];
+      Map<String, List<DateTime>> groupedShowings = new Map();
+
+      groupedShowingObjects.forEach((String location, List<num> showingNums) {
+        List<DateTime> showingDates = showingNums.map((n) => new DateTime.fromMillisecondsSinceEpoch(n));
+
+        groupedShowings[location] = showingDates;
+      });
+
+      movies.add(new Movie(title: movieObject['title'], showings: showings, showingLocations: movieObject['locations'], groupedShowings: groupedShowings));
     }
 
     cached = movies;
