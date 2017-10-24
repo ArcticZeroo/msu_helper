@@ -8,6 +8,7 @@ import 'package:msu_helper/api/movies.dart';
 import 'package:msu_helper/pages/movie_times.dart';
 import 'package:msu_helper/util/AndroidUtil.dart';
 import 'package:msu_helper/util/DateUtil.dart';
+import 'package:msu_helper/util/UrlUtil.dart';
 import 'package:msu_helper/util/WidgetUtil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -47,9 +48,7 @@ class _HomepageState extends State<Homepage> {
         DateTime now = new DateTime.now();
 
         for (FoodTruckStop stop in stops) {
-          Widget leading = (Platform.isAndroid)
-              ? new Icon(Icons.location_on)
-              : new Icon(Icons.timer);
+          Widget leading = new Icon(Icons.location_on);
 
           Widget title = new Text(stop.location);
           Widget subtitle;
@@ -74,23 +73,14 @@ class _HomepageState extends State<Homepage> {
               subtitle = new Text('Here from ${DateUtil.toTimeString(stop.start)} until ${DateUtil.toTimeString(stop.end)} (${timeUntil.inHours}h ${timeUntil.inMinutes % 60}m from now).');
             }
 
-            if (Platform.isAndroid) {
-              truckWidgets.add(new ListTile(
-                leading: leading,
-                title: title,
-                subtitle: subtitle,
-                onTap: () async {
-                  if (Platform.isAndroid) {
-                    await AndroidUtil.openMaps(stop.mapsLocation);
-                  }
-                },
-              ));
-            } else {
-              truckWidgets.add(new ListTile(
-                  leading: leading,
-                  title: title
-              ));
-            }
+            truckWidgets.add(new ListTile(
+              leading: leading,
+              title: title,
+              subtitle: subtitle,
+              onTap: () async {
+                await UrlUtil.openMapsToCoordinates(stop.locationCoords.x, stop.locationCoords.y);
+              },
+            ));
           }
         }
 
