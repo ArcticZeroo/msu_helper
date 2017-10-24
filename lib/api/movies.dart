@@ -43,11 +43,15 @@ class MovieNightResponse {
         showings.add(new MovieShowing.fromJson(showingObject));
       }
 
-      Map<String, List<num>> groupedShowingObjects = movieObject['groupedShowings'];
+      Map<String, List<int>> groupedShowingObjects = movieObject['groupedShowings'];
       Map<String, List<DateTime>> groupedShowings = new Map();
 
-      groupedShowingObjects.forEach((String location, List<num> showingNums) {
-        List<DateTime> showingDates = showingNums.map((n) => new DateTime.fromMillisecondsSinceEpoch(n));
+      groupedShowingObjects.forEach((String location, List<int> showingNums) {
+        List<DateTime> showingDates = new List();
+
+        for (int time in showingNums) {
+          showingDates.add(new DateTime.fromMillisecondsSinceEpoch(time));
+        }
 
         groupedShowings[location] = showingDates;
       });
