@@ -4,6 +4,7 @@ description: Handy MSU utilities
 dependencies:
   android_intent: any
   shared_preferences: any
+  url_launcher: any
   flutter:
     sdk: flutter
 
