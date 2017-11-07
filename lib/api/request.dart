@@ -19,10 +19,26 @@ Future toUTF8(HttpClientResponse res) async {
 Future makeRestRequest(String url) async {
   HttpClient client = new HttpClient();
 
-  HttpClientRequest req = (await client.getUrl(Uri.parse(url)));
-  HttpClientResponse res = await req.close();
+  HttpClientRequest req;
+  try {
+    req = (await client.getUrl(Uri.parse(url)));
+  } catch (e) {
+    return new Future.error(e);
+  }
 
-  String responseText = await toUTF8(res);
+  HttpClientResponse res;
+  try {
+    res = await req.close();
+  } catch (e) {
+    return new Future.error(e);
+  }
+
+  String responseText;
+  try {
+    responseText = await toUTF8(res);
+  } catch (e) {
+    return new Future.error(e);
+  }
 
   Map decoded = JSON.decode(responseText);
 
