@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:msu_helper/api/movies.dart';
-import 'package:msu_helper/util/AndroidUtil.dart';
+import 'package:msu_helper/util/UrlUtil.dart';
 
 final DateFormat timeFormat = new DateFormat('EEEE MMMM d, hh:mm aaa');
 
@@ -13,10 +13,10 @@ Widget getMovieTimesPage(Movie movie) {
   movie.groupedShowings.forEach((String location, List<DateTime> times) {
     Text title = new Text(location);
 
+    int nextShowing = Movie.getNextShowing(times);
+
     List<Widget> locationWidgets = <Widget>[
-      (Platform.isAndroid)
-        ? new ListTile(leading: new Icon(Icons.location_on), title: title, onTap: () { AndroidUtil.openMaps(location); })
-        : new ListTile(leading: new Icon(Icons.local_movies), title: title)
+      new ListTile(leading: new Icon(nextShowing == -1 ? Icons.mood_bad : Icons.location_on), title: title, subtitle: (nextShowing == -1) ? new Text('All of the below showtimes have passed for this location.') : new Text(''), onTap: () { UrlUtil.openMapsToLocation(location); })
     ];
 
     for (DateTime time in times) {

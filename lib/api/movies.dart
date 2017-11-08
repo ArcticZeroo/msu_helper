@@ -21,9 +21,9 @@ class Movie {
   final Map<String, List<DateTime>> groupedShowings;
 
   Movie({this.title, this.showings, this.showingLocations, this.groupedShowings})
-    : nextShowing = Movie._getNextShowing(showings);
+    : nextShowing = Movie.getNextShowing(showings.map((s) => s.time).toList());
 
-  static int _getNextShowing(List<MovieShowing> showings) {
+  static int getNextShowing(List<DateTime> showings) {
     if (showings.length == 0) {
       return null;
     }
@@ -32,7 +32,7 @@ class Movie {
     int millis = now.millisecondsSinceEpoch;
 
     for (int i = 0; i < showings.length; i++) {
-      if (millis < showings[i].time.millisecondsSinceEpoch) {
+      if (millis < showings[i].millisecondsSinceEpoch) {
         return i;
       }
     }
