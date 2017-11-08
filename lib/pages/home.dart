@@ -131,10 +131,16 @@ class _HomepageState extends State<Homepage> {
     ];
 
     for (Movie movie in movies) {
+      String text = 'This movie has ${movie.showings.length} showing${movie.showings.length == 1 ? '' : 's'} this week.';
+
+      if (movie.nextShowing == -1) {
+        text += ' However, all showings have already passed.';
+      }
+
       movieWidgets.add(new ListTile(
         leading: new Icon(Icons.movie),
         title: new Text(movie.title),
-        subtitle: new Text('This movie has ${movie.showings.length} showing${movie.showings.length == 1 ? '' : 's'} this week.'),
+        subtitle: new Text(text),
         onTap: () {
           Navigator.of(buildContext).push(new MaterialPageRoute(builder: (BuildContext context) {
             return getMovieTimesPage(movie);

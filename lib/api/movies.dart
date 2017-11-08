@@ -16,10 +16,29 @@ class MovieShowing {
 class Movie {
   final String title;
   final List<MovieShowing> showings;
+  final int nextShowing;
   final List<String> showingLocations;
   final Map<String, List<DateTime>> groupedShowings;
 
-  Movie({this.title, this.showings, this.showingLocations, this.groupedShowings});
+  Movie({this.title, this.showings, this.showingLocations, this.groupedShowings})
+    : nextShowing = Movie._getNextShowing(showings);
+
+  static int _getNextShowing(List<MovieShowing> showings) {
+    if (showings.length == 0) {
+      return null;
+    }
+
+    DateTime now = new DateTime.now();
+    int millis = now.millisecondsSinceEpoch;
+
+    for (int i = 0; i < showings.length; i++) {
+      if (millis < showings[i].time.millisecondsSinceEpoch) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
 }
 
 class MovieNightResponse {
