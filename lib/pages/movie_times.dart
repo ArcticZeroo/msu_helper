@@ -11,6 +11,10 @@ Widget getMovieTimesPage(Movie movie) {
   List<Widget> widgets = new List();
 
   movie.groupedShowings.forEach((String location, List<DateTime> times) {
+    if (times.length == 0) {
+      return;
+    }
+
     Text title = new Text(location);
 
     int nextShowing = Movie.getNextShowing(times);
