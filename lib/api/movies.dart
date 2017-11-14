@@ -16,12 +16,17 @@ class MovieShowing {
 class Movie {
   final String title;
   final List<MovieShowing> showings;
-  final int nextShowing;
   final List<String> showingLocations;
   final Map<String, List<DateTime>> groupedShowings;
+  MovieShowing nextShowing;
 
-  Movie({this.title, this.showings, this.showingLocations, this.groupedShowings})
-    : nextShowing = Movie.getNextShowing(showings.map((s) => s.time).toList());
+  Movie({this.title, this.showings, this.showingLocations, this.groupedShowings}) {
+    int nextShowingIndex = Movie.getNextShowing(showings.map((s) => s.time).toList());
+
+    if (nextShowingIndex != null && nextShowingIndex != -1) {
+      this.nextShowing = showings[nextShowingIndex];
+    }
+  }
 
   static int getNextShowing(List<DateTime> showings) {
     if (showings.length == 0) {

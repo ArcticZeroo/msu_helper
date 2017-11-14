@@ -130,11 +130,20 @@ class _HomepageState extends State<Homepage> {
       )
     ];
 
+    MovieShowing overallNextShowing;
+
     for (Movie movie in movies) {
       String text = 'This movie has ${movie.showings.length} showing${movie.showings.length == 1 ? '' : 's'} this week.';
 
-      if (movie.nextShowing == -1) {
+      if (movie.nextShowing == null) {
         text += ' However, all showings have already passed.';
+      } else {
+        text += ' The next will be at ${new DateFormat('hh:mm aaa').format(movie.nextShowing.time)}.';
+
+        // If no next showing has been found yet and the current showing is later than the one we want to find
+        if (overallNextShowing == null || overallNextShowing.time.millisecondsSinceEpoch > movie.nextShowing.time.millisecondsSinceEpoch) {
+          overallNextShowing = movie.nextShowing;
+        }
       }
 
       movieWidgets.add(new ListTile(
@@ -156,7 +165,7 @@ class _HomepageState extends State<Homepage> {
       ),
     );
 
-    infoWidgetPriorities[Identifiers.MOVIE_NIGHT] = 1.0;
+    infoWidgetPriorities[Identifiers.MOVIE_NIGHT] = overallNextShowing == null ? Priorities.MOVIE_NIGHT : computePriority(base: Priorities.MOVIE_NIGHT, when: overallNextShowing.time);
   }
 
   Future loadPageData([bool refresh = false]) async {
