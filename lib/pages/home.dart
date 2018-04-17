@@ -55,6 +55,16 @@ class _HomepageState extends State<Homepage> {
 
           Duration timeUntil = stop.start.difference(now);
 
+          if (stop.isCancelled) {
+            truckBadWidgets.add(new ListTile(
+              leading: new Icon(Icons.cancel),
+              title: title,
+              subtitle: new Text('This stop has been cancelled.'),
+            ));
+
+            continue;
+          }
+
           // Truck is gone
           if (stop.end.isBefore(now)) {
             truckBadWidgets.add(new ListTile(
@@ -78,7 +88,7 @@ class _HomepageState extends State<Homepage> {
               title: title,
               subtitle: subtitle,
               onTap: () async {
-                await UrlUtil.openMapsToCoordinates(stop.locationCoords.x, stop.locationCoords.y);
+                stop.openMaps();
               },
             ));
           }
