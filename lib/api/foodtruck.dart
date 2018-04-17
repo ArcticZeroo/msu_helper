@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:msu_helper/util/DateUtil.dart';
+import 'package:msu_helper/util/UrlUtil.dart';
 
 import '../util/TextUtil.dart';
 import '../config/Pages.dart';
@@ -8,6 +9,7 @@ import './request.dart';
 
 class FoodTruckStop {
   final String location;
+  final String mapsLocation;
   final Point locationCoords;
   final bool isCancelled;
   final DateTime start;
@@ -15,10 +17,20 @@ class FoodTruckStop {
 
   FoodTruckStop(Map<String, dynamic> jsonObject)
     : this.location = jsonObject['place'],
+      this.mapsLocation = (jsonObject['place'].toString().contains(' near ') ? jsonObject['place'].toString().split(' near ')[1].trim() : jsonObject['place']),
       this.locationCoords = new Point(double.parse(jsonObject['location']['x'].toString()), double.parse(jsonObject['location']['y'].toString())),
       this.isCancelled = jsonObject['place'].toLowerCase().contains('cancel'),
       this.start = new DateTime.fromMillisecondsSinceEpoch(jsonObject['start']),
       this.end = new DateTime.fromMillisecondsSinceEpoch(jsonObject['end']);
+
+  openMaps() {
+    if (this.locationCoords.x == 0 && this.locationCoords.y == 0) {
+      UrlUtil.openMaps(this.mapsLocation);
+      return;
+    }
+
+    UrlUtil.openMapsToCoordinates(this.locationCoords.x, this.locationCoords.y);
+  }
 }
 
 class FoodTruckResponse {
