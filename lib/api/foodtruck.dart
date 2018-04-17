@@ -16,7 +16,7 @@ class FoodTruckStop {
   FoodTruckStop(Map<String, dynamic> jsonObject)
     : this.location = jsonObject['place'],
       this.locationCoords = new Point(double.parse(jsonObject['location']['x'].toString()), double.parse(jsonObject['location']['y'].toString())),
-      this.isCancelled = jsonObject['place'].toLowerCase().contains('cancelled'),
+      this.isCancelled = jsonObject['place'].toLowerCase().contains('cancel'),
       this.start = new DateTime.fromMillisecondsSinceEpoch(jsonObject['start']),
       this.end = new DateTime.fromMillisecondsSinceEpoch(jsonObject['end']);
 }
