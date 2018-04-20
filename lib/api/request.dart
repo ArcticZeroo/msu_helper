@@ -16,7 +16,7 @@ Future toUTF8(HttpClientResponse res) async {
   return responseText;
 }
 
-Future makeRestRequest(String url) async {
+Future<Map<String, dynamic>> makeRestRequest(String url) async {
   HttpClient client = new HttpClient();
 
   HttpClientRequest req;
@@ -40,7 +40,13 @@ Future makeRestRequest(String url) async {
     return new Future.error(e);
   }
 
-  Map decoded = JSON.decode(responseText);
+  dynamic decodedUnknown = new JsonDecoder().convert(responseText);
+
+  if (!(decodedUnknown is Map)) {
+    return new Future.error('Unable to decode response into a map.');
+  }
+
+  Map<String, dynamic> decoded = decodedUnknown;
 
   if (!res.statusCode.toString().startsWith('2')) {
     return new Future.error('Request unsuccessful: ${decoded.containsKey('error') ? '(${res.statusCode}) ${decoded['error']}' : res.statusCode}');
