@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:msu_helper/pages/settings.dart';
 
 import './util/TextUtil.dart';
 import './pages/home.dart';
@@ -18,11 +17,7 @@ class MsuHelperApp extends StatelessWidget {
         primarySwatch: Colors.green,
         accentColor: Colors.greenAccent
       ),
-      routes: {
-        '/': (BuildContext context) => new Homepage(),
-        '/foodtruck': (BuildContext context) => new Homepage(),
-        '/settings': (BuildContext context) => new SettingsPage()
-      }
+      home: new Homepage()
     );
   }
 }
