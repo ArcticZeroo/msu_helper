@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:msu_helper/api/structures/dining_hall/dining_hall_venue.dart';
+import 'package:msu_helper/api/dining_hall/structures/dining_hall_venue.dart';
 
-part 'dining_hall_menu.g.dart';
+part './dining_hall_menu.g.dart';
 
 @JsonSerializable()
 class DiningHallMenu extends Object with _$DiningHallMenuSerializerMixin {

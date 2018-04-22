@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:msu_helper/api/structures/dining_hall/dining_hall_hours.dart';
+import 'package:msu_helper/api/dining_hall/structures/dining_hall_hours.dart';
 
-part 'package:msu_helper/api/structures/dining_hall/dining_hall.g.dart';
+part './dining_hall.g.dart';
 
 @JsonSerializable()
 class DiningHall extends Object with _$DiningHallSerializerMixin {
@@ -17,7 +17,7 @@ class DiningHall extends Object with _$DiningHallSerializerMixin {
   final String brandName;
   final String fullName;
   final String searchName;
-  final List<DiningHallHours> hours;
+  final Map<String, List<DiningHallHours>> hours;
 
   factory DiningHall.fromJson(Map<String, dynamic> json) => _$DiningHallFromJson(json);
 }

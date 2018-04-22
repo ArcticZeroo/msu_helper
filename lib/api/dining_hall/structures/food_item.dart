@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'food_item.g.dart';
+part './food_item.g.dart';
 
 @JsonSerializable()
 class FoodItem extends Object with _$FoodItemSerializerMixin {
