@@ -1,11 +1,34 @@
 class PageRoute {
-  static const String ROOT = 'https://frozor.io/api/';
-  static const String MSU = 'msu/';
-  static const String DINING = 'dining/';
-  static const String DINING_LIST = 'list/';
-  static const String DINING_MENU = 'menu/';
+  // Root paths
+  static const String ROOT = 'https://frozor.io';
+  static const String API = 'api';
+  static const String MSU = 'msu';
+
+  // Category paths
+  static const String DINING = 'dining';
+  static const String FOOD_TRUCK = 'foodtruck';
+
+  // Method paths
+  static const String LIST = 'list';
+  static const String MENU = 'menu';
+
+  static String join(List<String> pieces) {
+    return pieces.join('/');
+  }
+
+  static String getMsuApi() {
+    return join([PageRoute.ROOT, PageRoute.API, PageRoute.MSU]);
+  }
+
+  static String getApiRoute(String route, String end) {
+    return join([getMsuApi(), route, end]);
+  }
 
   static String getDining(String end) {
-    return PageRoute.ROOT + PageRoute.MSU + PageRoute.DINING + end;
+    return getApiRoute(PageRoute.DINING, end);
+  }
+
+  static String getFoodTruck(String end) {
+    return getApiRoute(PageRoute.FOOD_TRUCK, end);
   }
 }
