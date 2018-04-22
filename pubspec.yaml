@@ -5,7 +5,11 @@ dependencies:
   url_launcher: any
   intl: any
   sqflite: any
+  path_provider: any
+  path: any
+  events: any
   json_annotation: ^0.2.2
+  http: any
   flutter:
     sdk: flutter
 
