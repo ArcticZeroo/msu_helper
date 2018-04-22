@@ -2,11 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:intl/intl.dart';
-import 'package:msu_helper/api/dining_hall/Meal.dart';
+import 'package:msu_helper/api/dining_hall/meal.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_menu.dart';
 import 'package:msu_helper/api/dining_hall/time.dart';
 import 'package:msu_helper/api/request.dart';
 import 'package:msu_helper/api/timed_cache.dart';
+import 'package:msu_helper/config/expire_time.dart';
 import 'package:msu_helper/config/page_route.dart';
 
 import '../database.dart';
@@ -16,6 +17,12 @@ MainDatabase database = new MainDatabase();
 List<DiningHall> hallCache;
 TimedCache<String, DiningHallMenu> menuCache = new TimedCache((String key) async {
   Deserialized deserialized = await deserializeFromKey(key);
+
+  TimedCacheEntry<DiningHallMenu> fromDb = await retrieveMenuFromDatabase(deserialized.diningHall, deserialized.menuDate, deserialized.meal);
+
+  if (fromDb != null) {
+    return fromDb;
+  }
 
   return retrieveMenuFromWeb(deserialized.diningHall, deserialized.menuDate, deserialized.meal);
 }, 60*60*1000);
@@ -51,7 +58,7 @@ Future<List<DiningHall>> retrieveListFromDatabase() async {
 }
 
 Future<List<DiningHall>> retrieveListFromWeb() async {
-  String url = PageRoute.getDining(PageRoute.DINING_LIST);
+  String url = PageRoute.getDining(PageRoute.LIST);
 
   List<Map<String, dynamic>> response = await makeRestRequest(url);
 
@@ -59,16 +66,16 @@ Future<List<DiningHall>> retrieveListFromWeb() async {
 }
 
 Future<List<DiningHall>> retrieveListFromWebAndSave() async {
-  List<DiningHall> fromDb = await retrieveListFromWeb();
+  List<DiningHall> fromWeb = await retrieveListFromWeb();
 
-  for (DiningHall diningHall in fromDb) {
+  for (DiningHall diningHall in fromWeb) {
     await database.db.insert(TableName.diningHalls, {
       'searchName': diningHall.searchName,
       'json': json.encode(diningHall)
     });
   }
 
-  return fromDb;
+  return fromWeb;
 }
 
 Future<List<DiningHall>> retrieveList([bool respectCache = true]) async {
@@ -92,14 +99,56 @@ Future<List<DiningHall>> retrieveList([bool respectCache = true]) async {
 Future<DiningHallMenu> retrieveMenuFromWeb(DiningHall diningHall, MenuDate date, Meal meal) async {
   String dateString = date.getFormatted();
 
-  String url = PageRoute.getDining('${PageRoute.getDining(PageRoute.DINING_MENU)}/$dateString/${meal.ordinal}');
+  String url = PageRoute.join([PageRoute.getDining(PageRoute.MENU), dateString, meal.ordinal]);
 
   Map<String, dynamic> response = await makeRestRequest(url);
 
   return DiningHallMenu.fromJson(response);
 }
 
-Future<DiningHallMenu> retrieveMenu(DiningHall diningHall, MenuDate date, Meal meal) {
+Future<TimedCacheEntry<DiningHallMenu>> retrieveMenuFromDatabase(DiningHall diningHall, MenuDate date, Meal meal) async {
+  String where = "searchName = ? AND date = ? AND meal = ?";
+  List whereArgs = [diningHall.searchName, date.getFormatted(), meal.ordinal.toString()];
+
+  List<Map> results = await database.db.query(TableName.diningHallMenu,
+      columns: ['json', 'retrieved'],
+      where: where,
+      whereArgs: whereArgs);
+
+  if (results.length == 0) {
+    return null;
+  }
+
+  Map<String, dynamic> result = results[0];
+
+  int retrieved = result['retrieved'] as int;
+  DiningHallMenu diningHallMenu = DiningHallMenu.fromJson(result['json']);
+
+  int elapsedMs = DateTime.now().millisecondsSinceEpoch - retrieved;
+  if (diningHallMenu.closed) {
+    // This is an invalid entry if it's been half the expiry and
+    // the hall is closed
+    if (elapsedMs >= ExpireTime.DINING_HALL_MENU / 2) {
+      // Remove the row if it's invalid
+      await database.db.delete(TableName.diningHallMenu,
+          where: where,
+          whereArgs: whereArgs);
+      return null;
+    }
+    // This is an invalid entry if it's been too long since it was retrieved
+  } else if (elapsedMs >= ExpireTime.DINING_HALL_MENU) {
+    // Remove the row if it's invalid
+    await database.db.delete(TableName.diningHallMenu,
+        where: where,
+        whereArgs: whereArgs);
+    return null;
+  }
+
+  // The entry is valid
+  return new TimedCacheEntry<DiningHallMenu>(diningHallMenu, retrieved);
+}
+
+Future<DiningHallMenu> retrieveMenu(DiningHall diningHall, MenuDate date, Meal meal) async {
   String key = serializeToKey(diningHall, date, meal);
 
   return menuCache.get(key);
