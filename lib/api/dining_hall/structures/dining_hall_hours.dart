@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:msu_helper/api/dining_hall/Meal.dart';
+import 'package:msu_helper/api/dining_hall/meal.dart';
 
 part './dining_hall_hours.g.dart';
 
