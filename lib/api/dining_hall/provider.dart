@@ -16,7 +16,7 @@ import 'structures/dining_hall.dart';
 MainDatabase database = new MainDatabase();
 List<DiningHall> hallCache;
 TimedCache<String, DiningHallMenu> menuCache = new TimedCache((String key) async {
-  Deserialized deserialized = await deserializeFromKey(key);
+  MenuMetadata deserialized = await deserializeFromKey(key);
 
   TimedCacheEntry<DiningHallMenu> fromDb = await retrieveMenuFromDatabase(deserialized.diningHall, deserialized.menuDate, deserialized.meal);
 
@@ -24,22 +24,26 @@ TimedCache<String, DiningHallMenu> menuCache = new TimedCache((String key) async
     return fromDb;
   }
 
-  return retrieveMenuFromWeb(deserialized.diningHall, deserialized.menuDate, deserialized.meal);
+  DiningHallMenu menu = await retrieveMenuFromWeb(deserialized.diningHall, deserialized.menuDate, deserialized.meal);
+
+  await saveMenuToDb(deserialized.diningHall, deserialized.menuDate, deserialized.meal, menu);
+
+  return menu;
 }, 60*60*1000);
 
-class Deserialized {
+class MenuMetadata {
   final DiningHall diningHall;
   final MenuDate menuDate;
   final Meal meal;
   
-  Deserialized(this.diningHall, this.menuDate, this.meal);
+  MenuMetadata(this.diningHall, this.menuDate, this.meal);
 }
 
 String serializeToKey(DiningHall diningHall, MenuDate time, Meal meal) {
   return [diningHall.searchName, time.getFormatted(), meal.ordinal.toString()].join('|');
 }
 
-Future<Deserialized> deserializeFromKey(String key) async {
+Future<MenuMetadata> deserializeFromKey(String key) async {
   List<String> split = key.split('|');
 
   // Don't handle the orElse, since a serialized key should never
@@ -48,7 +52,7 @@ Future<Deserialized> deserializeFromKey(String key) async {
   MenuDate menuDate = MenuDate.fromFormatted(split[1]);
   Meal meal = Meal.fromOrdinal(int.parse(split[2]));
 
-  return new Deserialized(diningHall, menuDate, meal);
+  return new MenuMetadata(diningHall, menuDate, meal);
 }
 
 Future<List<DiningHall>> retrieveListFromDatabase() async {
@@ -146,6 +150,32 @@ Future<TimedCacheEntry<DiningHallMenu>> retrieveMenuFromDatabase(DiningHall dini
 
   // The entry is valid
   return new TimedCacheEntry<DiningHallMenu>(diningHallMenu, retrieved);
+}
+
+Future saveMenuToDb(DiningHall diningHall, MenuDate date, Meal meal, DiningHallMenu menu) async {
+  String where = "searchName = ? AND date = ? AND meal = ?";
+  List whereArgs = [diningHall.searchName, date.getFormatted(), meal.ordinal.toString()];
+
+  List<Map> rows = await database.db.query(TableName.diningHallMenu,
+      where: where, whereArgs: whereArgs);
+
+  String jsonString = json.encode(menu);
+  int retrieved = DateTime.now().millisecondsSinceEpoch;
+
+  if (rows.length > 0) {
+    await database.db.update(TableName.diningHallMenu, {
+      'json': jsonString,
+      'retrieved': retrieved
+    }, where: where, whereArgs: whereArgs);
+  } else {
+    await database.db.insert(TableName.diningHallMenu, {
+      'json': jsonString,
+      'retrieved': retrieved,
+      'searchName': diningHall.searchName,
+      'meal': meal.ordinal,
+      'date': date.getFormatted()
+    });
+  }
 }
 
 Future<DiningHallMenu> retrieveMenu(DiningHall diningHall, MenuDate date, Meal meal) async {
