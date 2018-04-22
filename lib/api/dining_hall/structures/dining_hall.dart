@@ -20,4 +20,9 @@ class DiningHall extends Object with _$DiningHallSerializerMixin {
   final Map<String, List<DiningHallHours>> hours;
 
   factory DiningHall.fromJson(Map<String, dynamic> json) => _$DiningHallFromJson(json);
+
+  @override
+  String toString() {
+    return "DiningHall[$searchName]";
+  }
 }

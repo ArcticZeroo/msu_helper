@@ -66,6 +66,15 @@ class MenuDate {
   }
 
   String getFormatted() {
-    return new DateFormat("yyy-MM-dd").format(_time);
+    return new DateFormat("yyyy-MM-dd").format(_time);
+  }
+
+  factory MenuDate.fromFormatted(String formatted) {
+    return new MenuDate(DateTime.parse(formatted));
+  }
+
+  @override
+  String toString() {
+    return "MenuDate[${getFormatted()}]";
   }
 }

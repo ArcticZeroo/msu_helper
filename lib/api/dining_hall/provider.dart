@@ -14,25 +14,34 @@ import 'structures/dining_hall.dart';
 
 MainDatabase database = new MainDatabase();
 List<DiningHall> hallCache;
-TimedCache<String, DiningHallMenu> menuCache = new TimedCache((String key) {}, );
+TimedCache<String, DiningHallMenu> menuCache = new TimedCache((String key) async {
+  Deserialized deserialized = await deserializeFromKey(key);
+
+  return retrieveMenuFromWeb(deserialized.diningHall, deserialized.menuDate, deserialized.meal);
+}, 60*60*1000);
 
 class Deserialized {
   final DiningHall diningHall;
-  final MenuDate time;
+  final MenuDate menuDate;
   final Meal meal;
   
-  Deserialized(this.diningHall, this.time, this.meal);
+  Deserialized(this.diningHall, this.menuDate, this.meal);
 }
 
 String serializeToKey(DiningHall diningHall, MenuDate time, Meal meal) {
   return [diningHall.searchName, time.getFormatted(), meal.ordinal.toString()].join('|');
 }
 
-deserializeFromKey(String key) async {
+Future<Deserialized> deserializeFromKey(String key) async {
   List<String> split = key.split('|');
-  
+
+  // Don't handle the orElse, since a serialized key should never
+  // not be able to get deserialized
   DiningHall diningHall = (await retrieveList()).firstWhere((hall) => hall.searchName == split[0]);
-  MenuDate menuDate = MenuDate.
+  MenuDate menuDate = MenuDate.fromFormatted(split[1]);
+  Meal meal = Meal.fromOrdinal(int.parse(split[2]));
+
+  return new Deserialized(diningHall, menuDate, meal);
 }
 
 Future<List<DiningHall>> retrieveListFromDatabase() async {
@@ -80,12 +89,18 @@ Future<List<DiningHall>> retrieveList([bool respectCache = true]) async {
   return fromWeb;
 }
 
-Future<DiningHallMenu> retrieveMenuFromWeb(DiningHall diningHall, DateTime date, Meal meal) async {
-  String dateString = new DateFormat('yyyy-MM-dd').format(date);
+Future<DiningHallMenu> retrieveMenuFromWeb(DiningHall diningHall, MenuDate date, Meal meal) async {
+  String dateString = date.getFormatted();
 
   String url = PageRoute.getDining('${PageRoute.getDining(PageRoute.DINING_MENU)}/$dateString/${meal.ordinal}');
 
   Map<String, dynamic> response = await makeRestRequest(url);
 
   return DiningHallMenu.fromJson(response);
+}
+
+Future<DiningHallMenu> retrieveMenu(DiningHall diningHall, MenuDate date, Meal meal) {
+  String key = serializeToKey(diningHall, date, meal);
+
+  return menuCache.get(key);
 }
