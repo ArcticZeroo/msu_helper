@@ -7,11 +7,13 @@ import 'package:path/path.dart';
 class TableName {
   static const diningHalls = 'diningHalls';
   static const diningHallMenu = 'diningHallMenu';
+  static const jsonCache = 'jsonCache';
 }
 
 Map<String, String> tables = {
   '${TableName.diningHalls}': 'searchName TEXT PRIMARY KEY, json TEXT',
-  '${TableName.diningHallMenu}': 'searchName TEXT, date TEXT, retrieved INTEGER'
+  '${TableName.diningHallMenu}': 'searchName TEXT, date TEXT, meal INTEGER, retrieved INTEGER, json TEXT',
+  '${TableName.jsonCache}': 'name TEXT PRIMARY KEY, json TEXT'
 };
 
 class MainDatabase {
