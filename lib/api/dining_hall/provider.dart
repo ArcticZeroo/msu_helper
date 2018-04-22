@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:intl/intl.dart';
 import 'package:msu_helper/api/dining_hall/meal.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_menu.dart';
 import 'package:msu_helper/api/dining_hall/time.dart';
@@ -176,6 +175,12 @@ Future saveMenuToDb(DiningHall diningHall, MenuDate date, Meal meal, DiningHallM
       'date': date.getFormatted()
     });
   }
+}
+
+Future removeOldMenus() async {
+  return database.db.delete(TableName.diningHallMenu,
+      where: 'retrieved < ?',
+      whereArgs: [ExpireTime.getLastTime(ExpireTime.DINING_HALL_MENU)]);
 }
 
 Future<DiningHallMenu> retrieveMenu(DiningHall diningHall, MenuDate date, Meal meal) async {
