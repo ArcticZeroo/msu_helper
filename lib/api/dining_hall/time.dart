@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_hours.dart';
 import 'package:msu_helper/util/DateUtil.dart';
 

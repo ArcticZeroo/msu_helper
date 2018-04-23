@@ -131,7 +131,7 @@ Future<TimedCacheEntry<DiningHallMenu>> retrieveMenuFromDatabase(DiningHall dini
   if (diningHallMenu.closed) {
     // This is an invalid entry if it's been half the expiry and
     // the hall is closed
-    if (elapsedMs >= ExpireTime.DINING_HALL_MENU / 2) {
+    if (elapsedMs >= ExpireTime.DAY / 2) {
       // Remove the row if it's invalid
       await database.db.delete(TableName.diningHallMenu,
           where: where,
@@ -139,7 +139,7 @@ Future<TimedCacheEntry<DiningHallMenu>> retrieveMenuFromDatabase(DiningHall dini
       return null;
     }
     // This is an invalid entry if it's been too long since it was retrieved
-  } else if (elapsedMs >= ExpireTime.DINING_HALL_MENU) {
+  } else if (elapsedMs >= ExpireTime.DAY) {
     // Remove the row if it's invalid
     await database.db.delete(TableName.diningHallMenu,
         where: where,
@@ -177,7 +177,7 @@ Future saveMenuToDb(DiningHall diningHall, MenuDate date, Meal meal, DiningHallM
 Future removeOldMenus() async {
   return database.db.delete(TableName.diningHallMenu,
       where: 'retrieved < ?',
-      whereArgs: [ExpireTime.getLastTime(ExpireTime.DINING_HALL_MENU)]);
+      whereArgs: [ExpireTime.getLastTime(ExpireTime.DAY)]);
 }
 
 Future<DiningHallMenu> retrieveMenu(DiningHall diningHall, MenuDate date, Meal meal) async {
