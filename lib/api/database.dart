@@ -13,7 +13,7 @@ class TableName {
 Map<String, String> tables = {
   '${TableName.diningHalls}': 'searchName TEXT PRIMARY KEY, json TEXT',
   '${TableName.diningHallMenu}': 'searchName TEXT, date TEXT, meal INTEGER, retrieved INTEGER, json TEXT',
-  '${TableName.jsonCache}': 'name TEXT PRIMARY KEY, json TEXT'
+  '${TableName.jsonCache}': 'name TEXT PRIMARY KEY, json TEXT, retrieved INTEGER'
 };
 
 class MainDatabase {

@@ -155,18 +155,15 @@ Future saveMenuToDb(DiningHall diningHall, MenuDate date, Meal meal, DiningHallM
   String where = "searchName = ? AND date = ? AND meal = ?";
   List whereArgs = [diningHall.searchName, date.getFormatted(), meal.ordinal.toString()];
 
-  List<Map> rows = await database.db.query(TableName.diningHallMenu,
-      where: where, whereArgs: whereArgs);
-
   String jsonString = json.encode(menu);
   int retrieved = DateTime.now().millisecondsSinceEpoch;
 
-  if (rows.length > 0) {
-    await database.db.update(TableName.diningHallMenu, {
-      'json': jsonString,
-      'retrieved': retrieved
-    }, where: where, whereArgs: whereArgs);
-  } else {
+  int rows = await database.db.update(TableName.diningHallMenu, {
+    'json': jsonString,
+    'retrieved': retrieved
+  }, where: where, whereArgs: whereArgs);
+
+  if (rows == 0) {
     await database.db.insert(TableName.diningHallMenu, {
       'json': jsonString,
       'retrieved': retrieved,
