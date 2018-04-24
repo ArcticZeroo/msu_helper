@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
+1import 'dart:math' show min;
 
 class MainBottomBar {
   List<Widget> _pages = [];
@@ -40,5 +40,7 @@ class MainBottomBar {
 
   void addPage(String title, Icon icon, Widget page) {
     _pages.add(page);
+    _icons.add(icon);
+    _titles.add(title);
   }
 }
