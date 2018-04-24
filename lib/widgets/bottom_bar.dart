@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-1import 'dart:math' show min;
+import 'dart:math' show min;
 
 class MainBottomBar {
   List<Widget> _pages = [];
