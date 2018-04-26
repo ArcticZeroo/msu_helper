@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:msu_helper/api/database.dart';
+import 'package:msu_helper/api/timed_cache.dart';
 import 'package:msu_helper/config/expire_time.dart';
 
 MainDatabase database = new MainDatabase();
+Map<String, TimedCacheEntry<String>> jsonCache = new Map();
 
-Future<String> retrieveCachedJson(String key, [int expireTime = ExpireTime.DEFAULT]) async {
+Future retrieveJsonFromDb(String key, [int expireTime = ExpireTime.THIRTY_MINUTES]) async {
   List<Map<String, dynamic>> rows = await database.db.query(TableName.jsonCache,
       where: 'key = ?', whereArgs: [key]);
 
@@ -28,10 +30,10 @@ Future<String> retrieveCachedJson(String key, [int expireTime = ExpireTime.DEFAU
     return null;
   }
 
-  return row['json'];
+  return json.decode(row['json']);
 }
 
-Future cacheJson(String key, dynamic object) async {
+Future saveJsonToDb(String key, dynamic object) async {
   if (object is! String) {
     object = json.encode(object);
   }
