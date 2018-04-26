@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import './util/TextUtil.dart';
-import './pages/home.dart';
+import './pages/main_page.dart';
 
 void main() {
   runApp(new MsuHelperApp());
@@ -17,7 +17,7 @@ class MsuHelperApp extends StatelessWidget {
         primarySwatch: Colors.green,
         accentColor: Colors.greenAccent
       ),
-      home: new Homepage()
+      home: new MainPage()
     );
   }
 }
