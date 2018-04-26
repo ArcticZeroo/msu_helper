@@ -9,7 +9,7 @@ class DiningHallPageState extends State<DiningHallPage> {
   @override
   Widget build(BuildContext context) {
     return new Center(
-      child: new Text('Hello world!'),
+      child: new Text('Dining hall!'),
     );
   }
 }

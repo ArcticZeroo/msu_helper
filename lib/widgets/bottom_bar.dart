@@ -3,14 +3,14 @@ import 'dart:math' show min;
 
 import 'package:msu_helper/api/page_data.dart';
 
+typedef void SetStateCallback(void fn());
+
 class MainBottomBar {
-  static final MainBottomBar _mainBar = MainBottomBar._internal();
+  SetStateCallback setState;
 
-  factory MainBottomBar() {
-    return _mainBar;
+  MainBottomBar(SetStateCallback setState) {
+    this.setState = setState;
   }
-
-  MainBottomBar._internal();
 
   List<PageData> _pages = [];
 
@@ -22,6 +22,12 @@ class MainBottomBar {
 
   Widget getPage() {
     return getPageData().page;
+  }
+
+  void setPage(int index) {
+    setState(() {
+      _position = index;
+    });
   }
 
   List<BottomNavigationBarItem> buildItems() {
@@ -38,12 +44,14 @@ class MainBottomBar {
     return items;
   }
 
-  BottomNavigationBar build(Function setState) {
+  BottomNavigationBar build() {
     return new BottomNavigationBar(
       currentIndex: _position,
       items: buildItems(),
       onTap: (int index) {
+        print('Tapped');
         setState(() {
+          print('Setting state');
           _position = index;
         });
       },
