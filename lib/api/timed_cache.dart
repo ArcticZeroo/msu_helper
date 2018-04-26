@@ -1,16 +1,23 @@
 import 'dart:async';
 import 'dart:core';
 
+import 'package:msu_helper/config/expire_time.dart';
+
 class TimedCacheEntry<T> {
   T value;
   int added;
+  int expireTime;
 
-  TimedCacheEntry(this.value, [int added]) {
+  TimedCacheEntry(this.value, {int added, int expireTime}) {
     this.added = added ?? DateTime.now().millisecondsSinceEpoch;
   }
 
-  bool isValid(int expireTime) {
-    return (DateTime.now().millisecondsSinceEpoch - added) >= expireTime;
+  bool isValid([int expireTime]) {
+    if (expireTime == null) {
+      expireTime = this.expireTime;
+    }
+
+    return ExpireTime.isValid(added, expireTime);
   }
 
   void update(T value) {
@@ -28,8 +35,8 @@ class TimedCache<K, V> {
     _cache = new Map();
   }
 
-  void put(K key, V value, [int added]) {
-    _cache[key] = new TimedCacheEntry<V>(value, added);
+  void put(K key, V value, {int added}) {
+    _cache[key] = new TimedCacheEntry<V>(value, added: added);
   }
 
   TimedCacheEntry<V> getDirectEntry(K key) {
