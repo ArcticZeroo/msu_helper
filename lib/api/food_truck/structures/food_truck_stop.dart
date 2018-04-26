@@ -29,5 +29,12 @@ class FoodTruckStop extends Object with _$FoodTruckStopSerializerMixin {
 
     UrlUtil.openMapsToCoordinates(location.x, location.y);
   }
+
+  isNow() {
+    DateTime now = DateTime.now();
+
+    // End is not inclusive
+    return (start.isBefore(now) || start.isAtSameMomentAs(now)) && end.isAfter(now);
+  }
 }
 
