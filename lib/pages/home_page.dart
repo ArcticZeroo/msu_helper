@@ -14,7 +14,11 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return new Center(
-      child: new Text('Home Page')
+      child: new ListView(
+        children: <Widget>[
+
+        ],
+      ),
     );
   }
 }

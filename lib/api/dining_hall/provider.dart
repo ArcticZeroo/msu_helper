@@ -148,7 +148,7 @@ Future<TimedCacheEntry<DiningHallMenu>> retrieveMenuFromDatabase(DiningHall dini
   }
 
   // The entry is valid
-  return new TimedCacheEntry<DiningHallMenu>(diningHallMenu, retrieved);
+  return new TimedCacheEntry<DiningHallMenu>(diningHallMenu, added: retrieved);
 }
 
 Future saveMenuToDb(DiningHall diningHall, MenuDate date, Meal meal, DiningHallMenu menu) async {
