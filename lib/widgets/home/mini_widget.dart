@@ -7,14 +7,15 @@ class MiniWidgetDisplay extends StatelessWidget {
   final String title;
   final String subtitle;
   final List<String> text;
+  final bool active;
 
   MiniWidgetDisplay({
-    @required
-    this.icon,
-    @required
-    this.title,
+    @required this.icon,
+    @required this.title,
+    @required this.active,
     this.subtitle,
-    this.text});
+    this.text,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -56,8 +57,10 @@ class MiniWidgetDisplay extends StatelessWidget {
           new Container(
             padding: const EdgeInsets.all(32.0),
             child: new Icon(
-              icon,
-              color: Colors.grey[700]
+                icon,
+                color: active
+                    ? Theme.of(context).primaryColor
+                    : Colors.grey[500]
             ),
           ),
           new Expanded(
@@ -79,34 +82,37 @@ class MiniWidget extends StatelessWidget {
   final int index;
   final MainBottomBar bottomBar;
   final List<String> text;
+  final bool active;
 
   MiniWidget({
-    @required
-    this.icon,
-    @required
-    this.title,
-    @required
-    this.subtitle,
-    @required
-    this.index,
-    @required
-    this.bottomBar,
-    @required
-    this.text
+    @required this.icon,
+    @required this.title,
+    @required this.subtitle,
+    @required this.index,
+    @required this.bottomBar,
+    @required this.text,
+    this.active = false
   });
 
   @override
   Widget build(BuildContext context) {
-    return new InkWell(
-      onTap: () {
-        bottomBar.setPage(index);
-      },
-      child: new MiniWidgetDisplay(
-          icon: icon,
-          title: title,
-          subtitle: subtitle,
-          text: text
-      ),
+    MiniWidgetDisplay display = new MiniWidgetDisplay(
+      icon: icon,
+      title: title,
+      subtitle: subtitle,
+      text: text,
+      active: active,
     );
+
+    if (active) {
+      return new InkWell(
+        onTap: () {
+          bottomBar.setPage(index);
+        },
+        child: display,
+      );
+    }
+
+    return display;
   }
 }

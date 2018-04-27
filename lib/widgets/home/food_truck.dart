@@ -61,7 +61,7 @@ class FoodTruckMiniWidgetState extends State<FoodTruckMiniWidget> {
       subtitle: 'Delicious food, all on combo!',
       text: text,
       bottomBar: widget.homePage.bottomBar,
-      index: 2
+      index: 2,
     );
   }
 }
