@@ -16,8 +16,27 @@ Map<String, String> tables = {
   '${TableName.jsonCache}': 'name TEXT PRIMARY KEY, json TEXT, retrieved INTEGER'
 };
 
+typedef OnReadyCallback();
+
 class MainDatabase {
   static final MainDatabase _mainDb = MainDatabase._internal();
+  static List<OnReadyCallback> _onReadyCallbacks = new List();
+
+  static Future<Database> getDbInstance() async {
+    if (_mainDb.db != null) {
+      return _mainDb.db;
+    }
+
+    Completer<Database> completer = new Completer();
+
+    OnReadyCallback callback = () {
+      completer.complete(_mainDb.db);
+    };
+
+    _onReadyCallbacks.add(callback);
+
+    return completer.future;
+  }
 
   factory MainDatabase() {
     return _mainDb;
@@ -44,12 +63,19 @@ class MainDatabase {
   }
 
   Future _onOpen(Database db) async {
+    print('Database opened');
+
     for (MapEntry<String, String> table in tables.entries) {
       await db.execute('CREATE TABLE IF NOT EXISTS ${table.key} (${table.value})');
     }
   }
 
   Future init() async {
+    print('Initializing database...');
     db = await openDatabase(await _localPath, onOpen: _onOpen);
+
+    for (OnReadyCallback callback in _onReadyCallbacks) {
+      await callback();
+    }
   }
 }
