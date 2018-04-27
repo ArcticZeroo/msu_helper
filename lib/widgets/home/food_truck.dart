@@ -19,6 +19,7 @@ class FoodTruckMiniWidget extends StatefulWidget {
 
 class FoodTruckMiniWidgetState extends State<FoodTruckMiniWidget> {
   List<String> text = [];
+  bool hasFailed = false;
 
   FoodTruckMiniWidgetState() {
     load().catchError((e) {
@@ -28,6 +29,7 @@ class FoodTruckMiniWidgetState extends State<FoodTruckMiniWidget> {
 
       setState(() {
         text = ['Unable to load food truck information.'];
+        hasFailed = true;
       });
     });
   }
@@ -62,6 +64,7 @@ class FoodTruckMiniWidgetState extends State<FoodTruckMiniWidget> {
       text: text,
       bottomBar: widget.homePage.bottomBar,
       index: 2,
+      active: !hasFailed
     );
   }
 }
