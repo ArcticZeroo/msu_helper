@@ -8,12 +8,15 @@ class TableName {
   static const diningHalls = 'diningHalls';
   static const diningHallMenu = 'diningHallMenu';
   static const jsonCache = 'jsonCache';
+  static const userSettings = 'userSettings';
 }
 
 Map<String, String> tables = {
   '${TableName.diningHalls}': 'searchName TEXT PRIMARY KEY, json TEXT',
   '${TableName.diningHallMenu}': 'searchName TEXT, date TEXT, meal INTEGER, retrieved INTEGER, json TEXT',
-  '${TableName.jsonCache}': 'name TEXT PRIMARY KEY, json TEXT, retrieved INTEGER'
+  '${TableName.jsonCache}': 'name TEXT PRIMARY KEY, json TEXT, retrieved INTEGER',
+  // Store settings value as text so it can be anything... will be later converted
+  '${TableName.userSettings}': 'name TEXT PRIMARY KEY, value TEXT'
 };
 
 typedef OnReadyCallback();
