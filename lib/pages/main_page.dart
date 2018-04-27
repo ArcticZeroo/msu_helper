@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:msu_helper/api/page_data.dart';
-import 'package:msu_helper/pages/dining_hall.dart';
-import 'package:msu_helper/pages/food_truck.dart';
+import 'package:msu_helper/pages/dining_hall_page.dart';
+import 'package:msu_helper/pages/food_truck_page.dart';
 import 'package:msu_helper/pages/home_page.dart';
 import 'package:msu_helper/widgets/bottom_bar.dart';
 
@@ -25,7 +25,7 @@ class MainPageState extends State<MainPage> {
         appBarTitle: 'MSU Helper Home',
         bottomBarTitle: 'Home',
         bottomBarIcon: new Icon(Icons.home),
-        page: new HomePage(this)
+        page: new HomePage(bottomBar)
     ));
 
     bottomBar.addPage(new PageData(
@@ -45,8 +45,7 @@ class MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    print('Building page');
-    print(bottomBar.getPage().toString());
+    print('Building page "${bottomBar.getPageData().bottomBarTitle}"');
 
     return new Scaffold(
       appBar: new AppBar(

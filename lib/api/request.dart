@@ -18,7 +18,7 @@ Future makeRestRequest(String url) async {
     return new Future.error('Empty response.');
   }
 
-  dynamic decoded = new JsonDecoder().convert(res.body);
+  dynamic decoded = json.decode(res.body);
 
   if (decoded == null) {
     return new Future.error('Empty JSON response.');
