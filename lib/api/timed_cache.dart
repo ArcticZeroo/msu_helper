@@ -8,7 +8,10 @@ class TimedCacheEntry<T> {
   int added;
   int expireTime;
 
-  TimedCacheEntry(this.value, {int added, int expireTime}) {
+  TimedCacheEntry(this.value, {
+    int added,
+    this.expireTime = ExpireTime.THIRTY_MINUTES
+  }) {
     this.added = added ?? DateTime.now().millisecondsSinceEpoch;
   }
 
@@ -16,6 +19,8 @@ class TimedCacheEntry<T> {
     if (expireTime == null) {
       expireTime = this.expireTime;
     }
+
+    print('Added: $added, ExpireTime: $expireTime');
 
     return ExpireTime.isValid(added, expireTime);
   }

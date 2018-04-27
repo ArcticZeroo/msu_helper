@@ -7,6 +7,6 @@ class ExpireTime {
   }
 
   static bool isValid(int retrieveTime, int expireTime) {
-    return DateTime.now().millisecondsSinceEpoch - retrieveTime < expireTime;
+    return (DateTime.now().millisecondsSinceEpoch - retrieveTime) < expireTime;
   }
 }
