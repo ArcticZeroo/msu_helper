@@ -10,12 +10,16 @@ class FoodTruckStop extends Object with _$FoodTruckStopSerializerMixin {
   final String mapsLocation;
   final Point location;
   final bool isCancelled;
-  final DateTime start;
-  final DateTime end;
 
-  FoodTruckStop(this.place, this.location, int start, int end)
-      : this.start = DateTime.fromMillisecondsSinceEpoch(start),
-        this.end = DateTime.fromMillisecondsSinceEpoch(end),
+  final DateTime startDate;
+  final DateTime endDate;
+
+  final int start;
+  final int end;
+
+  FoodTruckStop(this.place, this.location, this.start, this.end)
+      : this.startDate = DateTime.fromMillisecondsSinceEpoch(start),
+        this.endDate = DateTime.fromMillisecondsSinceEpoch(end),
         this.mapsLocation = place.contains('near') ? place.split('near')[1].trim() : place,
         this.isCancelled = place.toLowerCase().contains('cancel');
 
@@ -34,7 +38,7 @@ class FoodTruckStop extends Object with _$FoodTruckStopSerializerMixin {
     DateTime now = DateTime.now();
 
     // End is not inclusive
-    return (start.isBefore(now) || start.isAtSameMomentAs(now)) && end.isAfter(now);
+    return (startDate.isBefore(now) || startDate.isAtSameMomentAs(now)) && endDate.isAfter(now);
   }
 }
 

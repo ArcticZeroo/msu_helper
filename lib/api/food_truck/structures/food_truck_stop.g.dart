@@ -18,12 +18,12 @@ FoodTruckStop _$FoodTruckStopFromJson(Map<String, dynamic> json) =>
 abstract class _$FoodTruckStopSerializerMixin {
   String get place;
   Point get location;
-  DateTime get start;
-  DateTime get end;
+  int get start;
+  int get end;
   Map<String, dynamic> toJson() => <String, dynamic>{
         'place': place,
         'location': location,
-        'start': start?.toIso8601String(),
-        'end': end?.toIso8601String()
+        'start': start,
+        'end': end
       };
 }
