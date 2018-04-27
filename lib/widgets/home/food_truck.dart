@@ -49,9 +49,12 @@ class FoodTruckMiniWidgetState extends State<FoodTruckMiniWidget> {
 
     setState(() {
       text = [
-        '${stops.length} stop${stops.length == 1 ? '' : 's'} coming up.',
-        'Next is at ${DateUtil.toTimeString(mostRelevant.startDate)}'
+        '${stops.length} stop${stops.length == 1 ? '' : 's'} coming up.'
       ];
+
+      if (mostRelevant != null) {
+        text.add('Next is at ${DateUtil.toTimeString(mostRelevant.startDate)}');
+      }
     });
   }
 

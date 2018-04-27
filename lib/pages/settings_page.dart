@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:msu_helper/api/settings/setting_data.dart';
+import 'package:msu_helper/config/settings.dart';
+import 'package:msu_helper/widgets/settings/favorite_dining_hall.dart';
 
 class SettingsPage extends StatefulWidget {
+  final Function onChanged;
+
+  SettingsPage(this.onChanged);
+
   @override
   State<StatefulWidget> createState() => new _SettingsPageState();
 }
@@ -18,8 +25,18 @@ class _SettingsPageState extends State<SettingsPage> {
             }
         ),
       ),
-      body: new Center(
-        child: new Text('Settings!'),
+      body: new Container(
+        padding: const EdgeInsets.all(12.0),
+        child: new ListView(
+          children: <Widget>[
+            new ListTile(
+              leading: new Icon(Icons.restaurant),
+              title: new Text(SettingsConfig.favoriteDiningHall.title),
+              subtitle: new Text(SettingsConfig.favoriteDiningHall.description),
+              trailing: new FavoriteDiningHall(widget.onChanged),
+            )
+          ],
+        ),
       )
     );
   }

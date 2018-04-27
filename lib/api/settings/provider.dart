@@ -50,4 +50,6 @@ Future saveSettingToDb(SettingData data, dynamic value) async {
       'value': encoded
     });
   }
+
+  settingCache[data.key] = encoded;
 }

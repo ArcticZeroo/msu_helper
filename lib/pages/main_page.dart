@@ -58,7 +58,9 @@ class MainPageState extends State<MainPage> {
                 Navigator.push(
                     context,
                     new MaterialPageRoute(
-                        builder: (context) => new SettingsPage()
+                        builder: (context) => new SettingsPage(() {
+                          setState(() {});
+                        })
                     )
                 );
               }

@@ -57,9 +57,9 @@ Future<MenuMetadata> deserializeFromKey(String key) async {
 Future<List<DiningHall>> retrieveListFromDatabase() async {
   Database db = await MainDatabase.getDbInstance();
 
-  List<Map> results = await db.rawQuery('SELECT "json" from "${TableName.diningHalls}"');
+  List<dynamic> results = await db.rawQuery('SELECT "json" from "${TableName.diningHalls}"');
 
-  return results.map((r) => DiningHall.fromJson(json.decode(r['json']) as Map<String, dynamic>));
+  return results.map((r) => DiningHall.fromJson(json.decode(r['json']) as Map<String, dynamic>)).toList();
 }
 
 Future<List<DiningHall>> retrieveListFromWeb() async {
@@ -67,7 +67,7 @@ Future<List<DiningHall>> retrieveListFromWeb() async {
 
   List<dynamic> response = await makeRestRequest(url);
 
-  return response.map((r) => DiningHall.fromJson(r as Map<String, dynamic>));
+  return response.map((r) => DiningHall.fromJson(r as Map<String, dynamic>)).toList();
 }
 
 Future<List<DiningHall>> retrieveListFromWebAndSave() async {
@@ -86,21 +86,31 @@ Future<List<DiningHall>> retrieveListFromWebAndSave() async {
 }
 
 Future<List<DiningHall>> retrieveList([bool respectCache = true]) async {
+  print('Getting dining hall list');
+
   if (hallCache != null && respectCache) {
+    print('Returning a cached value');
     return hallCache;
   }
 
   List<DiningHall> fromDb = await retrieveListFromDatabase();
 
   if (fromDb.length > 0) {
+    print('Returning a value from db');
     hallCache = fromDb;
     return fromDb;
   }
 
   List<DiningHall> fromWeb = await retrieveListFromWebAndSave();
 
-  hallCache = fromWeb;
-  return fromWeb;
+  if (fromWeb != null) {
+    print('Returning a web value');
+    hallCache = fromWeb;
+    return fromWeb;
+  }
+
+  print('None found');
+  return null;
 }
 
 Future<DiningHallMenu> retrieveMenuFromWeb(DiningHall diningHall, MenuDate date, Meal meal) async {

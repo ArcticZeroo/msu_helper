@@ -23,6 +23,10 @@ Future<FoodTruckStop> retrieveMostRelevant() async {
   // Remove all stops where the end has already passed
   stops.removeWhere((stop) => stop.endDate.isBefore(now) || stop.endDate.isAtSameMomentAs(now));
 
+  if (stops.length == 0) {
+    return null;
+  }
+
   FoodTruckStop stopNow = stops.firstWhere((stop) => stop.isNow(),
       orElse: null);
 

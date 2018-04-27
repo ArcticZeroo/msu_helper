@@ -8,20 +8,20 @@ abstract class SettingData<T> {
   String key;
   String title;
   String description;
-  SettingDisplayType displayType;
 
   SettingData({
     @required this.key,
     @required this.title,
-    @required this.description,
-    @required this.displayType
+    @required this.description
   });
 
   T decode(String from);
   String encode(T from);
 
-  Future<T> retrieve() {
-    return settingProvider.retrieveSettingFromDb(this);
+  Future<T> retrieve() async {
+    String value = await settingProvider.retrieveSettingFromDb(this);
+
+    return decode(value);
   }
 
   Future save(T value) {
@@ -30,6 +30,16 @@ abstract class SettingData<T> {
 }
 
 class StringSetting extends SettingData<String> {
+  StringSetting({
+    @required String key,
+    @required String title,
+    @required String description,
+  }) : super(
+      key: key,
+      title: title,
+      description: description
+  );
+
   @override
   String decode(String from) => from;
 
@@ -38,6 +48,16 @@ class StringSetting extends SettingData<String> {
 }
 
 class BooleanSetting extends SettingData<bool> {
+  BooleanSetting({
+    @required String key,
+    @required String title,
+    @required String description,
+  }) : super(
+      key: key,
+      title: title,
+      description: description
+  );
+
   @override
   bool decode(String from) {
     return from.toLowerCase() == 'true';
@@ -49,6 +69,14 @@ class BooleanSetting extends SettingData<bool> {
   }
 }
 
-enum SettingDisplayType {
-  checkbox, dropdown
+class DropdownSetting extends StringSetting {
+  DropdownSetting({
+    @required String key,
+    @required String title,
+    @required String description,
+  }) : super(
+      key: key,
+      title: title,
+      description: description
+  );
 }
