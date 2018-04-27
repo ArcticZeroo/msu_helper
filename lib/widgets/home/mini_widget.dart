@@ -17,17 +17,7 @@ class MiniWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> columnChildren = <Widget>[
-      new Container(
-        padding: const EdgeInsets.only(bottom: 8.0),
-        child: new Text(
-          title,
-          style: new TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    ];
+    List<Widget> columnChildren = <Widget>[];
 
     if (subtitle != null) {
       columnChildren.add(new Container(
@@ -43,21 +33,19 @@ class MiniWidget extends StatelessWidget {
       for (String line in text) {
         columnChildren.add(new Text(
           line,
-          style: new TextStyle(color: Colors.grey[800]),
+          style: new TextStyle(color: Colors.grey[600]),
         ));
       }
     }
 
-    return new Row(
-      children: <Widget>[
-        icon,
-        new Expanded(
-          child: new Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: columnChildren
-          ),
-        )
-      ],
+    return new Center(
+      child: new ListTile(
+        leading: icon,
+        title: new Text(title),
+        subtitle: new Column(
+          children: columnChildren,
+        ),
+      ),
     );
   }
 }
