@@ -42,6 +42,7 @@ Future<List<FoodTruckStop>> retrieveStops() async {
   print('Retrieving food truck stops...');
 
   if (truckStopCache != null && truckStopCache.isValid()) {
+    print('Returning a valid cached value');
     return truckStopCache.value;
   }
 

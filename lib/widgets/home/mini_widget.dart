@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
+import 'package:msu_helper/widgets/bottom_bar.dart';
 
-class MiniWidget extends StatelessWidget {
-  final Icon icon;
+class MiniWidgetDisplay extends StatelessWidget {
+  final IconData icon;
   final String title;
   final String subtitle;
   final List<String> text;
 
-  MiniWidget({
+  MiniWidgetDisplay({
     @required
     this.icon,
     @required
@@ -17,7 +18,17 @@ class MiniWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> columnChildren = <Widget>[];
+    List<Widget> columnChildren = <Widget>[
+      new Container(
+        padding: const EdgeInsets.only(bottom: 8.0),
+        child: new Text(
+          title,
+          style: new TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    ];
 
     if (subtitle != null) {
       columnChildren.add(new Container(
@@ -33,18 +44,68 @@ class MiniWidget extends StatelessWidget {
       for (String line in text) {
         columnChildren.add(new Text(
           line,
-          style: new TextStyle(color: Colors.grey[600]),
+          style: new TextStyle(color: Colors.grey[700]),
         ));
       }
     }
 
     return new Center(
-      child: new ListTile(
-        leading: icon,
-        title: new Text(title),
-        subtitle: new Column(
-          children: columnChildren,
-        ),
+      child: new Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          new Container(
+            padding: const EdgeInsets.all(32.0),
+            child: new Icon(
+              icon,
+              color: Colors.grey[700]
+            ),
+          ),
+          new Expanded(
+            child: new Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: columnChildren
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class MiniWidget extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final int index;
+  final MainBottomBar bottomBar;
+  final List<String> text;
+
+  MiniWidget({
+    @required
+    this.icon,
+    @required
+    this.title,
+    @required
+    this.subtitle,
+    @required
+    this.index,
+    @required
+    this.bottomBar,
+    @required
+    this.text
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return new InkWell(
+      onTap: () {
+        bottomBar.setPage(index);
+      },
+      child: new MiniWidgetDisplay(
+          icon: icon,
+          title: title,
+          subtitle: subtitle,
+          text: text
       ),
     );
   }

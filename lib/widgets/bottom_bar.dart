@@ -25,6 +25,7 @@ class MainBottomBar {
 
   void setPage(int index) {
     setState(() {
+      print('Setting page to $index');
       _position = index;
     });
   }
@@ -47,13 +48,7 @@ class MainBottomBar {
     return new BottomNavigationBar(
       currentIndex: _position,
       items: buildItems(),
-      onTap: (int index) {
-        print('Tapped');
-        setState(() {
-          print('Setting state');
-          _position = index;
-        });
-      },
+      onTap: this.setPage,
     );
   }
 

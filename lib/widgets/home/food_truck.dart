@@ -48,23 +48,20 @@ class FoodTruckMiniWidgetState extends State<FoodTruckMiniWidget> {
     setState(() {
       text = [
         '${stops.length} stop${stops.length == 1 ? '' : 's'} coming up.',
-        'Next stop is at ${DateUtil.toTimeString(mostRelevant.startDate)}'
+        'Next is at ${DateUtil.toTimeString(mostRelevant.startDate)}'
       ];
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return new GestureDetector(
-      onTap: () {
-        widget.homePage.bottomBar.setPage(2);
-      },
-      child: new MiniWidget(
-          icon: new Icon(Icons.local_shipping),
-          title: 'Food Truck',
-          subtitle: 'Delicious food, on combo!',
-          text: text
-      ),
+    return new MiniWidget(
+      icon: Icons.local_shipping,
+      title: 'Food Truck',
+      subtitle: 'Delicious food, all on combo!',
+      text: text,
+      bottomBar: widget.homePage.bottomBar,
+      index: 2
     );
   }
 }
