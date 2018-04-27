@@ -3,6 +3,7 @@ import 'package:msu_helper/api/page_data.dart';
 import 'package:msu_helper/pages/dining_hall_page.dart';
 import 'package:msu_helper/pages/food_truck_page.dart';
 import 'package:msu_helper/pages/home_page.dart';
+import 'package:msu_helper/pages/settings_page.dart';
 import 'package:msu_helper/widgets/bottom_bar.dart';
 
 class MainPage extends StatefulWidget {
@@ -50,6 +51,19 @@ class MainPageState extends State<MainPage> {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(bottomBar.getPageData().appBarTitle),
+        actions: <Widget>[
+          new IconButton(
+              icon: new Icon(Icons.settings),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (context) => new SettingsPage()
+                    )
+                );
+              }
+          )
+        ],
       ),
       body: bottomBar.getPage(),
       bottomNavigationBar: bottomBar.build()
