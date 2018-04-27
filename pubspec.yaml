@@ -10,6 +10,7 @@ dependencies:
   events: any
   json_annotation: ^0.2.3
   http: any
+  shared_preferences: any
   flutter:
     sdk: flutter
 
