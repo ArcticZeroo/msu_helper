@@ -4,13 +4,18 @@ import 'dart:convert';
 import 'package:msu_helper/api/database.dart';
 import 'package:msu_helper/api/timed_cache.dart';
 import 'package:msu_helper/config/expire_time.dart';
+import 'package:sqflite/sqflite.dart';
 
 MainDatabase database = new MainDatabase();
 Map<String, TimedCacheEntry<String>> jsonCache = new Map();
 
 Future retrieveJsonFromDb(String key, [int expireTime = ExpireTime.THIRTY_MINUTES]) async {
-  List<Map<String, dynamic>> rows = await database.db.query(TableName.jsonCache,
-      where: 'key = ?', whereArgs: [key]);
+  print('Getting database instance...');
+  Database db = await MainDatabase.getDbInstance();
+  print('Got it');
+
+  List<Map<String, dynamic>> rows = await db.query(TableName.jsonCache,
+      where: 'name = ?', whereArgs: [key]);
 
   if (rows.length == 0) {
     return null;
@@ -25,8 +30,8 @@ Future retrieveJsonFromDb(String key, [int expireTime = ExpireTime.THIRTY_MINUTE
   int retrieved = row['retrieved'] as int;
 
   if (!ExpireTime.isValid(retrieved, expireTime)) {
-    await database.db.delete(TableName.jsonCache,
-        where: 'key = ?', whereArgs: [key]);
+    await db.delete(TableName.jsonCache,
+        where: 'name = ?', whereArgs: [key]);
     return null;
   }
 
@@ -38,18 +43,20 @@ Future saveJsonToDb(String key, dynamic object) async {
     object = json.encode(object);
   }
 
-  int updated = await database.db.update(TableName.jsonCache, {
+  Database db = await MainDatabase.getDbInstance();
+
+  int updated = await db.update(TableName.jsonCache, {
     'json': object,
     'retrieved': DateTime.now().millisecondsSinceEpoch
-  }, where: 'key = ?', whereArgs: [key]);
+  }, where: 'name = ?', whereArgs: [key]);
 
   if (updated > 0) {
     return;
   }
 
-  await database.db.insert(TableName.jsonCache, {
+  await db.insert(TableName.jsonCache, {
     'json': object,
     'retrieved': DateTime.now().millisecondsSinceEpoch,
-    'key': key
+    'name': key
   });
 }

@@ -8,11 +8,11 @@ import 'package:msu_helper/api/request.dart';
 import 'package:msu_helper/api/timed_cache.dart';
 import 'package:msu_helper/config/expire_time.dart';
 import 'package:msu_helper/config/page_route.dart';
+import 'package:sqflite/sqflite.dart';
 
 import '../database.dart';
 import 'structures/dining_hall.dart';
 
-MainDatabase database = new MainDatabase();
 List<DiningHall> hallCache;
 TimedCache<String, DiningHallMenu> menuCache = new TimedCache((String key) async {
   MenuMetadata deserialized = await deserializeFromKey(key);
@@ -55,24 +55,28 @@ Future<MenuMetadata> deserializeFromKey(String key) async {
 }
 
 Future<List<DiningHall>> retrieveListFromDatabase() async {
-  List<Map> results = await database.db.rawQuery('SELECT "json" from "${TableName.diningHalls}"');
+  Database db = await MainDatabase.getDbInstance();
 
-  return results.map((r) => DiningHall.fromJson(json.decode(r['json'])));
+  List<Map> results = await db.rawQuery('SELECT "json" from "${TableName.diningHalls}"');
+
+  return results.map((r) => DiningHall.fromJson(json.decode(r['json']) as Map<String, dynamic>));
 }
 
 Future<List<DiningHall>> retrieveListFromWeb() async {
   String url = PageRoute.getDining(PageRoute.LIST);
 
-  List<Map<String, dynamic>> response = await makeRestRequest(url);
+  List<dynamic> response = await makeRestRequest(url);
 
-  return response.map((r) => DiningHall.fromJson(r));
+  return response.map((r) => DiningHall.fromJson(r as Map<String, dynamic>));
 }
 
 Future<List<DiningHall>> retrieveListFromWebAndSave() async {
   List<DiningHall> fromWeb = await retrieveListFromWeb();
 
+  Database db = await MainDatabase.getDbInstance();
+
   for (DiningHall diningHall in fromWeb) {
-    await database.db.insert(TableName.diningHalls, {
+    await db.insert(TableName.diningHalls, {
       'searchName': diningHall.searchName,
       'json': json.encode(diningHall)
     });
@@ -104,16 +108,18 @@ Future<DiningHallMenu> retrieveMenuFromWeb(DiningHall diningHall, MenuDate date,
 
   String url = PageRoute.join([PageRoute.getDining(PageRoute.MENU), dateString, meal.ordinal]);
 
-  Map<String, dynamic> response = await makeRestRequest(url);
+  Map<String, dynamic> response = (await makeRestRequest(url)) as Map<String, dynamic>;
 
   return DiningHallMenu.fromJson(response);
 }
 
 Future<TimedCacheEntry<DiningHallMenu>> retrieveMenuFromDatabase(DiningHall diningHall, MenuDate date, Meal meal) async {
+  Database db = await MainDatabase.getDbInstance();
+
   String where = "searchName = ? AND date = ? AND meal = ?";
   List whereArgs = [diningHall.searchName, date.getFormatted(), meal.ordinal.toString()];
 
-  List<Map> results = await database.db.query(TableName.diningHallMenu,
+  List<Map<String, dynamic>> results = await db.query(TableName.diningHallMenu,
       columns: ['json', 'retrieved'],
       where: where,
       whereArgs: whereArgs);
@@ -125,7 +131,7 @@ Future<TimedCacheEntry<DiningHallMenu>> retrieveMenuFromDatabase(DiningHall dini
   Map<String, dynamic> result = results[0];
 
   int retrieved = result['retrieved'] as int;
-  DiningHallMenu diningHallMenu = DiningHallMenu.fromJson(result['json']);
+  DiningHallMenu diningHallMenu = DiningHallMenu.fromJson(json.decode(result['json']) as Map<String, dynamic>);
 
   int elapsedMs = DateTime.now().millisecondsSinceEpoch - retrieved;
   if (diningHallMenu.closed) {
@@ -133,7 +139,7 @@ Future<TimedCacheEntry<DiningHallMenu>> retrieveMenuFromDatabase(DiningHall dini
     // the hall is closed
     if (elapsedMs >= ExpireTime.DAY / 2) {
       // Remove the row if it's invalid
-      await database.db.delete(TableName.diningHallMenu,
+      await db.delete(TableName.diningHallMenu,
           where: where,
           whereArgs: whereArgs);
       return null;
@@ -141,7 +147,7 @@ Future<TimedCacheEntry<DiningHallMenu>> retrieveMenuFromDatabase(DiningHall dini
     // This is an invalid entry if it's been too long since it was retrieved
   } else if (elapsedMs >= ExpireTime.DAY) {
     // Remove the row if it's invalid
-    await database.db.delete(TableName.diningHallMenu,
+    await db.delete(TableName.diningHallMenu,
         where: where,
         whereArgs: whereArgs);
     return null;
@@ -152,19 +158,21 @@ Future<TimedCacheEntry<DiningHallMenu>> retrieveMenuFromDatabase(DiningHall dini
 }
 
 Future saveMenuToDb(DiningHall diningHall, MenuDate date, Meal meal, DiningHallMenu menu) async {
+  Database db = await MainDatabase.getDbInstance();
+
   String where = "searchName = ? AND date = ? AND meal = ?";
   List whereArgs = [diningHall.searchName, date.getFormatted(), meal.ordinal.toString()];
 
   String jsonString = json.encode(menu);
   int retrieved = DateTime.now().millisecondsSinceEpoch;
 
-  int rows = await database.db.update(TableName.diningHallMenu, {
+  int rows = await db.update(TableName.diningHallMenu, {
     'json': jsonString,
     'retrieved': retrieved
   }, where: where, whereArgs: whereArgs);
 
   if (rows == 0) {
-    await database.db.insert(TableName.diningHallMenu, {
+    await db.insert(TableName.diningHallMenu, {
       'json': jsonString,
       'retrieved': retrieved,
       'searchName': diningHall.searchName,
@@ -175,7 +183,9 @@ Future saveMenuToDb(DiningHall diningHall, MenuDate date, Meal meal, DiningHallM
 }
 
 Future removeOldMenus() async {
-  return database.db.delete(TableName.diningHallMenu,
+  Database db = await MainDatabase.getDbInstance();
+
+  return db.delete(TableName.diningHallMenu,
       where: 'retrieved < ?',
       whereArgs: [ExpireTime.getLastTime(ExpireTime.DAY)]);
 }
