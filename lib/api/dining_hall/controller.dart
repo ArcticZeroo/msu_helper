@@ -19,7 +19,7 @@ Future<DiningHall> fromSearchName(String searchName) async {
 }
 
 Future<DiningHall> retrieveFavoriteHall() async {
-  String searchName = await retrieveSettingFromDb(SettingsConfig.favoriteDiningHall);
+  String searchName = await retrieveSetting(SettingsConfig.favoriteDiningHall);
 
   if (searchName == null) {
     return null;

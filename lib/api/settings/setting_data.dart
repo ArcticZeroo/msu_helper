@@ -19,13 +19,13 @@ abstract class SettingData<T> {
   String encode(T from);
 
   Future<T> retrieve() async {
-    String value = await settingProvider.retrieveSettingFromDb(this);
+    String value = await settingProvider.retrieveSetting(this);
 
     return decode(value);
   }
 
   Future save(T value) {
-    return settingProvider.saveSettingToDb(this, value);
+    return settingProvider.saveSetting(this, value);
   }
 }
 

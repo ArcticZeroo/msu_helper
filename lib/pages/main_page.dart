@@ -7,10 +7,6 @@ import 'package:msu_helper/pages/settings_page.dart';
 import 'package:msu_helper/widgets/bottom_bar.dart';
 
 class MainPage extends StatefulWidget {
-  static final GlobalKey<MainPageState> mainPageState = new GlobalKey<MainPageState>();
-
-  MainPage() : super(key: mainPageState);
-
   @override
   State<StatefulWidget> createState() => new MainPageState();
 }
@@ -48,10 +44,6 @@ class MainPageState extends State<MainPage> {
     ));
   }
 
-  void rebuild() {
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     print('Building page "${bottomBar.getPageData().bottomBarTitle}"');
@@ -62,13 +54,15 @@ class MainPageState extends State<MainPage> {
         actions: <Widget>[
           new IconButton(
               icon: new Icon(Icons.settings),
-              onPressed: () {
-                Navigator.push(
+              onPressed: () async {
+                await Navigator.push(
                     context,
-                    new MaterialPageRoute(
-                        builder: (context) => new SettingsPage()
-                    )
+                    new MaterialPageRoute(builder: (context) => new SettingsPage())
                 );
+                print('Settings was closed');
+                setState(() {
+                  print('Rebuilding as a result');
+                });
               }
           )
         ],

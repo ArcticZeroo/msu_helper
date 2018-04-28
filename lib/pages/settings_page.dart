@@ -5,10 +5,10 @@ import 'package:msu_helper/widgets/settings/favorite_dining_hall.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => new _SettingsPageState();
+  State<StatefulWidget> createState() => new SettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
+class SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(

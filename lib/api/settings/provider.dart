@@ -6,7 +6,7 @@ import 'package:sqflite/sqflite.dart';
 
 Map<String, String> settingCache = new Map();
 
-Future<dynamic> retrieveSettingFromDb(SettingData data) async {
+Future<dynamic> retrieveSetting(SettingData data) async {
   if (settingCache.containsKey(data.key)) {
     return data.decode(settingCache[data.key]);
   }
@@ -32,7 +32,7 @@ Future<dynamic> retrieveSettingFromDb(SettingData data) async {
   return data.decode(value);
 }
 
-Future saveSettingToDb(SettingData data, dynamic value) async {
+Future saveSetting(SettingData data, dynamic value) async {
   Database db = await MainDatabase.getDbInstance();
 
   String encoded = data.encode(value);
