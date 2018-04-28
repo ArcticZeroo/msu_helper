@@ -4,10 +4,6 @@ import 'package:msu_helper/config/settings.dart';
 import 'package:msu_helper/widgets/settings/favorite_dining_hall.dart';
 
 class SettingsPage extends StatefulWidget {
-  final Function onChanged;
-
-  SettingsPage(this.onChanged);
-
   @override
   State<StatefulWidget> createState() => new _SettingsPageState();
 }
@@ -33,7 +29,7 @@ class _SettingsPageState extends State<SettingsPage> {
               leading: new Icon(Icons.restaurant),
               title: new Text(SettingsConfig.favoriteDiningHall.title),
               subtitle: new Text(SettingsConfig.favoriteDiningHall.description),
-              trailing: new FavoriteDiningHall(widget.onChanged),
+              trailing: new FavoriteDiningHall(),
             )
           ],
         ),

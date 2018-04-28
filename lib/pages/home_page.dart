@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:msu_helper/widgets/bottom_bar.dart';
+import 'package:msu_helper/widgets/home/dining_hall.dart';
 import 'package:msu_helper/widgets/home/food_truck.dart';
 
 class HomePage extends StatefulWidget {
@@ -24,7 +25,8 @@ class HomePageState extends State<HomePage> {
             padding: const EdgeInsets.only(bottom: 32.0),
             child: new Text('Tap one of the below widgets to visit its page!'),
           ),
-          new FoodTruckMiniWidget(widget)
+          new FoodTruckMiniWidget(widget),
+          new DiningHallMiniWidget(widget)
         ],
       ),
     );

@@ -1,16 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:msu_helper/api/dining_hall/controller.dart';
 
 import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/dining_hall/provider.dart' as diningHallProvider;
 import 'package:msu_helper/api/settings/setting_data.dart';
 import 'package:msu_helper/config/settings.dart';
+import 'package:msu_helper/pages/main_page.dart';
 
 class FavoriteDiningHall extends StatefulWidget {
-  final Function onChanged;
-
-  FavoriteDiningHall(this.onChanged);
+  FavoriteDiningHall();
 
   @override
   State<StatefulWidget> createState() => new _FavoriteDiningHallState();
@@ -44,20 +44,10 @@ class _FavoriteDiningHallState extends State<FavoriteDiningHall> {
     print('Got dining halls');
     print('There are ${diningHalls.length}');
 
-    String selectedSetting = await _settingData.retrieve();
-
-    print('Current setting for it is $selectedSetting');
-
-    if (selectedSetting == null) {
-      setState(() {});
-      return;
-    }
+    DiningHall favoriteHall = await retrieveFavoriteHall();
 
     setState(() {
-      selected = diningHalls.firstWhere(
-          (diningHall) => diningHall.searchName == selectedSetting,
-          orElse: null
-      );
+      selected = favoriteHall;
     });
   }
 
@@ -95,7 +85,7 @@ class _FavoriteDiningHallState extends State<FavoriteDiningHall> {
         _settingData.save(value.searchName)
             .then((v) {
               print('Saved!');
-              widget.onChanged();
+              MainPage.mainPageState.currentState?.rebuild();
             })
             .catchError((e) {
               print('Could not save favorite dining hall...');

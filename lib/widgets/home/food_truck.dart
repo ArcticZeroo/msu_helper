@@ -18,7 +18,7 @@ class FoodTruckMiniWidget extends StatefulWidget {
 }
 
 class FoodTruckMiniWidgetState extends State<FoodTruckMiniWidget> {
-  List<String> text = [];
+  List<String> text = ['Loading...'];
   bool hasFailed = false;
 
   FoodTruckMiniWidgetState() {

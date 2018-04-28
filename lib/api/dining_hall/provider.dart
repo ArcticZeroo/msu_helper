@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:msu_helper/api/database.dart';
 import 'package:msu_helper/api/dining_hall/meal.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_menu.dart';
 import 'package:msu_helper/api/dining_hall/time.dart';
@@ -10,7 +11,6 @@ import 'package:msu_helper/config/expire_time.dart';
 import 'package:msu_helper/config/page_route.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../database.dart';
 import 'structures/dining_hall.dart';
 
 List<DiningHall> hallCache;
@@ -116,7 +116,7 @@ Future<List<DiningHall>> retrieveList([bool respectCache = true]) async {
 Future<DiningHallMenu> retrieveMenuFromWeb(DiningHall diningHall, MenuDate date, Meal meal) async {
   String dateString = date.getFormatted();
 
-  String url = PageRoute.join([PageRoute.getDining(PageRoute.MENU), dateString, meal.ordinal]);
+  String url = PageRoute.join([PageRoute.getDining(PageRoute.MENU), dateString, meal.ordinal.toString()]);
 
   Map<String, dynamic> response = (await makeRestRequest(url)) as Map<String, dynamic>;
 

@@ -7,6 +7,10 @@ import 'package:msu_helper/pages/settings_page.dart';
 import 'package:msu_helper/widgets/bottom_bar.dart';
 
 class MainPage extends StatefulWidget {
+  static final GlobalKey<MainPageState> mainPageState = new GlobalKey<MainPageState>();
+
+  MainPage() : super(key: mainPageState);
+
   @override
   State<StatefulWidget> createState() => new MainPageState();
 }
@@ -44,6 +48,10 @@ class MainPageState extends State<MainPage> {
     ));
   }
 
+  void rebuild() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     print('Building page "${bottomBar.getPageData().bottomBarTitle}"');
@@ -58,9 +66,7 @@ class MainPageState extends State<MainPage> {
                 Navigator.push(
                     context,
                     new MaterialPageRoute(
-                        builder: (context) => new SettingsPage(() {
-                          setState(() {});
-                        })
+                        builder: (context) => new SettingsPage()
                     )
                 );
               }

@@ -55,7 +55,7 @@ class MiniWidgetDisplay extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           new Container(
-            padding: const EdgeInsets.all(32.0),
+            padding: const EdgeInsets.all(24.0),
             child: new Icon(
                 icon,
                 color: active
@@ -83,36 +83,50 @@ class MiniWidget extends StatelessWidget {
   final MainBottomBar bottomBar;
   final List<String> text;
   final bool active;
+  final VoidCallback onTap;
 
   MiniWidget({
     @required this.icon,
     @required this.title,
     @required this.subtitle,
-    @required this.index,
-    @required this.bottomBar,
     @required this.text,
+    this.index,
+    this.bottomBar,
+    this.onTap,
     this.active = false
   });
 
-  @override
-  Widget build(BuildContext context) {
-    MiniWidgetDisplay display = new MiniWidgetDisplay(
+  Widget buildDisplay() {
+    return new MiniWidgetDisplay(
       icon: icon,
       title: title,
       subtitle: subtitle,
       text: text,
       active: active,
     );
+  }
 
-    if (active) {
-      return new InkWell(
-        onTap: () {
-          bottomBar.setPage(index);
-        },
-        child: display,
-      );
-    }
+  @override
+  Widget build(BuildContext context) {
+    Widget cardChild = new Container(
+      padding: const EdgeInsets.only(
+      top: 16.0, bottom: 16.0, right: 16.0
+      ),
+      child: buildDisplay()
+    );
 
-    return display;
+    return new Container(
+      margin: const EdgeInsets.only(
+          bottom: 16.0, left: 16.0, right: 16.0
+      ),
+      child: new Card(
+        child: active ? new InkWell(
+          onTap: onTap ?? () {
+            bottomBar.setPage(index);
+          },
+          child: cardChild,
+        ) : cardChild,
+      ),
+    );
   }
 }

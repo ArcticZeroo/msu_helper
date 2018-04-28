@@ -28,12 +28,12 @@ Future<FoodTruckStop> retrieveMostRelevant() async {
   }
 
   FoodTruckStop stopNow = stops.firstWhere((stop) => stop.isNow(),
-      orElse: null);
+      orElse: () => null);
 
   if (stopNow != null) {
     return stopNow;
   }
 
   return stops.firstWhere((stop) => stop.startDate.isAfter(now) || stop.startDate.isAtSameMomentAs(now),
-      orElse: null);
+      orElse: () => null);
 }

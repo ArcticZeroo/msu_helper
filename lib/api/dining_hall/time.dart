@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:msu_helper/api/dining_hall/meal.dart';
+import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_hours.dart';
 import 'package:msu_helper/util/DateUtil.dart';
 
@@ -12,17 +14,38 @@ class MenuDate {
     }
   }
 
-  forward() {
+  DateTime get time => _time;
+
+  void forward() {
     _time.add(Duration(days: 1));
   }
 
-  back() {
+  void back() {
     _time.subtract(Duration(days: 1));
-    return this;
   }
 
-  now() {
+  void now() {
     _time = DateTime.now();
+  }
+
+  static DiningHallHours getFirstRelevant(List<DiningHallHours> hoursOnDay, TimeOfDay timeOfDay) {
+   return hoursOnDay.firstWhere((hours) {
+      if (hours.closed) {
+        return false;
+      }
+
+      // If the end time has already passed, get rid of it
+      if (timeOfDay.hour < hours.endTime.hour) {
+        return false;
+      }
+
+      if (timeOfDay.hour == hours.endTime.hour
+          && timeOfDay.minute < hours.endTime.minute) {
+        return false;
+      }
+
+      return true;
+    }, orElse: () => null);
   }
 
   static DiningHallHours getMostRelevant(Map<String, List<DiningHallHours>> hours, DateTime start) {
@@ -62,6 +85,16 @@ class MenuDate {
     }
 
     return null;
+  }
+
+  List<DiningHallHours> getDayHours(DiningHall diningHall) {
+    String day = DateUtil.getWeekday(_time).toLowerCase();
+
+    return diningHall.hours[day];
+  }
+
+  DiningHallHours getMealHours(DiningHall diningHall, Meal meal) {
+    return getDayHours(diningHall)[meal.ordinal];
   }
 
   String getFormatted() {
