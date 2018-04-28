@@ -1,14 +1,19 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:msu_helper/api/database.dart';
 import 'package:msu_helper/api/settings/setting_data.dart';
 import 'package:sqflite/sqflite.dart';
 
-Map<String, String> settingCache = new Map();
+Map<String, SettingsNotifier> settingCache = new Map();
+
+class SettingsNotifier extends ValueNotifier<String> {
+  SettingsNotifier(value) : super(value);
+}
 
 Future<dynamic> retrieveSetting(SettingData data) async {
-  if (settingCache.containsKey(data.key)) {
-    return data.decode(settingCache[data.key]);
+  if (settingCache.containsKey(data.key) && settingCache[data.key].value != null) {
+    return data.decode(settingCache[data.key].value);
   }
 
   Database db = await MainDatabase.getDbInstance();
@@ -27,7 +32,7 @@ Future<dynamic> retrieveSetting(SettingData data) async {
   Map<String, dynamic> row = rows[0];
   String value = row['value'] as String;
 
-  settingCache[data.key] = value;
+  settingCache[data.key].value = value;
 
   return data.decode(value);
 }
@@ -51,5 +56,13 @@ Future saveSetting(SettingData data, dynamic value) async {
     });
   }
 
-  settingCache[data.key] = encoded;
+  settingCache[data.key].value = encoded;
+}
+
+void addSettingListener(SettingData data, VoidCallback listener) {
+  if (!settingCache.containsKey(data.key)) {
+    settingCache[data.key] = new SettingsNotifier(null);
+  }
+
+  settingCache[data.key].addListener(listener);
 }

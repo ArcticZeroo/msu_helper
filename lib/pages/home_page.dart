@@ -15,6 +15,7 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    print('Building homepage');
     return new Center(
       // This is a column instead of a ListView since I want it to be centered
       child: new Column(

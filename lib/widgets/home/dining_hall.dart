@@ -7,6 +7,8 @@ import 'package:msu_helper/api/dining_hall/structures/dining_hall_hours.dart';
 import 'package:msu_helper/api/dining_hall/time.dart';
 import 'package:msu_helper/api/food_truck/structures/food_truck_stop.dart';
 import 'package:msu_helper/api/dining_hall//provider.dart' as diningHallProvider;
+import 'package:msu_helper/api/settings/provider.dart';
+import 'package:msu_helper/config/settings.dart';
 import 'package:msu_helper/pages/home_page.dart';
 import 'package:msu_helper/pages/settings_page.dart';
 import 'package:msu_helper/util/DateUtil.dart';
@@ -27,7 +29,12 @@ class _DiningHallMiniWidgetState extends State<DiningHallMiniWidget> {
   bool hasFailed = false;
 
   _DiningHallMiniWidgetState() {
-    load().catchError((e) {
+    print('Dining hall mini widget initialized');
+    load();
+  }
+
+  load() {
+    _retrieveDataAndUpdate().catchError((e) {
       print('Could not load dining hall data:');
       print(e.toString());
       print((e as Error).stackTrace);
@@ -39,12 +46,22 @@ class _DiningHallMiniWidgetState extends State<DiningHallMiniWidget> {
     });
   }
 
+  @override
+  void initState() {
+    super.initState();
+
+    addSettingListener(SettingsConfig.favoriteDiningHall, () {
+      load();
+    });
+  }
+
   String _formatOpenNext(MenuDate menuDate, DiningHallHours mealHours) {
     return 'It opens next on ${DateUtil.getWeekday(menuDate.time)} '
         'at ${DateUtil.formatTimeOfDay(mealHours.beginTime)}';
   }
 
-  Future load() async {
+  Future _retrieveDataAndUpdate() async {
+    print('Loading favorite dining hall...');
     favoriteHall = await retrieveFavoriteHall();
 
     if (favoriteHall == null) {
