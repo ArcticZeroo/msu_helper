@@ -85,10 +85,10 @@ Future<List<DiningHall>> retrieveListFromWebAndSave() async {
   return fromWeb;
 }
 
-Future<List<DiningHall>> retrieveList([bool respectCache = true]) async {
+Future<List<DiningHall>> retrieveList() async {
   print('Getting dining hall list');
 
-  if (hallCache != null && respectCache) {
+  if (hallCache != null && hallCache.length != 0) {
     print('Returning a cached value');
     return hallCache;
   }

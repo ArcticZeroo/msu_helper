@@ -11,7 +11,15 @@ class DateUtil {
   }
 
   static String formatTimeOfDay(TimeOfDay from) {
-    return '${from.hour}:${from.minute}${from.period == DayPeriod.am ? 'am' : 'pm'}';
+    String _addLeadingZeroIfNeeded(int value) {
+      if (value < 10)
+        return '0$value';
+      return value.toString();
+    }
+
+    final String minuteLabel = _addLeadingZeroIfNeeded(from.minute);
+
+    return '${(from.hour + 1) - from.periodOffset}:$minuteLabel ${from.period == DayPeriod.am ? 'am' : 'pm'}';
   }
 
   static double timeToDouble(TimeOfDay toConvert) {

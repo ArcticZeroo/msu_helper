@@ -29,7 +29,6 @@ class _DiningHallMiniWidgetState extends State<DiningHallMiniWidget> {
   bool hasFailed = false;
 
   _DiningHallMiniWidgetState() {
-    print('Dining hall mini widget initialized');
     load();
   }
 
@@ -56,12 +55,12 @@ class _DiningHallMiniWidgetState extends State<DiningHallMiniWidget> {
   }
 
   String _formatOpenNext(MenuDate menuDate, DiningHallHours mealHours) {
-    return 'It opens next on ${DateUtil.getWeekday(menuDate.time)} '
+    return 'It opens for ${mealHours.meal.name} '
+        'on ${DateUtil.getWeekday(menuDate.time)} '
         'at ${DateUtil.formatTimeOfDay(mealHours.beginTime)}';
   }
 
   Future _retrieveDataAndUpdate() async {
-    print('Loading favorite dining hall...');
     favoriteHall = await retrieveFavoriteHall();
 
     if (favoriteHall == null) {
@@ -71,12 +70,14 @@ class _DiningHallMiniWidgetState extends State<DiningHallMiniWidget> {
       return;
     }
 
+    text = ['Your favorite: ${favoriteHall.hallName}'];
+
     MenuDate menuDate = new MenuDate();
     List<DiningHallHours> hoursToday = menuDate.getDayHours(favoriteHall);
 
     // If it's closed today
     if (DiningHallHours.isFullyClosed(hoursToday)) {
-      text = ['${favoriteHall.hallName} is closed today.'];
+      text.add('It\'s closed today.');
 
       for (int i = 1; i < 7; i++) {
         menuDate.forward();
@@ -85,7 +86,7 @@ class _DiningHallMiniWidgetState extends State<DiningHallMiniWidget> {
         if (!DiningHallHours.isFullyClosed(nextHours)) {
           DiningHallHours relevant = MenuDate.getFirstRelevant(
               nextHours,
-              TimeOfDay.fromDateTime(menuDate.time)
+              new TimeOfDay(hour: 0, minute: 0)
           );
 
           if (relevant != null) {
@@ -96,13 +97,14 @@ class _DiningHallMiniWidgetState extends State<DiningHallMiniWidget> {
             setState(() {});
           }
 
-          break;
+          return;
         }
       }
 
       setState(() {
         text.add('It doesn\'t look like it will be open again this week.');
       });
+
       return;
     }
 
@@ -113,17 +115,17 @@ class _DiningHallMiniWidgetState extends State<DiningHallMiniWidget> {
     if (relevant != null) {
       if (relevant.isNow()) {
         setState(() {
-          text = [
-            '${favoriteHall.hallName} is currently serving ${relevant.meal.name} '
+          text.add(
+            'It\'s currently serving ${relevant.meal.name} '
             'until ${DateUtil.formatTimeOfDay(relevant.endTime)}'
-          ];
+          );
         });
       } else {
         setState(() {
-          text = [
-            '${favoriteHall.hallName} will serve ${relevant.meal.name} '
+          text.add(
+            'It will serve ${relevant.meal.name} '
             'at ${DateUtil.formatTimeOfDay(relevant.beginTime)}'
-          ];
+          );
         });
       }
       return;
@@ -136,28 +138,28 @@ class _DiningHallMiniWidgetState extends State<DiningHallMiniWidget> {
       if (!DiningHallHours.isFullyClosed(nextHours)) {
         DiningHallHours relevant = MenuDate.getFirstRelevant(
             nextHours,
-            TimeOfDay.fromDateTime(menuDate.time)
+            new TimeOfDay(hour: 0, minute: 0)
         );
 
         if (relevant != null) {
           setState(() {
-            text = [
-              '${favoriteHall.hallName} will serve ${relevant.meal.name} on'
+            text.add(
+              'It will serve ${relevant.meal.name} on'
               '${DateUtil.getWeekday(menuDate.time)} at ${DateUtil.formatTimeOfDay(relevant.beginTime)}'
-            ];
+            );
           });
         } else {
           setState(() {
-            text = ['The next opening for ${favoriteHall.hallName} can\'t be found.'];
+            text.add('The next opening can\'t be found.');
           });
         }
 
-        break;
+        return;
       }
     }
 
     setState(() {
-      text = ['The next opening for ${favoriteHall.hallName} can\'t be found.'];
+      text.add('The next opening can\'t be found.');
     });
   }
 

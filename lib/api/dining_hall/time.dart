@@ -9,19 +9,22 @@ class MenuDate {
   DateTime _time;
 
   MenuDate([this._time]) {
-    if (this._time == null) {
-      this._time = DateTime.now();
+    if (_time == null) {
+      _time = DateTime.now();
     }
+
+    _time = _time.toUtc();
   }
 
   DateTime get time => _time;
+  String get weekday => DateUtil.getWeekday(time);
 
   void forward() {
-    _time.add(Duration(days: 1));
+    _time = _time.add(Duration(days: 1));
   }
 
   void back() {
-    _time.subtract(Duration(days: 1));
+    _time = _time.subtract(Duration(days: 1));
   }
 
   void now() {
@@ -29,13 +32,13 @@ class MenuDate {
   }
 
   static DiningHallHours getFirstRelevant(List<DiningHallHours> hoursOnDay, TimeOfDay timeOfDay) {
-   return hoursOnDay.firstWhere((hours) {
+    return hoursOnDay.firstWhere((hours) {
       if (hours.closed) {
         return false;
       }
 
       // If the end time has already passed, get rid of it
-      if (timeOfDay.hour < hours.endTime.hour) {
+      if (timeOfDay.hour >= hours.endTime.hour) {
         return false;
       }
 

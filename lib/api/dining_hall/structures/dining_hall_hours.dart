@@ -58,12 +58,27 @@ class DiningHallHours extends Object with _$DiningHallHoursSerializerMixin {
   }
 
   static TimeOfDay timeFromHour(double time) {
+    double minuteDecimal = time - time.truncate();
+    int minutes = (minuteDecimal * 60).floor();
+
+    if (minutes > 0) {
+      minutes -= 1;
+    }
+
     return new TimeOfDay(
         hour: time.floor() - 1,
-        minute: (time - time.truncate() * 60).floor() - 1);
+        minute: minutes
+    );
   }
 
   static bool isFullyClosed(List<DiningHallHours> hours) {
     return hours.where((mealHours) => !mealHours.closed).toList().length == 0;
+  }
+
+  @override
+  String toString() {
+    return 'DiningHallHours'
+        '(${meal.name})' +
+        (closed ? '[Closed]' : '[${DateUtil.formatTimeOfDay(beginTime)}-${DateUtil.formatTimeOfDay(endTime)}]');
   }
 }

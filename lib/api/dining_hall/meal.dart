@@ -20,8 +20,6 @@ class Meal {
   }
 
   static Meal fromOrdinal(int i) {
-    print(meal);
-    print('Getting meal from ordinal $i');
     return meal[i];
   }
 
