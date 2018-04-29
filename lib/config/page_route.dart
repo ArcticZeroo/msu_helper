@@ -7,6 +7,7 @@ class PageRoute {
   // Category paths
   static const String DINING = 'dining';
   static const String FOOD_TRUCK = 'foodtruck';
+  static const String MOVIE_NIGHT = 'movies';
 
   // Method paths
   static const String LIST = 'list';
@@ -30,5 +31,9 @@ class PageRoute {
 
   static String getFoodTruck(String end) {
     return getApiRoute(PageRoute.FOOD_TRUCK, end);
+  }
+
+  static String getMovieNight(String end) {
+    return getApiRoute(PageRoute.MOVIE_NIGHT, end);
   }
 }

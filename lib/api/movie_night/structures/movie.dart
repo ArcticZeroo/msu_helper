@@ -12,9 +12,18 @@ class Movie extends Object with _$MovieSerializerMixin {
   MovieShowing nextShowing;
 
   Movie(this.title, this.showings, this.locations, Map<String, List<int>> groupedShowings)
-    : this.groupedShowings = groupedShowings.map(
-          (String key, List<int> times) => new MapEntry(key, times.map((time) => DateTime.fromMillisecondsSinceEpoch(time))));
+    : this.groupedShowings = Movie.buildGroupedShowings(groupedShowings);
 
   factory Movie.fromJson(Map<String, dynamic> json) => _$MovieFromJson(json);
+
+  static Map<String, List<DateTime>> buildGroupedShowings(Map<String, List<int>> raw) {
+    Map<String, List<DateTime>> showings = new Map();
+
+    for (String location in raw.keys) {
+      showings[location] = raw[location].map((i) => DateTime.fromMillisecondsSinceEpoch(i)).toList();
+    }
+
+    return showings;
+  }
 }
 
