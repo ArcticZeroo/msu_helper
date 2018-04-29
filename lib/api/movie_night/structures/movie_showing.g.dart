@@ -11,7 +11,7 @@ MovieShowing _$MovieShowingFromJson(Map<String, dynamic> json) =>
 
 abstract class _$MovieShowingSerializerMixin {
   String get location;
-  DateTime get date;
+  int get time;
   Map<String, dynamic> toJson() =>
-      <String, dynamic>{'location': location, 'date': date?.toIso8601String()};
+      <String, dynamic>{'location': location, 'date': time};
 }

@@ -12,7 +12,6 @@ import 'package:msu_helper/config/page_route.dart';
 TimedCacheEntry<List<FoodTruckStop>> truckStopCache;
 
 Future<List<FoodTruckStop>> retrieveStopsFromWeb() async {
-  print('Retrieving stops from web...');
   String url = PageRoute.getFoodTruck(PageRoute.LIST);
 
   List<dynamic> response = await makeRestRequest(url);
@@ -21,7 +20,6 @@ Future<List<FoodTruckStop>> retrieveStopsFromWeb() async {
 }
 
 Future<List<FoodTruckStop>> retrieveStopsFromDb() async {
-  print('Retrieving stops from db...');
   List<dynamic> stopJsonMap = await jsonCache.retrieveJsonFromDb(Identifier.foodTruck);
 
   if (stopJsonMap == null) {
@@ -34,15 +32,11 @@ Future<List<FoodTruckStop>> retrieveStopsFromDb() async {
 }
 
 void setCached(List<FoodTruckStop> stops) {
-  print('Adding stops to cache...');
   truckStopCache = new TimedCacheEntry(stops, expireTime: ExpireTime.THIRTY_MINUTES);
 }
 
 Future<List<FoodTruckStop>> retrieveStops() async {
-  print('Retrieving food truck stops...');
-
   if (truckStopCache != null && truckStopCache.isValid()) {
-    print('Returning a valid cached value');
     return truckStopCache.value;
   }
 
@@ -58,7 +52,6 @@ Future<List<FoodTruckStop>> retrieveStops() async {
   if (fromWeb != null && fromWeb.length != 0) {
     setCached(fromWeb);
 
-    print('Saving stops to db...');
     await jsonCache.saveJsonToDb(Identifier.foodTruck, fromWeb);
 
     return fromWeb;

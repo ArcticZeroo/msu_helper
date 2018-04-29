@@ -19,11 +19,11 @@ abstract class Reloadable<T extends StatefulWidget> extends State<T> {
     }
   }
 
-  void reload() {
+  void reload(Map<String, dynamic> params) {
     setState(() {});
   }
 
-  static void triggerReload([List<String> categories = const [defaultCategory]]) {
+  static void triggerReload([List<String> categories = const [defaultCategory], Map<String, dynamic> params = const {}]) {
     print('[Reloadable] triggering reload of categories $categories');
 
     List<Reloadable> reloaded = new List();
@@ -43,13 +43,13 @@ abstract class Reloadable<T extends StatefulWidget> extends State<T> {
           continue;
         }
 
-        reloadable.reload();
+        reloadable.reload(params);
         reloaded.add(reloadable);
       }
     }
   }
 
-  static void triggerReloadForAll() {
-    triggerReload(categoryNames);
+  static void triggerReloadForAll([Map<String, dynamic> params = const {}]) {
+    triggerReload(categoryNames, params);
   }
 }

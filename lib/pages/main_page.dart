@@ -27,7 +27,8 @@ class MainPageState extends State<MainPage> {
         appBarTitle: 'MSU Helper Home',
         bottomBarTitle: 'Home',
         bottomBarIcon: new Icon(Icons.home),
-        page: new HomePage(bottomBar)
+        page: new HomePage(bottomBar),
+        reloadName: HomePage.reloadableCategory
     ));
 
     bottomBar.addPage(new PageData(
@@ -49,7 +50,23 @@ class MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     print('Building page "${bottomBar.getPageData().bottomBarTitle}"');
 
-    List<Widget> actions = [new IconButton(
+    List<Widget> actions = [];
+
+    if (bottomBar.getPageData().reloadName != null) {
+      actions.add(
+          new IconButton(
+              icon: new Icon(Icons.refresh),
+              onPressed: () {
+                Reloadable.triggerReload(
+                    [bottomBar.getPageData().reloadName],
+                    { 'refresh': true }
+                );
+              }
+          )
+      );
+    }
+
+    actions.add(new IconButton(
         icon: new Icon(Icons.settings),
         onPressed: () async {
           await Navigator.push(
@@ -62,23 +79,15 @@ class MainPageState extends State<MainPage> {
           });*/
           Reloadable.triggerReload([SettingsPage.reloadableCategory]);
         }
-    )];
-
-    List<Widget> pageDataActions = bottomBar.getPageData().appBarActions;
-
-    if (pageDataActions != null && pageDataActions.length > 0) {
-      List<Widget> cloned = new List.from(pageDataActions);
-      cloned.addAll(actions);
-      actions = cloned;
-    }
+    ));
 
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(bottomBar.getPageData().appBarTitle),
-        actions: actions,
-      ),
-      body: bottomBar.getPage(),
-      bottomNavigationBar: bottomBar.build()
+        appBar: new AppBar(
+          title: new Text(bottomBar.getPageData().appBarTitle),
+          actions: actions,
+        ),
+        body: bottomBar.getPage(),
+        bottomNavigationBar: bottomBar.build()
     );
   }
 }

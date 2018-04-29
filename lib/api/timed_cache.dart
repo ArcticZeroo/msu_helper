@@ -20,8 +20,6 @@ class TimedCacheEntry<T> {
       expireTime = this.expireTime;
     }
 
-    print('Added: $added, ExpireTime: $expireTime');
-
     return ExpireTime.isValid(added, expireTime);
   }
 

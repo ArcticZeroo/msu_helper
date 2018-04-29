@@ -26,13 +26,11 @@ class DiningHallMiniWidget extends StatefulWidget {
 
 class _DiningHallMiniWidgetState extends Reloadable<DiningHallMiniWidget> {
   DiningHall favoriteHall;
-  List<String> text = ['Loading...'];
+  List<String> text = ['You don\'t have a favorite dining hall set.', 'Do that in the settings!'];
   bool hasFailed = false;
 
   _DiningHallMiniWidgetState()
-      : super([HomePage.reloadableCategory, SettingsPage.reloadableCategory]) {
-    load();
-  }
+      : super([HomePage.reloadableCategory, SettingsPage.reloadableCategory]);
 
   load() {
     _retrieveDataAndUpdate().catchError((e) {

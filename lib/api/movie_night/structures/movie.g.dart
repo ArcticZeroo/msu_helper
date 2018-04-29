@@ -40,7 +40,7 @@ abstract class _$MovieSerializerMixin {
             : new Map<String, dynamic>.fromIterables(
                 groupedShowings.keys,
                 groupedShowings.values
-                    .map((e) => e?.map((e) => e?.toIso8601String())?.toList())),
+                    .map((e) => e?.map((e) => e?.millisecondsSinceEpoch)?.toList())),
         'nextShowing': nextShowing
       };
 }

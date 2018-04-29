@@ -17,10 +17,16 @@ class MovieNightMiniWidget extends StatefulWidget {
 }
 
 class MovieNightMiniWidgetState extends Reloadable<MovieNightMiniWidget> {
+  static const NOT_YET_POSTED_DAYS = [DateTime.monday, DateTime.tuesday, DateTime.wednesday];
+
   List<String> text = ['Loading...'];
   bool hasFailed = false;
 
   MovieNightMiniWidgetState() : super([HomePage.reloadableCategory]) {
+    loadWithoutAsync();
+  }
+
+  loadWithoutAsync() {
     load().catchError((e) {
       print('Could not load movie night data:');
       print(e.toString());
@@ -35,6 +41,49 @@ class MovieNightMiniWidgetState extends Reloadable<MovieNightMiniWidget> {
 
   Future load() async {
     List<Movie> movies = await movieNightProvider.retrieveMovies();
+
+    hasFailed = false;
+
+    DateTime now = DateTime.now();
+    List<Movie> moviesNotPassed = movies.where(
+            (movie) => movie.showings.firstWhere(
+                (showing) => showing.date.isAfter(now),
+                orElse: () => null
+            ) != null).toList();
+
+    if (moviesNotPassed.length == 0) {
+      if (NOT_YET_POSTED_DAYS.contains(now.weekday)) {
+        setState(() {
+          text = ['Movie showtimes haven\'t been posted for this week.'];
+        });
+      } else {
+        setState(() {
+          text = ['All movie showtimes for this week have passed.'];
+        });
+      }
+    }
+  }
+
+  @override
+  void reload(Map<String, dynamic> params) {
+    if (params.containsKey('refresh')) {
+      setState(() {
+        text = ['Loading...'];
+      });
+
+      movieNightProvider.retrieveMoviesFromWebAndSave()
+        .then((v) => load())
+        .catchError((e) {
+            print(e);
+
+            setState(() {
+              text = ['Could not refresh movie data.'];
+              hasFailed = true;
+            });
+        });
+    } else {
+      super.reload(params);
+    }
   }
 
   @override

@@ -11,7 +11,6 @@ import 'package:msu_helper/config/page_route.dart';
 TimedCacheEntry<List<Movie>> movieCache;
 
 Future<List<Movie>> retrieveMoviesFromWeb() async {
-  print('Retrieving movies from web...');
   String url = PageRoute.getMovieNight(PageRoute.LIST);
 
   List<dynamic> response = await makeRestRequest(url);
@@ -19,29 +18,36 @@ Future<List<Movie>> retrieveMoviesFromWeb() async {
   return response.map((r) => Movie.fromJson(r as Map<String, dynamic>)).toList();
 }
 
+Future<List<Movie>> retrieveMoviesFromWebAndSave() async {
+  List<Movie> fromWeb = await retrieveMoviesFromWeb();
+
+  if (fromWeb != null && fromWeb.length != 0) {
+    setCached(fromWeb);
+
+    await jsonCache.saveJsonToDb(Identifier.movieNight, fromWeb);
+
+    return fromWeb;
+  }
+
+  return null;
+}
+
 Future<List<Movie>> retrieveMoviesFromDb() async {
-  print('Retrieving movies from db...');
   List<dynamic> movieJsonMap = await jsonCache.retrieveJsonFromDb(Identifier.movieNight);
 
   if (movieJsonMap == null) {
     return null;
   }
 
-  movieJsonMap.forEach((json) => print(json as Map<String, dynamic>));
-
   return movieJsonMap.map((j) => Movie.fromJson(j as Map<String, dynamic>)).toList();
 }
 
 void setCached(List<Movie> movies) {
-  print('Adding movies to cache...');
   movieCache = new TimedCacheEntry(movies, expireTime: ExpireTime.THIRTY_MINUTES);
 }
 
 Future<List<Movie>> retrieveMovies() async {
-  print('Retrieving food truck movies...');
-
   if (movieCache != null && movieCache.isValid()) {
-    print('Returning a valid cached value');
     return movieCache.value;
   }
 
@@ -52,16 +58,5 @@ Future<List<Movie>> retrieveMovies() async {
     return fromDb;
   }
 
-  List<Movie> fromWeb = await retrieveMoviesFromWeb();
-
-  if (fromWeb != null && fromWeb.length != 0) {
-    setCached(fromWeb);
-
-    print('Saving movies to db...');
-    await jsonCache.saveJsonToDb(Identifier.movieNight, fromWeb);
-
-    return fromWeb;
-  }
-
-  return null;
+  return retrieveMoviesFromWebAndSave();
 }

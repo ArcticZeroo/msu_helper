@@ -5,10 +5,12 @@ part './movie_showing.g.dart';
 @JsonSerializable()
 class MovieShowing extends Object with _$MovieShowingSerializerMixin {
   final String location;
-  final DateTime date;
+  @JsonKey(name: 'date')
+  final int time;
 
-  MovieShowing(this.location, int date)
-      : this.date = DateTime.fromMillisecondsSinceEpoch(date);
+  DateTime get date => DateTime.fromMillisecondsSinceEpoch(time);
+
+  MovieShowing(this.location, this.time);
 
   factory MovieShowing.fromJson(Map<String, dynamic> json) => _$MovieShowingFromJson(json);
 }

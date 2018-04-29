@@ -35,6 +35,8 @@ Future retrieveJsonFromDb(String key, [int expireTime = ExpireTime.THIRTY_MINUTE
     return null;
   }
 
+  print('$key\'s value was last retrieved at ${DateTime.fromMillisecondsSinceEpoch(retrieved)}');
+
   return json.decode(row['json']);
 }
 
