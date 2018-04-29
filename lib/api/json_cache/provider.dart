@@ -10,9 +10,8 @@ MainDatabase database = new MainDatabase();
 Map<String, TimedCacheEntry<String>> jsonCache = new Map();
 
 Future retrieveJsonFromDb(String key, [int expireTime = ExpireTime.THIRTY_MINUTES]) async {
-  print('Getting database instance...');
+  print('Retrieving stored json for $key');
   Database db = await MainDatabase.getDbInstance();
-  print('Got it');
 
   List<Map<String, dynamic>> rows = await db.query(TableName.jsonCache,
       where: 'name = ?', whereArgs: [key]);

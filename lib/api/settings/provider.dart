@@ -7,8 +7,16 @@ import 'package:sqflite/sqflite.dart';
 
 Map<String, SettingsNotifier> settingCache = new Map();
 
+typedef void SettingsNotifyCallback(String last);
 class SettingsNotifier extends ValueNotifier<String> {
+  String last;
+
   SettingsNotifier(value) : super(value);
+
+  setValue(String newValue) {
+    last = value;
+    value = newValue;
+  }
 }
 
 Future<dynamic> retrieveSetting(SettingData data) async {
@@ -32,7 +40,7 @@ Future<dynamic> retrieveSetting(SettingData data) async {
   Map<String, dynamic> row = rows[0];
   String value = row['value'] as String;
 
-  settingCache[data.key].value = value;
+  settingCache[data.key].setValue(value);
 
   return data.decode(value);
 }
@@ -56,13 +64,15 @@ Future saveSetting(SettingData data, dynamic value) async {
     });
   }
 
-  settingCache[data.key].value = encoded;
+  settingCache[data.key].setValue(encoded);
 }
 
-void addSettingListener(SettingData data, VoidCallback listener) {
+void addSettingListener(SettingData data, SettingsNotifyCallback listener) {
   if (!settingCache.containsKey(data.key)) {
     settingCache[data.key] = new SettingsNotifier(null);
   }
 
-  settingCache[data.key].addListener(listener);
+  settingCache[data.key].addListener(() {
+    listener(settingCache[data.key].last);
+  });
 }

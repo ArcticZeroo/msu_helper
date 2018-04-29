@@ -30,7 +30,9 @@ class _DiningHallMiniWidgetState extends Reloadable<DiningHallMiniWidget> {
   bool hasFailed = false;
 
   _DiningHallMiniWidgetState()
-      : super([HomePage.reloadableCategory, SettingsPage.reloadableCategory]);
+      : super([HomePage.reloadableCategory, SettingsPage.reloadableCategory]) {
+    load();
+  }
 
   load() {
     _retrieveDataAndUpdate().catchError((e) {
@@ -49,7 +51,14 @@ class _DiningHallMiniWidgetState extends Reloadable<DiningHallMiniWidget> {
   void initState() {
     super.initState();
 
-    addSettingListener(SettingsConfig.favoriteDiningHall, () {
+    // Reloads when the favorite dining hall is set
+    addSettingListener(SettingsConfig.favoriteDiningHall, (String last) {
+      print('Dining hall favorite setting has updated, last value was $last');
+
+      if (last == null) {
+        return;
+      }
+
       load();
     });
   }
