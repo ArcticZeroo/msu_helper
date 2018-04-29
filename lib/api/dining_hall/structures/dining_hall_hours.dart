@@ -65,8 +65,14 @@ class DiningHallHours extends Object with _$DiningHallHoursSerializerMixin {
       minutes -= 1;
     }
 
+    int hour = time.floor();
+
+    if (hour != 24) {
+      hour -= 1;
+    }
+
     return new TimeOfDay(
-        hour: time.floor() - 1,
+        hour: hour,
         minute: minutes
     );
   }

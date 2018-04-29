@@ -12,8 +12,6 @@ class MenuDate {
     if (_time == null) {
       _time = DateTime.now();
     }
-
-    _time = _time.toUtc();
   }
 
   DateTime get time => _time;
@@ -38,12 +36,12 @@ class MenuDate {
       }
 
       // If the end time has already passed, get rid of it
-      if (timeOfDay.hour >= hours.endTime.hour) {
+      if (timeOfDay.hour > hours.endTime.hour) {
         return false;
       }
 
       if (timeOfDay.hour == hours.endTime.hour
-          && timeOfDay.minute < hours.endTime.minute) {
+          && timeOfDay.minute >= hours.endTime.minute) {
         return false;
       }
 

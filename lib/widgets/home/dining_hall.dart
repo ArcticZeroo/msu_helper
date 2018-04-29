@@ -7,6 +7,7 @@ import 'package:msu_helper/api/dining_hall/structures/dining_hall_hours.dart';
 import 'package:msu_helper/api/dining_hall/time.dart';
 import 'package:msu_helper/api/food_truck/structures/food_truck_stop.dart';
 import 'package:msu_helper/api/dining_hall//provider.dart' as diningHallProvider;
+import 'package:msu_helper/api/reloadable.dart';
 import 'package:msu_helper/api/settings/provider.dart';
 import 'package:msu_helper/config/settings.dart';
 import 'package:msu_helper/pages/home_page.dart';
@@ -23,12 +24,13 @@ class DiningHallMiniWidget extends StatefulWidget {
   State<StatefulWidget> createState() => new _DiningHallMiniWidgetState();
 }
 
-class _DiningHallMiniWidgetState extends State<DiningHallMiniWidget> {
+class _DiningHallMiniWidgetState extends Reloadable<DiningHallMiniWidget> {
   DiningHall favoriteHall;
   List<String> text = ['Loading...'];
   bool hasFailed = false;
 
-  _DiningHallMiniWidgetState() {
+  _DiningHallMiniWidgetState()
+      : super([HomePage.reloadableCategory, SettingsPage.reloadableCategory]) {
     load();
   }
 
@@ -106,10 +108,11 @@ class _DiningHallMiniWidgetState extends State<DiningHallMiniWidget> {
       });
 
       return;
+    } else {
+      print('Dining hall ${favoriteHall.hallName} is not fully closed today (${menuDate.weekday})');
     }
 
     TimeOfDay timeNow = TimeOfDay.now();
-
     DiningHallHours relevant = MenuDate.getFirstRelevant(hoursToday, timeNow);
 
     if (relevant != null) {
@@ -144,7 +147,7 @@ class _DiningHallMiniWidgetState extends State<DiningHallMiniWidget> {
         if (relevant != null) {
           setState(() {
             text.add(
-              'It will serve ${relevant.meal.name} on'
+              'It will serve ${relevant.meal.name} on '
               '${DateUtil.getWeekday(menuDate.time)} at ${DateUtil.formatTimeOfDay(relevant.beginTime)}'
             );
           });

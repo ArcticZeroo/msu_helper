@@ -11,6 +11,10 @@ class DateUtil {
   }
 
   static String formatTimeOfDay(TimeOfDay from) {
+    if (from.hour == 24) {
+      return 'Midnight';
+    }
+
     String _addLeadingZeroIfNeeded(int value) {
       if (value < 10)
         return '0$value';
