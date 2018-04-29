@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:msu_helper/api/food_truck/structures/food_truck_stop.dart';
 import 'package:msu_helper/api/food_truck/controller.dart' as foodTruckController;
 import 'package:msu_helper/api/food_truck/provider.dart' as foodTruckProvider;
+import 'package:msu_helper/api/reloadable.dart';
 import 'package:msu_helper/pages/home_page.dart';
 import 'package:msu_helper/util/DateUtil.dart';
 import 'package:msu_helper/widgets/home/mini_widget.dart';
@@ -17,11 +18,11 @@ class FoodTruckMiniWidget extends StatefulWidget {
   State<StatefulWidget> createState() => new FoodTruckMiniWidgetState();
 }
 
-class FoodTruckMiniWidgetState extends State<FoodTruckMiniWidget> {
+class FoodTruckMiniWidgetState extends Reloadable<FoodTruckMiniWidget> {
   List<String> text = ['Loading...'];
   bool hasFailed = false;
 
-  FoodTruckMiniWidgetState() {
+  FoodTruckMiniWidgetState() : super([HomePage.reloadableCategory]) {
     load().catchError((e) {
       print('Could not load food truck data:');
       print(e.toString());

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:msu_helper/api/page_data.dart';
+import 'package:msu_helper/api/reloadable.dart';
 import 'package:msu_helper/pages/dining_hall_page.dart';
 import 'package:msu_helper/pages/food_truck_page.dart';
 import 'package:msu_helper/pages/home_page.dart';
@@ -48,24 +49,33 @@ class MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     print('Building page "${bottomBar.getPageData().bottomBarTitle}"');
 
+    List<Widget> actions = [new IconButton(
+        icon: new Icon(Icons.settings),
+        onPressed: () async {
+          await Navigator.push(
+              context,
+              new MaterialPageRoute(builder: (context) => new SettingsPage())
+          );
+          print('Settings was closed');
+          /*setState(() {
+            print('Rebuilding as a result');
+          });*/
+          Reloadable.triggerReload([SettingsPage.reloadableCategory]);
+        }
+    )];
+
+    List<Widget> pageDataActions = bottomBar.getPageData().appBarActions;
+
+    if (pageDataActions != null && pageDataActions.length > 0) {
+      List<Widget> cloned = new List.from(pageDataActions);
+      cloned.addAll(actions);
+      actions = cloned;
+    }
+
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(bottomBar.getPageData().appBarTitle),
-        actions: <Widget>[
-          new IconButton(
-              icon: new Icon(Icons.settings),
-              onPressed: () async {
-                await Navigator.push(
-                    context,
-                    new MaterialPageRoute(builder: (context) => new SettingsPage())
-                );
-                print('Settings was closed');
-                setState(() {
-                  print('Rebuilding as a result');
-                });
-              }
-          )
-        ],
+        actions: actions,
       ),
       body: bottomBar.getPage(),
       bottomNavigationBar: bottomBar.build()

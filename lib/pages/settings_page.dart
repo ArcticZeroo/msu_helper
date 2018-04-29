@@ -4,6 +4,8 @@ import 'package:msu_helper/config/settings.dart';
 import 'package:msu_helper/widgets/settings/favorite_dining_hall.dart';
 
 class SettingsPage extends StatefulWidget {
+  static const String reloadableCategory = 'settings_dependent';
+
   @override
   State<StatefulWidget> createState() => new SettingsPageState();
 }

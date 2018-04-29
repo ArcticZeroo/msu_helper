@@ -4,6 +4,7 @@ import 'package:msu_helper/widgets/home/dining_hall.dart';
 import 'package:msu_helper/widgets/home/food_truck.dart';
 
 class HomePage extends StatefulWidget {
+  static const String reloadableCategory = 'homepage_miniwidget';
   final MainBottomBar bottomBar;
 
   HomePage(this.bottomBar);
