@@ -13,20 +13,23 @@ class HallInfoPage extends StatefulWidget {
 
 class HallInfoPageState extends State<HallInfoPage> {
   Widget buildHours() {
-    return new Center(
-      child: new Column(
-        children: <Widget>[
-          new Center(
-            child: new Text('Hours for ${widget.diningHall.hallName}'),
-          ),
-          new HoursTable(widget.diningHall)
-        ],
-      ),
+    return new Container(
+      margin: const EdgeInsets.all(12.0),
+      child: new HoursTable(widget.diningHall)
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return buildHours();
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text('${widget.diningHall.hallName} - Menu/Hours'),
+      ),
+      body: new Column(
+        children: <Widget>[
+          buildHours()
+        ],
+      )
+    );
   }
 }

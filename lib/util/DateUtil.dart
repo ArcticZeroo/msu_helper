@@ -12,7 +12,7 @@ class DateUtil {
   ];
 
   static const WEEKDAY_ABBREVIATIONS = [
-    'su', 'm', 'tu', 'w', 'th', 'f', 'sa'
+    'sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'
   ];
 
   static String getAbbreviation(dynamic from) {
@@ -50,7 +50,13 @@ class DateUtil {
       return value.toString();
     }
 
-    final String minuteLabel = _addLeadingZeroIfNeeded(from.minute);
+    int minute = from.minute;
+
+    if (minute > 0) {
+      minute++;
+    }
+
+    final String minuteLabel = _addLeadingZeroIfNeeded(minute);
 
     return '${(from.hour + 1) - from.periodOffset}:$minuteLabel ${from.period == DayPeriod.am ? 'am' : 'pm'}';
   }
