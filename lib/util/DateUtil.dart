@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:msu_helper/util/NumberUtil.dart';
 
 class DateUtil {
   static const WEEKDAYS = [
@@ -39,7 +40,7 @@ class DateUtil {
     return new DateFormat("EEEE").format(from);
   }
 
-  static String formatTimeOfDay(TimeOfDay from) {
+  static String formatTimeOfDay(TimeOfDay from, [int add = 1]) {
     if (from.hour == 24) {
       return 'Midnight';
     }
@@ -50,15 +51,11 @@ class DateUtil {
       return value.toString();
     }
 
-    int minute = from.minute;
-
-    if (minute > 0) {
-      minute++;
-    }
+    int minute = NumberUtil.round(from.minute.toDouble(), 5);
 
     final String minuteLabel = _addLeadingZeroIfNeeded(minute);
 
-    return '${(from.hour + 1) - from.periodOffset}:$minuteLabel ${from.period == DayPeriod.am ? 'am' : 'pm'}';
+    return '${(from.hour + add) - from.periodOffset}:$minuteLabel ${from.period == DayPeriod.am ? 'am' : 'pm'}';
   }
 
   static double timeToDouble(TimeOfDay toConvert) {
@@ -70,5 +67,15 @@ class DateUtil {
   /// Return a negative integer if a is earlier than b
   static double compareTime(TimeOfDay a, TimeOfDay b) {
     return timeToDouble(a) - timeToDouble(b);
+  }
+
+  static String formatDifference(Duration difference) {
+    String differenceString = '${difference.inMinutes % 60}m';
+
+    if (difference.inHours >= 1) {
+      differenceString = '${difference.inHours}h $differenceString';
+    }
+
+    return differenceString;
   }
 }

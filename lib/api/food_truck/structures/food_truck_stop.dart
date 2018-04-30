@@ -17,6 +17,8 @@ class FoodTruckStop extends Object with _$FoodTruckStopSerializerMixin {
   final int start;
   final int end;
 
+  String get shortName => mapsLocation.toLowerCase().startsWith('the') ? mapsLocation : 'the $mapsLocation';
+
   FoodTruckStop(this.place, this.location, this.start, this.end)
       : this.startDate = DateTime.fromMillisecondsSinceEpoch(start),
         this.endDate = DateTime.fromMillisecondsSinceEpoch(end),
@@ -25,20 +27,26 @@ class FoodTruckStop extends Object with _$FoodTruckStopSerializerMixin {
 
   factory FoodTruckStop.fromJson(Map<String, dynamic> json) => _$FoodTruckStopFromJson(json);
 
-  openMaps() {
+  void openMaps() {
     if (location == null || location.isNull) {
-      UrlUtil.openMaps(mapsLocation);
+      UrlUtil.openMapsToLocation(mapsLocation);
       return;
     }
 
     UrlUtil.openMapsToCoordinates(location.x, location.y);
   }
 
-  isNow() {
+  bool get isNow {
     DateTime now = DateTime.now();
 
     // End is not inclusive
     return (startDate.isBefore(now) || startDate.isAtSameMomentAs(now)) && endDate.isAfter(now);
+  }
+
+  bool get isToday {
+    DateTime now = DateTime.now();
+
+    return now.day == startDate.day && now.month == startDate.month && now.year == startDate.year;
   }
 }
 

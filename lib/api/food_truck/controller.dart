@@ -27,7 +27,7 @@ Future<FoodTruckStop> retrieveMostRelevant() async {
     return null;
   }
 
-  FoodTruckStop stopNow = stops.firstWhere((stop) => stop.isNow(),
+  FoodTruckStop stopNow = stops.firstWhere((stop) => stop.isNow,
       orElse: () => null);
 
   if (stopNow != null) {

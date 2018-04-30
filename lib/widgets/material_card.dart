@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
+import 'package:msu_helper/util/ObjectUtil.dart';
 
 class MaterialCard extends StatelessWidget {
   static const titleStyle = const TextStyle(
@@ -19,12 +20,14 @@ class MaterialCard extends StatelessWidget {
   final Widget subtitle;
   final List<Widget> actions;
   final Widget body;
+  final VoidCallback onTap;
 
   MaterialCard({
-    @required this.title,
+    this.title,
     this.subtitle,
     this.actions,
-    this.body
+    this.body,
+    this.onTap
   });
 
   @override
@@ -37,18 +40,13 @@ class MaterialCard extends StatelessWidget {
 
     EdgeInsets actionsPadding = const EdgeInsets.all(8.0);
 
-    if (subtitle != null) {
+    if (title != null || subtitle != null) {
       columnChildren.add(new Container(
         padding: headerPadding,
         child: new Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[title, subtitle],
+          children: <Widget>[title, subtitle].where(ObjectUtil.notNull).toList(),
         ),
-      ));
-    } else {
-      columnChildren.add(new Container(
-        padding: headerPadding,
-        child: title
       ));
     }
 
@@ -79,13 +77,18 @@ class MaterialCard extends StatelessWidget {
       ));
     }
 
+    Widget cardChild = new Container(
+      padding: const EdgeInsets.symmetric(vertical: 24.0),
+      child: new Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: columnChildren,
+      ),
+    );
+
     return new Card(
-      child: new Container(
-        padding: const EdgeInsets.symmetric(vertical: 24.0),
-        child: new Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: columnChildren,
-        ),
+      child: new InkWell(
+          onTap: onTap,
+          child: cardChild
       ),
     );
   }

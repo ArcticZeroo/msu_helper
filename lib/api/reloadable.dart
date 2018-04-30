@@ -7,6 +7,7 @@ abstract class Reloadable<T extends StatefulWidget> extends State<T> {
   static List<String> get categoryNames => _reloadables.keys.toList();
 
   final List<String> _categories;
+  bool _disposed = false;
 
   Reloadable([List<String> categories = const [defaultCategory]])
       : _categories = categories.map((c) => c.toLowerCase()).toList();
@@ -27,12 +28,17 @@ abstract class Reloadable<T extends StatefulWidget> extends State<T> {
   @override
   void dispose() {
     super.dispose();
+    _disposed = true;
     for (String category in _categories) {
       _reloadables[category].remove(this);
     }
   }
 
   void reload(Map<String, dynamic> params) {
+    if (_disposed) {
+      return;
+    }
+
     setState(() {});
   }
 

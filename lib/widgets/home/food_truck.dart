@@ -54,7 +54,7 @@ class FoodTruckMiniWidgetState extends Reloadable<FoodTruckMiniWidget> {
       ];
 
       if (mostRelevant != null) {
-        text.add('Next is at ${DateUtil.toTimeString(mostRelevant.startDate)}');
+        text.add('Next is at ${DateUtil.toTimeString(mostRelevant.startDate)} at ${mostRelevant.shortName}');
       }
     });
   }

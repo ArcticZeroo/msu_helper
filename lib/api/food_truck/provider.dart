@@ -19,34 +19,7 @@ Future<List<FoodTruckStop>> retrieveStopsFromWeb() async {
   return response.map((r) => FoodTruckStop.fromJson(r as Map<String, dynamic>)).toList();
 }
 
-Future<List<FoodTruckStop>> retrieveStopsFromDb() async {
-  List<dynamic> stopJsonMap = await jsonCache.retrieveJsonFromDb(Identifier.foodTruck);
-
-  if (stopJsonMap == null) {
-    return null;
-  }
-
-  stopJsonMap.forEach((json) => print(json as Map<String, dynamic>));
-
-  return stopJsonMap.map((j) => FoodTruckStop.fromJson(j as Map<String, dynamic>)).toList();
-}
-
-void setCached(List<FoodTruckStop> stops) {
-  truckStopCache = new TimedCacheEntry(stops, expireTime: ExpireTime.THIRTY_MINUTES);
-}
-
-Future<List<FoodTruckStop>> retrieveStops() async {
-  if (truckStopCache != null && truckStopCache.isValid()) {
-    return truckStopCache.value;
-  }
-
-  List<FoodTruckStop> fromDb = await retrieveStopsFromDb();
-
-  if (fromDb != null && fromDb.length != 0) {
-    setCached(fromDb);
-    return fromDb;
-  }
-
+Future<List<FoodTruckStop>> retrieveStopsFromWebAndSave() async {
   List<FoodTruckStop> fromWeb = await retrieveStopsFromWeb();
 
   if (fromWeb != null && fromWeb.length != 0) {
@@ -58,4 +31,33 @@ Future<List<FoodTruckStop>> retrieveStops() async {
   }
 
   return null;
+}
+
+Future<List<FoodTruckStop>> retrieveStopsFromDb() async {
+  List<dynamic> stopJsonMap = await jsonCache.retrieveJsonFromDb(Identifier.foodTruck);
+
+  if (stopJsonMap == null) {
+    return null;
+  }
+
+  return stopJsonMap.map((j) => FoodTruckStop.fromJson(j as Map<String, dynamic>)).toList();
+}
+
+void setCached(List<FoodTruckStop> stops) {
+  truckStopCache = new TimedCacheEntry(stops, expireTime: ExpireTime.THIRTY_MINUTES);
+}
+
+Future<List<FoodTruckStop>> retrieveStops() async {
+  if (truckStopCache != null && truckStopCache.isValid()) {
+    return List.from(truckStopCache.value);
+  }
+
+  List<FoodTruckStop> fromDb = await retrieveStopsFromDb();
+
+  if (fromDb != null && fromDb.length != 0) {
+    setCached(fromDb);
+    return List.from(fromDb);
+  }
+
+  return List.from(await retrieveStopsFromWebAndSave());
 }
