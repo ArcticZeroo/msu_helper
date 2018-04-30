@@ -38,7 +38,7 @@ class _FavoriteDiningHallState extends State<FavoriteDiningHall> {
   }
 
   Future init() async {
-    diningHalls = await diningHallProvider.retrieveList();
+    diningHalls = await diningHallProvider.retrieveDiningList();
 
     print('Got dining halls');
     print('There are ${diningHalls.length}');

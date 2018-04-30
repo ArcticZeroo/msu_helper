@@ -6,7 +6,7 @@ import 'package:msu_helper/api/settings/provider.dart';
 import 'package:msu_helper/config/settings.dart';
 
 Future<DiningHall> fromSearchName(String searchName) async {
-  List<DiningHall> diningHalls = await retrieveList();
+  List<DiningHall> diningHalls = await retrieveDiningList();
 
   if (diningHalls == null || diningHalls.length == 0) {
     return null;

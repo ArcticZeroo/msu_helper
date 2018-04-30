@@ -24,25 +24,26 @@ class MainPageState extends State<MainPage> {
     bottomBar = new MainBottomBar(this.setState);
 
     bottomBar.addPage(new PageData(
-        appBarTitle: 'MSU Helper Home',
-        bottomBarTitle: 'Home',
-        bottomBarIcon: new Icon(Icons.home),
-        page: new HomePage(bottomBar),
-        reloadName: HomePage.reloadableCategory
+      appBarTitle: 'MSU Helper Home',
+      bottomBarTitle: 'Home',
+      bottomBarIcon: new Icon(Icons.home),
+      page: new HomePage(bottomBar),
+      reloadName: HomePage.reloadableCategory
     ));
 
     bottomBar.addPage(new PageData(
-        appBarTitle: 'Dining Hall Info',
-        bottomBarTitle: 'Dining Halls',
-        bottomBarIcon: new Icon(Icons.restaurant_menu),
-        page: new DiningMainPage()
+      appBarTitle: 'Dining Hall Info',
+      bottomBarTitle: 'Dining Halls',
+      bottomBarIcon: new Icon(Icons.restaurant_menu),
+      page: new DiningMainPage(),
+      reloadName: DiningMainPage.reloadableCategory
     ));
 
     bottomBar.addPage(new PageData(
-        appBarTitle: 'Food Truck Stops',
-        bottomBarTitle: 'Food Truck',
-        bottomBarIcon: new Icon(Icons.local_shipping),
-        page: new FoodTruckPage()
+      appBarTitle: 'Food Truck Stops',
+      bottomBarTitle: 'Food Truck',
+      bottomBarIcon: new Icon(Icons.local_shipping),
+      page: new FoodTruckPage()
     ));
   }
 

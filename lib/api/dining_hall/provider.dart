@@ -47,14 +47,14 @@ Future<MenuMetadata> deserializeFromKey(String key) async {
 
   // Don't handle the orElse, since a serialized key should never
   // not be able to get deserialized
-  DiningHall diningHall = (await retrieveList()).firstWhere((hall) => hall.searchName == split[0]);
+  DiningHall diningHall = (await retrieveDiningList()).firstWhere((hall) => hall.searchName == split[0]);
   MenuDate menuDate = MenuDate.fromFormatted(split[1]);
   Meal meal = Meal.fromOrdinal(int.parse(split[2]));
 
   return new MenuMetadata(diningHall, menuDate, meal);
 }
 
-Future<List<DiningHall>> retrieveListFromDatabase() async {
+Future<List<DiningHall>> retrieveDiningListFromDatabase() async {
   Database db = await MainDatabase.getDbInstance();
 
   List<dynamic> results = await db.rawQuery('SELECT "json" from "${TableName.diningHalls}"');
@@ -62,7 +62,7 @@ Future<List<DiningHall>> retrieveListFromDatabase() async {
   return results.map((r) => DiningHall.fromJson(json.decode(r['json']) as Map<String, dynamic>)).toList();
 }
 
-Future<List<DiningHall>> retrieveListFromWeb() async {
+Future<List<DiningHall>> retrieveDiningListFromWeb() async {
   String url = PageRoute.getDining(PageRoute.LIST);
 
   List<dynamic> response = await makeRestRequest(url);
@@ -70,8 +70,8 @@ Future<List<DiningHall>> retrieveListFromWeb() async {
   return response.map((r) => DiningHall.fromJson(r as Map<String, dynamic>)).toList();
 }
 
-Future<List<DiningHall>> retrieveListFromWebAndSave() async {
-  List<DiningHall> fromWeb = await retrieveListFromWeb();
+Future<List<DiningHall>> retrieveDiningListFromWebAndSave() async {
+  List<DiningHall> fromWeb = await retrieveDiningListFromWeb();
 
   Database db = await MainDatabase.getDbInstance();
 
@@ -85,7 +85,7 @@ Future<List<DiningHall>> retrieveListFromWebAndSave() async {
   return fromWeb;
 }
 
-Future<List<DiningHall>> retrieveList() async {
+Future<List<DiningHall>> retrieveDiningList() async {
   print('Getting dining hall list');
 
   if (hallCache != null && hallCache.length != 0) {
@@ -93,7 +93,7 @@ Future<List<DiningHall>> retrieveList() async {
     return hallCache;
   }
 
-  List<DiningHall> fromDb = await retrieveListFromDatabase();
+  List<DiningHall> fromDb = await retrieveDiningListFromDatabase();
 
   if (fromDb.length > 0) {
     print('Returning a value from db');
@@ -101,7 +101,7 @@ Future<List<DiningHall>> retrieveList() async {
     return fromDb;
   }
 
-  List<DiningHall> fromWeb = await retrieveListFromWebAndSave();
+  List<DiningHall> fromWeb = await retrieveDiningListFromWebAndSave();
 
   if (fromWeb != null) {
     print('Returning a web value');

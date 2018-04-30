@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
+import 'package:msu_helper/widgets/dining_hall/hours_table.dart';
 
 class HallInfoPage extends StatefulWidget {
   final DiningHall diningHall;
@@ -12,21 +13,20 @@ class HallInfoPage extends StatefulWidget {
 
 class HallInfoPageState extends State<HallInfoPage> {
   Widget buildHours() {
-    List<Widget> children = <Widget>[
-      new Center(
-        child: new Text('Hours for ${widget.diningHall.hallName}'),
-      )
-    ];
-
-    List<TableRow> tableRows = <TableRow>[];
-
-    for (String day in widget.diningHall.hours.keys) {
-
-    }
+    return new Center(
+      child: new Column(
+        children: <Widget>[
+          new Center(
+            child: new Text('Hours for ${widget.diningHall.hallName}'),
+          ),
+          new HoursTable(widget.diningHall)
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    return buildHours();
   }
 }

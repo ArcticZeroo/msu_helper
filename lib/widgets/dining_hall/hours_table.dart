@@ -10,7 +10,7 @@ import 'package:msu_helper/util/TextUtil.dart';
 class HoursTable extends StatelessWidget {
   final DiningHall diningHall;
 
-  const HoursTable({Key key, this.diningHall}) : super(key: key);
+  const HoursTable(this.diningHall);
   
   @override
   Widget build(BuildContext context) {
@@ -21,6 +21,8 @@ class HoursTable extends StatelessWidget {
     groupingsList.sort((a, b) {
       a.sort(sortGroupings);
       b.sort(sortGroupings);
+
+      return sortGroupings(a.first, b.first);
     });
 
     List<String> headerRow = <String>[''];
@@ -42,10 +44,12 @@ class HoursTable extends StatelessWidget {
       } else {
         bool allAdjacent = true;
         for (int i = 0; i < grouping.length - 1; i++) {
+          print('Checking if ${grouping[i]} and ${grouping[i + 1]} are adjacent');
           if (!isDayAdjacent(
               DateUtil.WEEKDAY_NAMES.indexOf(grouping[i]),
               DateUtil.WEEKDAY_NAMES.indexOf(grouping[i + 1]))
           ) {
+            print('nope');
             allAdjacent = false;
             break;
           }
@@ -56,12 +60,12 @@ class HoursTable extends StatelessWidget {
 
         String header;
         if (allAdjacent) {
-          String firstAbbreviation = TextUtil.capitalize(DateUtil.getAbbreviation(copy.last));
+          String firstAbbreviation = TextUtil.capitalize(DateUtil.getAbbreviation(copy.first));
           String lastAbbreviation = TextUtil.capitalize(DateUtil.getAbbreviation(copy.last));
 
           header = '$firstAbbreviation-$lastAbbreviation';
         } else {
-          header = copy.join('/');
+          header = copy.map((w) => TextUtil.capitalize(DateUtil.getAbbreviation(w))).join('/');
         }
 
         headerRow.add(header);
@@ -79,7 +83,7 @@ class HoursTable extends StatelessWidget {
         String main = '${DateUtil.formatTimeOfDay(mealHours.beginTime)} - ${DateUtil.formatTimeOfDay(mealHours.endTime)}';
         List<String> extra = [];
 
-        if (mealHours.limitedMenuBegin != -1) {
+        if (mealHours.limitedMenuBegin != null && mealHours.limitedMenuBegin != -1) {
           if (mealHours.isLimitedMenu) {
             extra.add('limited menu');
           } else {
@@ -87,7 +91,7 @@ class HoursTable extends StatelessWidget {
           }
         }
 
-        if (mealHours.grillClosesAt != -1) {
+        if (mealHours.grillClosesAt != null && mealHours.grillClosesAt != -1) {
           extra.add('grill closes at ${DateUtil.formatTimeOfDay(mealHours.grillCloseTime)}');
         }
 
@@ -115,11 +119,16 @@ class HoursTable extends StatelessWidget {
       }
     }
 
+    print(headerRow);
+    print(dataRows);
+
     List<TableRow> rows = [];
     rows.add(new TableRow(children: headerRow.map((s) => new Text(s)).toList()));
     rows.addAll(dataRows.map((row) => new TableRow(children: row)));
 
-    return new Table(children: rows);
+    return new Table(
+        children: rows
+    );
   }
 
   int sortGroupings(String a, String b) => DateUtil.WEEKDAY_NAMES.indexOf(a) - DateUtil.WEEKDAY_NAMES.indexOf(b);
@@ -130,14 +139,9 @@ class HoursTable extends StatelessWidget {
     }
 
     int smaller = min(dayA, dayB);
-    int larger = min(dayA, dayB);
+    int larger = max(dayA, dayB);
 
-    if (smaller == DateUtil.WEEKDAYS[0]
-        && larger == DateUtil.WEEKDAYS[DateUtil.WEEKDAYS.length - 1]) {
-      return true;
-    }
-
-    return (DateUtil.WEEKDAYS.indexOf(smaller) + 1) == DateUtil.WEEKDAYS.indexOf(larger);
+    return ((smaller + 1) == larger) || ((larger + 1) % DateUtil.WEEKDAYS.length == smaller);
   }
   
   bool sameHours(List<DiningHallHours> a, List<DiningHallHours> b) {
