@@ -4,6 +4,7 @@ import 'package:msu_helper/api/reloadable.dart';
 import 'package:msu_helper/pages/dining_hall/dining_main_page.dart';
 import 'package:msu_helper/pages/food_truck_page.dart';
 import 'package:msu_helper/pages/home_page.dart';
+import 'package:msu_helper/pages/movie_night_page.dart';
 import 'package:msu_helper/pages/settings_page.dart';
 import 'package:msu_helper/widgets/bottom_bar.dart';
 
@@ -32,18 +33,25 @@ class MainPageState extends State<MainPage> {
     ));
 
     bottomBar.addPage(new PageData(
+        appBarTitle: 'Food Truck Stops',
+        bottomBarTitle: 'Food Truck',
+        bottomBarIcon: new Icon(Icons.local_shipping),
+        page: new FoodTruckPage()
+    ));
+
+    bottomBar.addPage(new PageData(
         appBarTitle: 'Dining Hall Info',
         bottomBarTitle: 'Dining Halls',
-        bottomBarIcon: new Icon(Icons.restaurant_menu),
+        bottomBarIcon: new Icon(Icons.restaurant),
         page: new DiningMainPage(),
         reloadName: DiningMainPage.reloadableCategory
     ));
 
     bottomBar.addPage(new PageData(
-        appBarTitle: 'Food Truck Stops',
-        bottomBarTitle: 'Food Truck',
-        bottomBarIcon: new Icon(Icons.local_shipping),
-        page: new FoodTruckPage()
+        appBarTitle: 'Movie Night Info',
+        bottomBarTitle: 'Movie Night',
+        bottomBarIcon: new Icon(Icons.movie),
+        page: new MovieNightPage()
     ));
   }
 
@@ -90,7 +98,7 @@ class MainPageState extends State<MainPage> {
           actions: actions,
         ),
         body: bottomBar.getPage(),
-        bottomNavigationBar: bottomBar.build()
+        bottomNavigationBar: bottomBar.build(context)
     );
   }
 }

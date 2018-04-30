@@ -61,7 +61,13 @@ class MovieNightMiniWidgetState extends Reloadable<MovieNightMiniWidget> {
           text = ['All movie showtimes for this week have passed.'];
         });
       }
+
+      return;
     }
+
+    setState(() {
+      text = ['Movies this week: ${movies.map((movie) => movie.title).join(', ')}'];
+    });
   }
 
   @override

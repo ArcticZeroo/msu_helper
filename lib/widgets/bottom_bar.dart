@@ -33,22 +33,34 @@ class MainBottomBar {
   List<BottomNavigationBarItem> buildItems() {
     List<BottomNavigationBarItem> items = [];
 
-    // Juuuust in case one of them is smaller for some reason.
-    for (int i = 0; i < _pages.length; i++) {
+    for (PageData pageData in _pages) {
       items.add(new BottomNavigationBarItem(
-          icon: _pages[i].bottomBarIcon,
-          title: new Text(_pages[i].bottomBarTitle)
+          icon: pageData.bottomBarIcon,
+          title: new Text(pageData.bottomBarTitle)
       ));
     }
 
     return items;
   }
 
-  BottomNavigationBar build() {
-    return new BottomNavigationBar(
+  Widget build(BuildContext context) {
+    BottomNavigationBar bar = new BottomNavigationBar(
       currentIndex: _position,
       items: buildItems(),
       onTap: this.setPage,
+    );
+
+    if (bar.type == BottomNavigationBarType.fixed) {
+      return bar;
+    }
+
+    ThemeData contextTheme = Theme.of(context);
+
+    return new Theme(
+        data: contextTheme.copyWith(
+          canvasColor: contextTheme.primaryColor
+        ),
+        child: bar
     );
   }
 

@@ -11,8 +11,8 @@ class Movie extends Object with _$MovieSerializerMixin {
   final Map<String, List<DateTime>> groupedShowings;
   MovieShowing nextShowing;
 
-  Movie(this.title, this.showings, this.locations, Map<String, List<int>> groupedShowings)
-    : this.groupedShowings = Movie.buildGroupedShowings(groupedShowings);
+  Movie(String title, this.showings, this.locations, Map<String, List<int>> groupedShowings)
+    : this.title = title.trim(), this.groupedShowings = Movie.buildGroupedShowings(groupedShowings);
 
   factory Movie.fromJson(Map<String, dynamic> json) => _$MovieFromJson(json);
 

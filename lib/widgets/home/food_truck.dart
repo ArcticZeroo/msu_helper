@@ -67,7 +67,7 @@ class FoodTruckMiniWidgetState extends Reloadable<FoodTruckMiniWidget> {
       subtitle: 'Delicious food, all on combo!',
       text: text,
       bottomBar: widget.homePage.bottomBar,
-      index: 2,
+      index: 1,
       active: !hasFailed
     );
   }

@@ -181,7 +181,7 @@ class _DiningHallMiniWidgetState extends Reloadable<DiningHallMiniWidget> {
       subtitle: 'Decent food, but also on combo!',
       text: text,
       bottomBar: widget.homePage.bottomBar,
-      index: 1,
+      index: 2,
       active: !hasFailed && favoriteHall != null
     );
   }
