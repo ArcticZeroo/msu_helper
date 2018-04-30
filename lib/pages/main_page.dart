@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:msu_helper/api/page_data.dart';
 import 'package:msu_helper/api/reloadable.dart';
-import 'package:msu_helper/pages/dining_hall_page.dart';
+import 'package:msu_helper/pages/dining_hall/dining_main_page.dart';
 import 'package:msu_helper/pages/food_truck_page.dart';
 import 'package:msu_helper/pages/home_page.dart';
 import 'package:msu_helper/pages/settings_page.dart';
@@ -35,7 +35,7 @@ class MainPageState extends State<MainPage> {
         appBarTitle: 'Dining Hall Info',
         bottomBarTitle: 'Dining Halls',
         bottomBarIcon: new Icon(Icons.restaurant_menu),
-        page: new DiningHallPage()
+        page: new DiningMainPage()
     ));
 
     bottomBar.addPage(new PageData(

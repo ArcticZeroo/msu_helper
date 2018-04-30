@@ -24,4 +24,8 @@ class TextUtil {
 
     return PRETTY_TENS[decaIndex] + 'y-' + PRETTY_SPECIAL[num % 10];
   }
+
+  static String capitalize(String s) {
+    return s[0].toUpperCase() + s.substring(1).toLowerCase();
+  }
 }

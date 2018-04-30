@@ -4,7 +4,7 @@ class Meal {
   static const Meal dinner = Meal._internal(name: 'Dinner', identifier: 191, ordinal: 2);
   static const Meal lateNight = Meal._internal(name: 'Late Night', identifier: 232, ordinal: 3);
 
-  static final List<Meal> meal = new List.unmodifiable([
+  static final List<Meal> _meal = new List.unmodifiable([
     Meal.breakfast, Meal.lunch, Meal.dinner, Meal.lateNight
   ]);
 
@@ -20,8 +20,12 @@ class Meal {
   }
 
   static Meal fromOrdinal(int i) {
-    return meal[i];
+    return _meal[i];
   }
 
-  static int get count => meal.length;
+  static int get count => _meal.length;
+
+  static List<Meal> asList() {
+    return _meal;
+  }
 }

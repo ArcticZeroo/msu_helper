@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:msu_helper/api/dining_hall/meal.dart';
 import 'package:msu_helper/util/DateUtil.dart';
+import 'package:msu_helper/util/NumberUtil.dart';
 
 part './dining_hall_hours.g.dart';
 
@@ -9,12 +10,12 @@ part './dining_hall_hours.g.dart';
 class DiningHallHours extends Object with _$DiningHallHoursSerializerMixin {
   DiningHallHours({
     this.closed = false,
-    this.begin = 0.0,
-    this.end = 0.0,
-    this.limitedMenuBegin = 0.0,
-    this.grillClosesAt = 0.0,
-    this.extra = '',
-    this.mealOrdinal = -1
+    this.begin = -1.0,
+    this.end = -1.0,
+    this.limitedMenuBegin = -1.0,
+    this.grillClosesAt = -1.0,
+    this.mealOrdinal = -1,
+    this.extra
   });
 
   final bool closed;
@@ -86,5 +87,39 @@ class DiningHallHours extends Object with _$DiningHallHoursSerializerMixin {
     return 'DiningHallHours'
         '(${meal.name})' +
         (closed ? '[Closed]' : '[${DateUtil.formatTimeOfDay(beginTime)}-${DateUtil.formatTimeOfDay(endTime)}]');
+  }
+
+  @override
+  bool operator ==(other) {
+    if (identical(this, other)) {
+      return true;
+    }
+
+    return other is DiningHallHours
+        && (
+          this.mealOrdinal == other.mealOrdinal
+            && this.closed == other.closed
+            && this.begin == other.begin
+            && this.end == other.end
+            && this.limitedMenuBegin == other.limitedMenuBegin
+            && this.grillClosesAt == other.grillClosesAt
+            && this.extra == other.extra
+        );
+  }
+
+  @override
+  int get hashCode {
+    int prime = 31;
+    int result = 17;
+
+    result = prime * result + (closed ? 1 : 0);
+    result = prime * result + beginTime.hashCode;
+    result = prime * result + endTime.hashCode;
+    result = prime * result + limitedMenuTime.hashCode;
+    result = prime * result + grillCloseTime.hashCode;
+    result = prime * result + mealOrdinal.hashCode;
+    result = prime * result + (extra ?? '').hashCode;
+
+    return result;
   }
 }

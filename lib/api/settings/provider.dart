@@ -19,7 +19,7 @@ class SettingsNotifier extends ValueNotifier<String> {
   }
 }
 
-Future<dynamic> retrieveSetting(SettingData data) async {
+Future<dynamic> retrieveSetting(SettingData data, [dynamic orElse]) async {
   if (settingCache.containsKey(data.key) && settingCache[data.key].value != null) {
     return data.decode(settingCache[data.key].value);
   }
@@ -34,7 +34,13 @@ Future<dynamic> retrieveSetting(SettingData data) async {
   );
 
   if (rows == null || rows.length == 0) {
-    return null;
+    if (orElse == null) {
+      return null;
+    }
+
+    await saveSetting(data, orElse);
+
+    return orElse;
   }
 
   Map<String, dynamic> row = rows[0];

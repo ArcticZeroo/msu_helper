@@ -9,13 +9,26 @@ abstract class Reloadable<T extends StatefulWidget> extends State<T> {
   final List<String> _categories;
 
   Reloadable([List<String> categories = const [defaultCategory]])
-      : _categories = categories.map((c) => c.toLowerCase()).toList() {
+      : _categories = categories.map((c) => c.toLowerCase()).toList();
+
+
+  @override
+  void initState() {
+    super.initState();
     for (String category in _categories) {
       if (!_reloadables.containsKey(category)) {
         _reloadables[category] = new List<Reloadable>();
       }
 
       _reloadables[category].add(this);
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    for (String category in _categories) {
+      _reloadables[category].remove(this);
     }
   }
 
