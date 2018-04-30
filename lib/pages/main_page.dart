@@ -24,26 +24,26 @@ class MainPageState extends State<MainPage> {
     bottomBar = new MainBottomBar(this.setState);
 
     bottomBar.addPage(new PageData(
-      appBarTitle: 'MSU Helper Home',
-      bottomBarTitle: 'Home',
-      bottomBarIcon: new Icon(Icons.home),
-      page: new HomePage(bottomBar),
-      reloadName: HomePage.reloadableCategory
+        appBarTitle: 'MSU Helper Home',
+        bottomBarTitle: 'Home',
+        bottomBarIcon: new Icon(Icons.home),
+        page: new HomePage(bottomBar),
+        reloadName: HomePage.reloadableCategory
     ));
 
     bottomBar.addPage(new PageData(
-      appBarTitle: 'Dining Hall Info',
-      bottomBarTitle: 'Dining Halls',
-      bottomBarIcon: new Icon(Icons.restaurant_menu),
-      page: new DiningMainPage(),
-      reloadName: DiningMainPage.reloadableCategory
+        appBarTitle: 'Dining Hall Info',
+        bottomBarTitle: 'Dining Halls',
+        bottomBarIcon: new Icon(Icons.restaurant_menu),
+        page: new DiningMainPage(),
+        reloadName: DiningMainPage.reloadableCategory
     ));
 
     bottomBar.addPage(new PageData(
-      appBarTitle: 'Food Truck Stops',
-      bottomBarTitle: 'Food Truck',
-      bottomBarIcon: new Icon(Icons.local_shipping),
-      page: new FoodTruckPage()
+        appBarTitle: 'Food Truck Stops',
+        bottomBarTitle: 'Food Truck',
+        bottomBarIcon: new Icon(Icons.local_shipping),
+        page: new FoodTruckPage()
     ));
   }
 
@@ -56,6 +56,7 @@ class MainPageState extends State<MainPage> {
     if (bottomBar.getPageData().reloadName != null) {
       actions.add(
           new IconButton(
+              tooltip: 'Refresh',
               icon: new Icon(Icons.refresh),
               onPressed: () {
                 Reloadable.triggerReload(
@@ -68,6 +69,7 @@ class MainPageState extends State<MainPage> {
     }
 
     actions.add(new IconButton(
+        tooltip: 'Open Settings',
         icon: new Icon(Icons.settings),
         onPressed: () async {
           await Navigator.push(
