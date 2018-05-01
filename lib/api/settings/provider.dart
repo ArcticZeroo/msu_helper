@@ -118,6 +118,12 @@ Future loadAllSettings() async {
     SettingData data = settingConfigMap[name];
 
     addToCache(data, data.decode(value));
+
+    settingConfigMap.remove(name);
+  }
+
+  for (SettingData data in settingConfigMap.values) {
+    addToCache(data, data.defaultValue);
   }
 }
 
