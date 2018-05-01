@@ -4,6 +4,7 @@ import 'package:msu_helper/api/dining_hall/meal.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/dining_hall/time.dart';
 
+import 'settings/provider.dart' as settingsProvider;
 import 'food_truck/provider.dart' as foodTruckProvider;
 import 'dining_hall/provider.dart' as diningHallProvider;
 import 'movie_night/provider.dart' as movieNightProvider;
@@ -12,6 +13,17 @@ Future preloadPrimaryData() async {
   DateTime startTime = DateTime.now();
 
   print('Preloading primary data...');
+
+  // Preload all user settings. This is done first!
+  try {
+    await settingsProvider.loadAllSettings();
+  } catch (e) {
+    print('Could not preload user settings...');
+    print(e);
+  }
+
+  print('Preloaded user settings.');
+
   // Preload the single-retrieval datasets,
   // but their preloading is not necessary
   // so it's OK for it to fail

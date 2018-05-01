@@ -3,9 +3,16 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:msu_helper/api/database.dart';
 import 'package:msu_helper/api/settings/setting_data.dart';
+import 'package:msu_helper/config/settings.dart';
 import 'package:sqflite/sqflite.dart';
 
 Map<String, SettingsNotifier> settingCache = new Map();
+
+void main() {
+  for (SettingData data in SettingsConfig.allSettings) {
+    addNotifierToCacheMap(data);
+  }
+}
 
 typedef void SettingsNotifyCallback(String last);
 class SettingsNotifier extends ValueNotifier<String> {
@@ -17,6 +24,18 @@ class SettingsNotifier extends ValueNotifier<String> {
     last = value;
     value = newValue;
   }
+}
+
+void addNotifierToCacheMap(SettingData data) {
+  settingCache[data.key] = new SettingsNotifier(null);
+}
+
+void addToCache(SettingData data, dynamic value) {
+  if (!settingCache.containsKey(data.key)) {
+    addNotifierToCacheMap(data);
+  }
+
+  settingCache[data.key].setValue(value);
 }
 
 Future<dynamic> retrieveSetting(SettingData data, [dynamic orElse]) async {
@@ -73,9 +92,38 @@ Future saveSetting(SettingData data, dynamic value) async {
   settingCache[data.key].setValue(encoded);
 }
 
+Future loadAllSettings() async {
+  Database db = await MainDatabase.getDbInstance();
+
+  List<Map<String, dynamic>> rows = await db.rawQuery('SELECT * FROM ${TableName.userSettings}');
+
+  if (rows == null || rows.length == 0) {
+    return;
+  }
+
+  Map<String, SettingData> settingConfigMap = {};
+
+  for (SettingData data in SettingsConfig.allSettings) {
+    settingConfigMap[data.key] = data;
+  }
+
+  for (Map<String, dynamic> row in rows) {
+    String name = row['name'];
+    String value = row['value'];
+
+    if (!settingConfigMap.containsKey(name)) {
+      continue;
+    }
+
+    SettingData data = settingConfigMap[name];
+
+    addToCache(data, data.decode(value));
+  }
+}
+
 void addSettingListener(SettingData data, SettingsNotifyCallback listener) {
   if (!settingCache.containsKey(data.key)) {
-    settingCache[data.key] = new SettingsNotifier(null);
+    addNotifierToCacheMap(data);
   }
 
   settingCache[data.key].addListener(() {

@@ -15,24 +15,15 @@ class DiningMainPage extends StatefulWidget {
 
 class DiningMainPageState extends Reloadable<DiningMainPage> {
   List<DiningHall> diningHalls;
-  DateTime _selectedTime;
   bool failed = false;
-
-  DateTime get selectedTime => _selectedTime;
 
   Future<DateTime> selectTime(BuildContext context) async {
     final DateTime dateTime = await showDatePicker(
         context: context,
-        initialDate: _selectedTime ?? DateTime.now(),
+        initialDate: DateTime.now(),
         firstDate: DateTime.now().subtract(Duration(days: 1)),
         lastDate: DateTime.now().add(Duration(days: 7))
     );
-
-    if (dateTime == null) {
-      return _selectedTime;
-    }
-
-    _selectedTime = dateTime;
 
     return dateTime;
   }

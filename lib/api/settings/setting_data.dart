@@ -5,11 +5,11 @@ import 'package:meta/meta.dart';
 import './provider.dart' as settingProvider;
 
 abstract class SettingData<T> {
-  String key;
-  String title;
-  String description;
+  final String key;
+  final String title;
+  final String description;
 
-  SettingData({
+  const SettingData({
     @required this.key,
     @required this.title,
     @required this.description
@@ -30,7 +30,7 @@ abstract class SettingData<T> {
 }
 
 class StringSetting extends SettingData<String> {
-  StringSetting({
+  const StringSetting({
     @required String key,
     @required String title,
     @required String description,
@@ -48,7 +48,7 @@ class StringSetting extends SettingData<String> {
 }
 
 class BooleanSetting extends SettingData<bool> {
-  BooleanSetting({
+  const BooleanSetting({
     @required String key,
     @required String title,
     @required String description,
@@ -70,7 +70,7 @@ class BooleanSetting extends SettingData<bool> {
 }
 
 class DropdownSetting extends StringSetting {
-  DropdownSetting({
+  const DropdownSetting({
     @required String key,
     @required String title,
     @required String description,
