@@ -13,8 +13,8 @@ DiningHallHours _$DiningHallHoursFromJson(Map<String, dynamic> json) =>
         end: (json['end'] as num)?.toDouble(),
         limitedMenuBegin: (json['limitedMenuBegin'] as num)?.toDouble(),
         grillClosesAt: (json['grillClosesAt'] as num)?.toDouble(),
-        extra: json['extra'] as String,
-        mealOrdinal: json['meal'] as int);
+        mealOrdinal: json['meal'] as int,
+        extra: json['extra'] as String);
 
 abstract class _$DiningHallHoursSerializerMixin {
   bool get closed;

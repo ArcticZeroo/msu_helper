@@ -74,6 +74,8 @@ class FoodTruckPageState extends State<FoodTruckPage> {
         )
     );
 
+    print(stop);
+
     if (stop.isCancelled) {
       lines.add(getIconRow(Icons.mood_bad, 'This stop has been cancelled'));
     } else {

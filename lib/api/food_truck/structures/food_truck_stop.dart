@@ -19,11 +19,10 @@ class FoodTruckStop extends Object with _$FoodTruckStopSerializerMixin {
 
   String get shortName => mapsLocation.toLowerCase().startsWith('the') ? mapsLocation : 'the $mapsLocation';
 
-  FoodTruckStop(this.place, this.location, this.start, this.end)
+  FoodTruckStop({this.place, this.location, this.start, this.end, this.isCancelled})
       : this.startDate = DateTime.fromMillisecondsSinceEpoch(start),
         this.endDate = DateTime.fromMillisecondsSinceEpoch(end),
-        this.mapsLocation = place.contains('near') ? place.split('near')[1].trim() : place,
-        this.isCancelled = place.toLowerCase().contains('cancel');
+        this.mapsLocation = place.contains('near') ? place.split('near')[1].trim() : place;
 
   factory FoodTruckStop.fromJson(Map<String, dynamic> json) => _$FoodTruckStopFromJson(json);
 
@@ -47,6 +46,11 @@ class FoodTruckStop extends Object with _$FoodTruckStopSerializerMixin {
     DateTime now = DateTime.now();
 
     return now.day == startDate.day && now.month == startDate.month && now.year == startDate.year;
+  }
+
+  @override
+  String toString() {
+    return "FoodTruckStop[$shortName](Cancelled=$isCancelled)";
   }
 }
 

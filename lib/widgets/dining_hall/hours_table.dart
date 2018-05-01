@@ -189,19 +189,19 @@ class HoursTableState extends State<HoursTable> {
   @override
   Widget build(BuildContext context) {
     return new MaterialCard(
-      title: new Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          new Text('${widget.diningHall.hallName} Hours', style: MaterialCard.titleStyle),
-          new IconButton(
-            tooltip: collapsed ? 'Show Hours' : 'Hide Hours',
-            icon: new Icon(collapsed ? Icons.add : Icons.remove),
-            onPressed: () {
-              setState(() {
-                collapsed = !collapsed;
-              });
-          })
-        ],
+      title: new InkWell(
+        child: new Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            new Text('${widget.diningHall.hallName} Hours', style: MaterialCard.titleStyle),
+            new Icon(collapsed ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up, color: Colors.black38, size: 24.0)
+          ],
+        ),
+        onTap: () {
+          setState(() {
+            collapsed = !collapsed;
+          });
+        }
       ),
       body: collapsed ? null : buildTable()
     );
