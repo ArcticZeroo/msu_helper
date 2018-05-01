@@ -49,20 +49,36 @@ void setCached(List<FoodTruckStop> stops) {
   truckStopCache = new TimedCacheEntry(stops, expireTime: ExpireTime.THIRTY_MINUTES);
 }
 
+List<FoodTruckStop> getCached() {
+  if (truckStopCache != null && truckStopCache.isValid()) {
+    return List.from(truckStopCache.value);
+  }
+
+  return null;
+}
+
+
+List<FoodTruckStop> setAndGetCache(List<FoodTruckStop> stops) {
+  setCached(stops);
+  return getCached();
+}
+
 Future<List<FoodTruckStop>> retrieveStops() async {
   List<FoodTruckStop> stops = await foodTruckLock.synchronized(() async {
-    if (truckStopCache != null && truckStopCache.isValid()) {
-      return truckStopCache.value;
+    List<FoodTruckStop> cached = getCached();
+
+    if (cached != null) {
+      return cached;
     }
 
     List<FoodTruckStop> fromDb = await retrieveStopsFromDb();
 
     if (fromDb != null && fromDb.length != 0) {
-      setCached(fromDb);
-      return fromDb;
+      return setAndGetCache(fromDb);
     }
 
-    return await retrieveStopsFromWebAndSave();
+    await retrieveStopsFromWebAndSave();
+    return getCached();
   });
 
   return stops;
