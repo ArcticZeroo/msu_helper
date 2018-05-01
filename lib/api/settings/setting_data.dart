@@ -8,11 +8,13 @@ abstract class SettingData<T> {
   final String key;
   final String title;
   final String description;
+  final T defaultValue;
 
   const SettingData({
     @required this.key,
-    @required this.title,
-    @required this.description
+    this.title,
+    this.description,
+    this.defaultValue
   });
 
   T decode(String from);
@@ -32,12 +34,14 @@ abstract class SettingData<T> {
 class StringSetting extends SettingData<String> {
   const StringSetting({
     @required String key,
-    @required String title,
-    @required String description,
+    String title,
+    String description,
+    String defaultValue
   }) : super(
       key: key,
       title: title,
-      description: description
+      description: description,
+      defaultValue: defaultValue
   );
 
   @override
@@ -50,12 +54,14 @@ class StringSetting extends SettingData<String> {
 class BooleanSetting extends SettingData<bool> {
   const BooleanSetting({
     @required String key,
-    @required String title,
-    @required String description,
+    String title,
+    String description,
+    bool defaultValue
   }) : super(
       key: key,
       title: title,
-      description: description
+      description: description,
+      defaultValue: defaultValue
   );
 
   @override
@@ -72,11 +78,13 @@ class BooleanSetting extends SettingData<bool> {
 class DropdownSetting extends StringSetting {
   const DropdownSetting({
     @required String key,
-    @required String title,
-    @required String description,
+    String title,
+    String description,
+    String defaultValue
   }) : super(
       key: key,
       title: title,
-      description: description
+      description: description,
+      defaultValue: defaultValue
   );
 }

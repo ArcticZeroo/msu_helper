@@ -7,5 +7,9 @@ class SettingsConfig {
       description: 'Select your favorite dining hall!',
   );
 
+  static const SettingData collapseHours = const BooleanSetting(
+    key: 'favoriteDiningHall'
+  );
+
   static const List<SettingData> allSettings = const [favoriteDiningHall];
 }

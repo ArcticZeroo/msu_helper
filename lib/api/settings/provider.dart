@@ -38,7 +38,7 @@ void addToCache(SettingData data, dynamic value) {
   settingCache[data.key].setValue(value);
 }
 
-Future<dynamic> retrieveSetting(SettingData data, [dynamic orElse]) async {
+Future<dynamic> retrieveSetting(SettingData data) async {
   if (settingCache.containsKey(data.key) && settingCache[data.key].value != null) {
     return data.decode(settingCache[data.key].value);
   }
@@ -53,13 +53,13 @@ Future<dynamic> retrieveSetting(SettingData data, [dynamic orElse]) async {
   );
 
   if (rows == null || rows.length == 0) {
-    if (orElse == null) {
+    if (data.defaultValue == null) {
       return null;
     }
 
-    await saveSetting(data, orElse);
+    await saveSetting(data, data.defaultValue);
 
-    return orElse;
+    return data.defaultValue;
   }
 
   Map<String, dynamic> row = rows[0];
