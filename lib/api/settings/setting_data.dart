@@ -21,9 +21,7 @@ abstract class SettingData<T> {
   String encode(T from);
 
   Future<T> retrieve() async {
-    String value = await settingProvider.retrieveSetting(this);
-
-    return decode(value);
+    return settingProvider.retrieveSetting(this);
   }
 
   Future save(T value) {

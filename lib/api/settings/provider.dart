@@ -30,17 +30,45 @@ void addNotifierToCacheMap(SettingData data) {
   settingCache[data.key] = new SettingsNotifier(null);
 }
 
-void addToCache(SettingData data, dynamic value) {
+void addToCache<T>(SettingData<T> data, dynamic value) {
   if (!settingCache.containsKey(data.key)) {
     addNotifierToCacheMap(data);
+  }
+
+  if (value is! String) {
+    if (value is T) {
+      value = data.encode(value);
+    } else {
+      throw new TypeError();
+    }
   }
 
   settingCache[data.key].setValue(value);
 }
 
-Future<dynamic> retrieveSetting(SettingData data) async {
-  if (settingCache.containsKey(data.key) && settingCache[data.key].value != null) {
+T getCached<T>(SettingData<T> data, [bool canReturnDefault = true]) {
+  if (isValidCached(data)) {
     return data.decode(settingCache[data.key].value);
+  }
+
+  if (!canReturnDefault) {
+    return null;
+  }
+
+  return data.defaultValue;
+}
+
+bool isValidCached(SettingData data) {
+  return settingCache.containsKey(data.key) && settingCache[data.key].value != null;
+}
+
+/// Retrieve a setting given a [SettingData],
+/// decoding it before returning.
+Future<T> retrieveSetting<T>(SettingData<T> data) async {
+  T cached = getCached(data, false);
+
+  if (cached != null) {
+    return cached;
   }
 
   Database db = await MainDatabase.getDbInstance();
@@ -117,7 +145,7 @@ Future loadAllSettings() async {
 
     SettingData data = settingConfigMap[name];
 
-    addToCache(data, data.decode(value));
+    addToCache(data, value);
 
     settingConfigMap.remove(name);
   }

@@ -19,7 +19,10 @@ Future preloadPrimaryData() async {
     await settingsProvider.loadAllSettings();
   } catch (e) {
     print('Could not preload user settings...');
-    print(e);
+
+    if (e is Error) {
+      print(e.stackTrace);
+    }
   }
 
   print('Preloaded user settings.');
@@ -31,7 +34,10 @@ Future preloadPrimaryData() async {
     await foodTruckProvider.retrieveStops();
   } catch (e) {
     print('Could not preload food truck stops...');
-    print(e);
+
+    if (e is Error) {
+      print(e.stackTrace);
+    }
   }
 
   print('Preloaded food truck stops.');
@@ -40,7 +46,10 @@ Future preloadPrimaryData() async {
     await movieNightProvider.retrieveMovies();
   } catch (e) {
     print('Could not preload movies...');
-    print(e);
+
+    if (e is Error) {
+      print(e.stackTrace);
+    }
   }
 
   print('Preloaded movie night information.');
@@ -92,7 +101,10 @@ Future preloadSecondaryData() async {
       await Future.wait(menuFutures);
     } catch (e) {
       print('Could not preload menus...');
-      print(e);
+
+      if (e is Error) {
+        print(e.stackTrace);
+      }
     }
 
     print('Preloaded all menus for ${menuDate.weekday}');

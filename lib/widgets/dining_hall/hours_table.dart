@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:msu_helper/api/dining_hall/meal.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_hours.dart';
+import 'package:msu_helper/config/settings_config.dart';
 import 'package:msu_helper/util/DateUtil.dart';
 import 'package:msu_helper/util/ListUtil.dart';
 import 'package:msu_helper/util/TextUtil.dart';
 import 'package:msu_helper/widgets/material_card.dart';
+
+import '../../api/settings/provider.dart' as settingsProvider;
 
 class HoursTable extends StatefulWidget {
   final DiningHall diningHall;
@@ -19,7 +22,7 @@ class HoursTable extends StatefulWidget {
 }
 
 class HoursTableState extends State<HoursTable> {
-  bool collapsed = false;
+  bool collapsed = settingsProvider.getCached(SettingsConfig.collapseDiningHallHours);
   Widget _table;
   
   Widget buildTable() {
@@ -64,12 +67,10 @@ class HoursTableState extends State<HoursTable> {
       } else {
         bool allAdjacent = true;
         for (int i = 0; i < grouping.length - 1; i++) {
-          print('Checking if ${grouping[i]} and ${grouping[i + 1]} are adjacent');
           if (!isDayAdjacent(
               DateUtil.WEEKDAY_NAMES.indexOf(grouping[i]),
               DateUtil.WEEKDAY_NAMES.indexOf(grouping[i + 1]))
           ) {
-            print('nope');
             allAdjacent = false;
             break;
           }
@@ -147,9 +148,6 @@ class HoursTableState extends State<HoursTable> {
       }
     }
 
-    print(headerRow);
-    print(dataRows);
-
     List<TableRow> rows = [];
 
     // Map the header strings to values
@@ -198,6 +196,8 @@ class HoursTableState extends State<HoursTable> {
           ],
         ),
         onTap: () {
+          SettingsConfig.collapseDiningHallHours.save(!collapsed);
+
           setState(() {
             collapsed = !collapsed;
           });

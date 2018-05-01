@@ -12,5 +12,5 @@ class SettingsConfig {
     defaultValue: false
   );
 
-  static const List<SettingData> allSettings = const [favoriteDiningHall];
+  static const List<SettingData> allSettings = const [favoriteDiningHall, collapseDiningHallHours];
 }
