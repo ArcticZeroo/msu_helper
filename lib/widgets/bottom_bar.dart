@@ -24,6 +24,10 @@ class MainBottomBar {
   }
 
   void setPage(int index) {
+    if (index == _position) {
+      return;
+    }
+
     setState(() {
       print('Setting page to $index');
       _position = index;

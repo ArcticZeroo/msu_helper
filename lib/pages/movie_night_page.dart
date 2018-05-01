@@ -87,7 +87,10 @@ class MovieNightPageState extends State<MovieNightPage> {
       title = "This Week's Movies";
     }
 
-    columnChildren.add(new Text(title, style: MaterialCard.titleStyle));
+    columnChildren.add(new Container(
+        padding: const EdgeInsets.only(top: 16.0),
+        child: new Center(child: new Text(title, style: MaterialCard.titleStyle))
+    ));
     columnChildren.addAll(_movies.map(buildMovie));
 
     return new Center(
