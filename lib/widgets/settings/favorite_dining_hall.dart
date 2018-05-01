@@ -6,7 +6,7 @@ import 'package:msu_helper/api/dining_hall/controller.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/dining_hall/provider.dart' as diningHallProvider;
 import 'package:msu_helper/api/settings/setting_data.dart';
-import 'package:msu_helper/config/settings.dart';
+import 'package:msu_helper/config/settings_config.dart';
 import 'package:msu_helper/pages/main_page.dart';
 import 'package:msu_helper/pages/settings_page.dart';
 

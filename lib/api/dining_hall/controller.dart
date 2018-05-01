@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:msu_helper/api/dining_hall/provider.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/settings/provider.dart';
-import 'package:msu_helper/config/settings.dart';
+import 'package:msu_helper/config/settings_config.dart';
 
 Future<DiningHall> fromSearchName(String searchName) async {
   List<DiningHall> diningHalls = await retrieveDiningList();

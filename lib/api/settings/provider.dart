@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:msu_helper/api/database.dart';
 import 'package:msu_helper/api/settings/setting_data.dart';
-import 'package:msu_helper/config/settings.dart';
+import 'package:msu_helper/config/settings_config.dart';
 import 'package:sqflite/sqflite.dart';
 
 Map<String, SettingsNotifier> settingCache = new Map();

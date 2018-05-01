@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:msu_helper/api/settings/setting_data.dart';
-import 'package:msu_helper/config/settings.dart';
+import 'package:msu_helper/config/settings_config.dart';
 import 'package:msu_helper/widgets/settings/favorite_dining_hall.dart';
 
 class SettingsPage extends StatefulWidget {

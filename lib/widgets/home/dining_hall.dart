@@ -9,7 +9,7 @@ import 'package:msu_helper/api/food_truck/structures/food_truck_stop.dart';
 import 'package:msu_helper/api/dining_hall//provider.dart' as diningHallProvider;
 import 'package:msu_helper/api/reloadable.dart';
 import 'package:msu_helper/api/settings/provider.dart';
-import 'package:msu_helper/config/settings.dart';
+import 'package:msu_helper/config/settings_config.dart';
 import 'package:msu_helper/pages/home_page.dart';
 import 'package:msu_helper/pages/settings_page.dart';
 import 'package:msu_helper/util/DateUtil.dart';
