@@ -11,7 +11,7 @@ MainDatabase database = new MainDatabase();
 Map<String, TimedCacheEntry<String>> jsonCache = new Map();
 Lock jsonLock = new Lock();
 
-Future retrieveJsonFromDb(String key, [int expireTime = ExpireTime.THIRTY_MINUTES]) async {
+Future retrieveJsonFromDb(String key, [num expireTime = ExpireTime.THIRTY_MINUTES]) async {
   return jsonLock.synchronized(() async {
     print('Retrieving stored json for $key');
     Database db = await MainDatabase.getDbInstance();

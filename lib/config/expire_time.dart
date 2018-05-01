@@ -6,7 +6,11 @@ class ExpireTime {
     return DateTime.now().millisecondsSinceEpoch - expireTime;
   }
 
-  static bool isValid(int retrieveTime, int expireTime) {
+  static bool isValid(int retrieveTime, num expireTime) {
+    if (expireTime.isInfinite) {
+      return true;
+    }
+
     return (DateTime.now().millisecondsSinceEpoch - retrieveTime) < expireTime;
   }
 }

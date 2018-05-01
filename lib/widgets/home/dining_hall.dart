@@ -6,7 +6,7 @@ import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_hours.dart';
 import 'package:msu_helper/api/dining_hall/time.dart';
 import 'package:msu_helper/api/food_truck/structures/food_truck_stop.dart';
-import 'package:msu_helper/api/dining_hall//provider.dart' as diningHallProvider;
+import 'package:msu_helper/api/dining_hall/provider.dart' as diningHallProvider;
 import 'package:msu_helper/api/reloadable.dart';
 import 'package:msu_helper/api/settings/provider.dart';
 import 'package:msu_helper/config/settings_config.dart';

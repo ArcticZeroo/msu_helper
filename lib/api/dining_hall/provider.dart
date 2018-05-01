@@ -12,6 +12,8 @@ import 'package:msu_helper/config/page_route.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:synchronized/synchronized.dart';
 
+import '../../config/identifier.dart';
+import '../json_cache/provider.dart' as jsonProvider;
 import 'structures/dining_hall.dart';
 
 List<DiningHall> hallCache;
@@ -57,12 +59,20 @@ Future<MenuMetadata> deserializeFromKey(String key) async {
   return new MenuMetadata(diningHall, menuDate, meal);
 }
 
+List<DiningHall> diningListFromJson(List<dynamic> parsedJson) {
+  return parsedJson.map((r) => DiningHall.fromJson(r as Map<String, dynamic>)).toList();
+}
+
 Future<List<DiningHall>> retrieveDiningListFromDatabase() async {
-  Database db = await MainDatabase.getDbInstance();
+  String jsonString = await jsonProvider.retrieveJsonFromDb(Identifier.diningHall, double.infinity);
 
-  List<dynamic> results = await db.rawQuery('SELECT "json" from "${TableName.diningHalls}"');
+  if (jsonString == null) {
+    return null;
+  }
 
-  return results.map((r) => DiningHall.fromJson(json.decode(r['json']) as Map<String, dynamic>)).toList();
+  List<dynamic> storedJson = json.decode(jsonString);
+
+  return diningListFromJson(storedJson);
 }
 
 Future<List<DiningHall>> retrieveDiningListFromWeb() async {
@@ -70,20 +80,13 @@ Future<List<DiningHall>> retrieveDiningListFromWeb() async {
 
   List<dynamic> response = await makeRestRequest(url);
 
-  return response.map((r) => DiningHall.fromJson(r as Map<String, dynamic>)).toList();
+  return diningListFromJson(response);
 }
 
 Future<List<DiningHall>> retrieveDiningListFromWebAndSave() async {
   List<DiningHall> fromWeb = await retrieveDiningListFromWeb();
 
-  Database db = await MainDatabase.getDbInstance();
-
-  for (DiningHall diningHall in fromWeb) {
-    await db.insert(TableName.diningHalls, {
-      'searchName': diningHall.searchName,
-      'json': json.encode(diningHall)
-    });
-  }
+  jsonProvider.saveJsonToDb(Identifier.diningHall, json.encode(fromWeb));
 
   return fromWeb;
 }
@@ -96,7 +99,7 @@ Future<List<DiningHall>> retrieveDiningList() async {
 
     List<DiningHall> fromDb = await retrieveDiningListFromDatabase();
 
-    if (fromDb.length > 0) {
+    if (fromDb != null && fromDb.length > 0) {
       hallCache = fromDb;
       return fromDb;
     }

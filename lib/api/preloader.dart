@@ -59,7 +59,10 @@ Future preloadPrimaryData() async {
     await diningHallProvider.retrieveDiningList();
   } catch (e) {
     print('Could not preload dining halls...');
-    print(e);
+
+    if (e is Error) {
+      print(e.stackTrace);
+    }
 
     // This is necessary to have preloaded
     // in order to load the menus, so return

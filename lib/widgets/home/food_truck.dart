@@ -60,6 +60,28 @@ class FoodTruckMiniWidgetState extends Reloadable<FoodTruckMiniWidget> {
   }
 
   @override
+  void reload(Map<String, dynamic> params) {
+    if (params.containsKey('refresh')) {
+      setState(() {
+        text = ['Loading...'];
+      });
+
+      foodTruckProvider.retrieveStopsFromWebAndSave()
+          .then((v) => load())
+          .catchError((e) {
+        print(e);
+
+        setState(() {
+          text = ['Could not refresh food truck data.'];
+          hasFailed = true;
+        });
+      });
+    } else {
+      super.reload(params);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return new MiniWidget(
       icon: Icons.local_shipping,
