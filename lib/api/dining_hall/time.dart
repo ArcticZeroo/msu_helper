@@ -8,10 +8,8 @@ import 'package:msu_helper/util/DateUtil.dart';
 class MenuDate {
   DateTime _time;
 
-  MenuDate([this._time]) {
-    if (_time == null) {
-      _time = DateTime.now();
-    }
+  MenuDate([DateTime time]) {
+    _time = time ?? DateTime.now();
   }
 
   DateTime get time => _time;

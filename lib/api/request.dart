@@ -11,7 +11,7 @@ Future makeRestRequest(String url) async {
   }
 
   if (!res.statusCode.toString().startsWith('2')) {
-    return new Future.error('Request unsuccessful: ${res.statusCode}');
+    return new Future.error('Request to $url unsuccessful: ${res.statusCode}');
   }
 
   if (res.body.length == 0) {

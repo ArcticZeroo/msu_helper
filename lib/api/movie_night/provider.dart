@@ -7,8 +7,10 @@ import 'package:msu_helper/api/timed_cache.dart';
 import 'package:msu_helper/config/expire_time.dart';
 import 'package:msu_helper/config/identifier.dart';
 import 'package:msu_helper/config/page_route.dart';
+import 'package:synchronized/synchronized.dart';
 
 TimedCacheEntry<List<Movie>> movieCache;
+Lock movieLock = new Lock();
 
 Future<List<Movie>> retrieveMoviesFromWeb() async {
   String url = PageRoute.getMovieNight(PageRoute.LIST);
@@ -47,16 +49,18 @@ void setCached(List<Movie> movies) {
 }
 
 Future<List<Movie>> retrieveMovies() async {
-  if (movieCache != null && movieCache.isValid()) {
-    return movieCache.value;
-  }
+  return movieLock.synchronized(() async {
+    if (movieCache != null && movieCache.isValid()) {
+      return movieCache.value;
+    }
 
-  List<Movie> fromDb = await retrieveMoviesFromDb();
+    List<Movie> fromDb = await retrieveMoviesFromDb();
 
-  if (fromDb != null && fromDb.length != 0) {
-    setCached(fromDb);
-    return fromDb;
-  }
+    if (fromDb != null && fromDb.length != 0) {
+      setCached(fromDb);
+      return fromDb;
+    }
 
-  return retrieveMoviesFromWebAndSave();
+    return retrieveMoviesFromWebAndSave();
+  });
 }

@@ -11,6 +11,7 @@ dependencies:
   json_annotation: ^0.2.3
   http: any
   shared_preferences: any
+  synchronized: any
   flutter:
     sdk: flutter
 

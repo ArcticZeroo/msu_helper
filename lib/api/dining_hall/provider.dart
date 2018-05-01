@@ -10,16 +10,19 @@ import 'package:msu_helper/api/timed_cache.dart';
 import 'package:msu_helper/config/expire_time.dart';
 import 'package:msu_helper/config/page_route.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:synchronized/synchronized.dart';
 
 import 'structures/dining_hall.dart';
 
 List<DiningHall> hallCache;
+Lock diningHallListLock = new Lock();
+
 TimedCache<String, DiningHallMenu> menuCache = new TimedCache((String key) async {
   MenuMetadata deserialized = await deserializeFromKey(key);
 
   TimedCacheEntry<DiningHallMenu> fromDb = await retrieveMenuFromDatabase(deserialized.diningHall, deserialized.menuDate, deserialized.meal);
 
-  if (fromDb != null) {
+  if (fromDb != null && fromDb.isValid() && !fromDb.value.closed) {
     return fromDb;
   }
 
@@ -86,37 +89,33 @@ Future<List<DiningHall>> retrieveDiningListFromWebAndSave() async {
 }
 
 Future<List<DiningHall>> retrieveDiningList() async {
-  print('Getting dining hall list');
+  return diningHallListLock.synchronized(() async {
+    if (hallCache != null && hallCache.length != 0) {
+      return hallCache;
+    }
 
-  if (hallCache != null && hallCache.length != 0) {
-    print('Returning a cached value');
-    return hallCache;
-  }
+    List<DiningHall> fromDb = await retrieveDiningListFromDatabase();
 
-  List<DiningHall> fromDb = await retrieveDiningListFromDatabase();
+    if (fromDb.length > 0) {
+      hallCache = fromDb;
+      return fromDb;
+    }
 
-  if (fromDb.length > 0) {
-    print('Returning a value from db');
-    hallCache = fromDb;
-    return fromDb;
-  }
+    List<DiningHall> fromWeb = await retrieveDiningListFromWebAndSave();
 
-  List<DiningHall> fromWeb = await retrieveDiningListFromWebAndSave();
+    if (fromWeb != null) {
+      hallCache = fromWeb;
+      return fromWeb;
+    }
 
-  if (fromWeb != null) {
-    print('Returning a web value');
-    hallCache = fromWeb;
-    return fromWeb;
-  }
-
-  print('None found');
-  return null;
+    return null;
+  });
 }
 
 Future<DiningHallMenu> retrieveMenuFromWeb(DiningHall diningHall, MenuDate date, Meal meal) async {
   String dateString = date.getFormatted();
 
-  String url = PageRoute.join([PageRoute.getDining(PageRoute.MENU), dateString, meal.ordinal.toString()]);
+  String url = PageRoute.join([PageRoute.getDining(PageRoute.MENU), diningHall.searchName, dateString, meal.ordinal.toString()]);
 
   Map<String, dynamic> response = (await makeRestRequest(url)) as Map<String, dynamic>;
 

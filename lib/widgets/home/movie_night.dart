@@ -17,8 +17,6 @@ class MovieNightMiniWidget extends StatefulWidget {
 }
 
 class MovieNightMiniWidgetState extends Reloadable<MovieNightMiniWidget> {
-  static const NOT_YET_POSTED_DAYS = [DateTime.monday, DateTime.tuesday, DateTime.wednesday];
-
   List<String> text = ['Loading...'];
   bool hasFailed = false;
 
@@ -52,7 +50,7 @@ class MovieNightMiniWidgetState extends Reloadable<MovieNightMiniWidget> {
             ) != null).toList();
 
     if (moviesNotPassed.length == 0) {
-      if (NOT_YET_POSTED_DAYS.contains(now.weekday)) {
+      if (Movie.NOT_YET_POSTED_DAYS.contains(now.weekday)) {
         setState(() {
           text = ['Movie showtimes haven\'t been posted for this week.'];
         });

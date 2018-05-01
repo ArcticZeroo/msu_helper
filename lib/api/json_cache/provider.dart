@@ -5,38 +5,42 @@ import 'package:msu_helper/api/database.dart';
 import 'package:msu_helper/api/timed_cache.dart';
 import 'package:msu_helper/config/expire_time.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:synchronized/synchronized.dart';
 
 MainDatabase database = new MainDatabase();
 Map<String, TimedCacheEntry<String>> jsonCache = new Map();
+Lock jsonLock = new Lock();
 
 Future retrieveJsonFromDb(String key, [int expireTime = ExpireTime.THIRTY_MINUTES]) async {
-  print('Retrieving stored json for $key');
-  Database db = await MainDatabase.getDbInstance();
+  return jsonLock.synchronized(() async {
+    print('Retrieving stored json for $key');
+    Database db = await MainDatabase.getDbInstance();
 
-  List<Map<String, dynamic>> rows = await db.query(TableName.jsonCache,
-      where: 'name = ?', whereArgs: [key]);
-
-  if (rows.length == 0) {
-    return null;
-  }
-
-  Map<String, dynamic> row = rows[0];
-
-  if (!row.containsKey('json')) {
-    return null;
-  }
-
-  int retrieved = row['retrieved'] as int;
-
-  if (!ExpireTime.isValid(retrieved, expireTime)) {
-    await db.delete(TableName.jsonCache,
+    List<Map<String, dynamic>> rows = await db.query(TableName.jsonCache,
         where: 'name = ?', whereArgs: [key]);
-    return null;
-  }
 
-  print('$key\'s value was last retrieved at ${DateTime.fromMillisecondsSinceEpoch(retrieved)}');
+    if (rows.length == 0) {
+      return null;
+    }
 
-  return json.decode(row['json']);
+    Map<String, dynamic> row = rows[0];
+
+    if (!row.containsKey('json')) {
+      return null;
+    }
+
+    int retrieved = row['retrieved'] as int;
+
+    if (!ExpireTime.isValid(retrieved, expireTime)) {
+      await db.delete(TableName.jsonCache,
+          where: 'name = ?', whereArgs: [key]);
+      return null;
+    }
+
+    print('$key\'s value was last retrieved at ${DateTime.fromMillisecondsSinceEpoch(retrieved)}');
+
+    return json.decode(row['json']);
+  });
 }
 
 Future saveJsonToDb(String key, dynamic object) async {

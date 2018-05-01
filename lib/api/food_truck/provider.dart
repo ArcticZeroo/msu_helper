@@ -8,8 +8,10 @@ import 'package:msu_helper/api/timed_cache.dart';
 import 'package:msu_helper/config/expire_time.dart';
 import 'package:msu_helper/config/identifier.dart';
 import 'package:msu_helper/config/page_route.dart';
+import 'package:synchronized/synchronized.dart';
 
 TimedCacheEntry<List<FoodTruckStop>> truckStopCache;
+Lock foodTruckLock = new Lock();
 
 Future<List<FoodTruckStop>> retrieveStopsFromWeb() async {
   String url = PageRoute.getFoodTruck(PageRoute.LIST);
@@ -48,16 +50,20 @@ void setCached(List<FoodTruckStop> stops) {
 }
 
 Future<List<FoodTruckStop>> retrieveStops() async {
-  if (truckStopCache != null && truckStopCache.isValid()) {
-    return List.from(truckStopCache.value);
-  }
+  List<FoodTruckStop> stops = await foodTruckLock.synchronized(() async {
+    if (truckStopCache != null && truckStopCache.isValid()) {
+      return truckStopCache.value;
+    }
 
-  List<FoodTruckStop> fromDb = await retrieveStopsFromDb();
+    List<FoodTruckStop> fromDb = await retrieveStopsFromDb();
 
-  if (fromDb != null && fromDb.length != 0) {
-    setCached(fromDb);
-    return List.from(fromDb);
-  }
+    if (fromDb != null && fromDb.length != 0) {
+      setCached(fromDb);
+      return fromDb;
+    }
 
-  return List.from(await retrieveStopsFromWebAndSave());
+    return await retrieveStopsFromWebAndSave();
+  });
+
+  return stops;
 }

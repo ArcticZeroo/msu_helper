@@ -139,7 +139,10 @@ class FoodTruckPageState extends State<FoodTruckPage> {
     List<Widget> columnChildren = <Widget>[];
 
     if (_stops.length == 0) {
-      columnChildren.add(new Center(child: new Text('No stops today.', style: MaterialCard.subtitleStyle)));
+      return new Center(
+          child: new Text('No stops found.',
+          style: MaterialCard.subtitleStyle)
+      );
     }
 
     DateTime now = DateTime.now();
@@ -148,7 +151,9 @@ class FoodTruckPageState extends State<FoodTruckPage> {
     List<FoodTruckStop> notToday = _stops.where((stop) => !today.contains(stop) && stop.startDate.isAfter(now)).toList();
 
     if (today.isEmpty && notToday.isEmpty) {
-
+      return new Center(
+        child: new Text('All stops listed have passed.'),
+      );
     }
 
     final TextStyle titleStyle = const TextStyle(
@@ -181,21 +186,21 @@ class FoodTruckPageState extends State<FoodTruckPage> {
     return new Center(
       child: new Scrollbar(
           child: new RefreshIndicator(
-          child: new ListView(
-            scrollDirection: Axis.vertical,
-            children: columnChildren,
-            physics: const AlwaysScrollableScrollPhysics(),
-          ),
-          onRefresh: () async {
-            try {
-              _stops = await foodTruckProvider.retrieveStopsFromWebAndSave();
-            } catch (e) {
-              print('Could not refresh stops from web:');
-              print(e);
-            }
+              child: new ListView(
+                scrollDirection: Axis.vertical,
+                children: columnChildren,
+                physics: const AlwaysScrollableScrollPhysics(),
+              ),
+              onRefresh: () async {
+                try {
+                  _stops = await foodTruckProvider.retrieveStopsFromWebAndSave();
+                } catch (e) {
+                  print('Could not refresh stops from web:');
+                  print(e);
+                }
 
-            await load();
-          })
+                await load();
+              })
       ),
     );
   }

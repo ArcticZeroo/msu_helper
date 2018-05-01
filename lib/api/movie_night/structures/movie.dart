@@ -5,6 +5,8 @@ part './movie.g.dart';
 
 @JsonSerializable()
 class Movie extends Object with _$MovieSerializerMixin {
+  static const NOT_YET_POSTED_DAYS = [DateTime.monday, DateTime.tuesday, DateTime.wednesday];
+
   final String title;
   final List<MovieShowing> showings;
   final List<String> locations;
@@ -26,4 +28,3 @@ class Movie extends Object with _$MovieSerializerMixin {
     return showings;
   }
 }
-

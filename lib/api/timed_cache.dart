@@ -60,17 +60,18 @@ class TimedCache<K, V> {
       }
     }
 
-    var value = await _fetch(key);
+    var fetched = await _fetch(key);
 
-    if (value is TimedCacheEntry<V>) {
-      _cache[key] = value;
-    } else if (value is V) {
-      put(key, value);
+    if (fetched is TimedCacheEntry<V>) {
+      _cache[key] = fetched;
+      return fetched.value;
+    } else if (fetched is V) {
+      put(key, fetched);
     } else {
       throw new TypeError();
     }
 
-    return value;
+    return fetched;
   }
 
   bool update(K key, V value) {
