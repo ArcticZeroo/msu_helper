@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_venue.dart';
 import 'package:msu_helper/api/dining_hall/structures/food_item.dart';
+import 'package:msu_helper/api/reloadable.dart';
+import 'package:msu_helper/config/settings_config.dart';
+import 'package:msu_helper/pages/settings_page.dart';
 import 'package:msu_helper/util/TextUtil.dart';
 import 'package:msu_helper/widgets/material_card.dart';
+import 'package:msu_helper/widgets/wrappable_text.dart';
+import '../../../api/settings/provider.dart' as settingsProvider;
 
 class VenueDisplay extends StatefulWidget {
   final DiningHallVenue venue;
@@ -13,21 +18,44 @@ class VenueDisplay extends StatefulWidget {
   State<StatefulWidget> createState() => new VenueDisplayState();
 }
 
-class VenueDisplayState extends State<VenueDisplay> {
+class VenueDisplayState extends Reloadable<VenueDisplay> {
   Widget _menu;
+  bool collapsed = false;
+
+  VenueDisplayState() : super([SettingsPage.reloadableCategory]);
 
   Widget buildTitle() {
     List<Widget> children = [];
 
     children.add(new Text(widget.venue.name.split(' ').map(TextUtil.capitalize).join(' '), style: MaterialCard.titleStyle));
 
-    if (widget.venue.description != null) {
+    if (widget.venue.description != null && settingsProvider.getCached(SettingsConfig.showVenueDescriptions)) {
       children.add(new Text(widget.venue.description, style: MaterialCard.subtitleStyle));
     }
 
-    return new Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: children,
+    return new InkWell(
+      child: new Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          new WrappableWidget(new Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: children,
+          )),
+          new IconButton(
+              icon: new Icon(collapsed ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up),
+              onPressed: () {
+                setState(() {
+                  collapsed = !collapsed;
+                });
+              }
+          )
+        ],
+      ),
+      onTap: () {
+        setState(() {
+          collapsed = !collapsed;
+        });
+      },
     );
   }
 
@@ -64,9 +92,12 @@ class VenueDisplayState extends State<VenueDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialCard(
-      title: buildTitle(),
-      body: buildMenu(),
+    return new Container(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: new MaterialCard(
+        title: buildTitle(),
+        body: collapsed ? null : buildMenu(),
+      ),
     );
   }
 }

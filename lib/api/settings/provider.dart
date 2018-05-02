@@ -8,7 +8,7 @@ import 'package:sqflite/sqflite.dart';
 
 Map<String, SettingsNotifier> settingCache = new Map();
 
-void main() {
+void populate() {
   for (SettingData data in SettingsConfig.allSettings) {
     addNotifierToCacheMap(data);
   }

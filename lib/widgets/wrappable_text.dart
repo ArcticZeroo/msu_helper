@@ -8,7 +8,7 @@ class WrappableWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Flexible(
-      child: new Column(
+      child: widget is Column ? widget : new Column(
         children: <Widget>[widget],
       ),
     );

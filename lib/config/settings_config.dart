@@ -12,5 +12,14 @@ class SettingsConfig {
     defaultValue: false
   );
 
-  static const List<SettingData> allSettings = const [favoriteDiningHall, collapseDiningHallHours];
+  static const SettingData showVenueDescriptions = const BooleanSetting(
+      key: 'diningHall_showVenueDescriptions',
+      defaultValue: true,
+      title: 'Show Venue Descriptions',
+      description: 'Some of them are pretty long. You can disable them here!'
+  );
+
+  static const List<SettingData> allSettings = const [
+    favoriteDiningHall, collapseDiningHallHours, showVenueDescriptions
+  ];
 }

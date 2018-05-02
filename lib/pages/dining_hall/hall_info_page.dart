@@ -98,7 +98,7 @@ class HallInfoPageState extends State<HallInfoPage> {
   Widget buildMenuHeader(BuildContext context) {
     List<Widget> children = [];
 
-    children.add(new Text('Date: ${new DateFormat("EEEE, MMMM d'${TextUtil.getOrdinalSuffix(_date.time.weekday)}', y").format(_date.time)}'));
+    children.add(new Text('Date: ${new DateFormat("EEEE, MMMM d'${TextUtil.getOrdinalSuffix(_date.time.day)}', y").format(_date.time)}'));
     children.add(new Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
