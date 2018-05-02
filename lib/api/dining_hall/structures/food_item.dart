@@ -14,4 +14,16 @@ class FoodItem extends Object with _$FoodItemSerializerMixin {
   final List<String> allergens;
 
   factory FoodItem.fromJson(Map<String, dynamic> json) => _$FoodItemFromJson(json);
+
+  @override
+  bool operator ==(other) {
+    if (other is FoodItem) {
+      return other.name.toLowerCase() == name.toLowerCase();
+    }
+
+    return false;
+  }
+
+  @override
+  int get hashCode => name.hashCode;
 }

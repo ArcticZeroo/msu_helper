@@ -15,6 +15,12 @@ class MenuDate {
   DateTime get time => _time;
   String get weekday => DateUtil.getWeekday(time);
 
+  bool get isToday {
+    DateTime now = DateTime.now();
+
+    return time.day == now.day && time.month == now.month && time.year == now.year;
+  }
+
   void forward() {
     _time = _time.add(Duration(days: 1));
   }

@@ -116,10 +116,14 @@ class HoursTableState extends State<HoursTable> {
         }
 
         if (mealHours.grillClosesAt != null && mealHours.grillClosesAt != -1) {
-          extra.add('grill closes at ${DateUtil.formatTimeOfDay(mealHours.grillCloseTime)}');
+          if (mealHours.isGrillClosed) {
+            extra.add('grill is closed');
+          } else {
+            extra.add('grill closes at ${DateUtil.formatTimeOfDay(mealHours.grillCloseTime)}');
+          }
         }
 
-        if (mealHours.extra != null && mealHours.extra.length != 0) {
+        if (mealHours.extra != null && mealHours.extra.isNotEmpty) {
           extra.add(mealHours.extra);
         }
 
@@ -184,6 +188,14 @@ class HoursTableState extends State<HoursTable> {
     return _table;
   }
 
+  void toggleCollapsed() {
+    SettingsConfig.collapseDiningHallHours.save(!collapsed);
+
+    setState(() {
+      collapsed = !collapsed;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return new MaterialCard(
@@ -192,16 +204,13 @@ class HoursTableState extends State<HoursTable> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             new Text('${widget.diningHall.hallName} Hours', style: MaterialCard.titleStyle),
-            new Icon(collapsed ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up, color: Colors.black38, size: 24.0)
+            new IconButton(
+                icon: new Icon(collapsed ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up, color: Colors.black38, size: 24.0),
+                onPressed: toggleCollapsed
+            )
           ],
         ),
-        onTap: () {
-          SettingsConfig.collapseDiningHallHours.save(!collapsed);
-
-          setState(() {
-            collapsed = !collapsed;
-          });
-        }
+        onTap: toggleCollapsed
       ),
       body: collapsed ? null : buildTable()
     );

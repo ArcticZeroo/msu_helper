@@ -28,6 +28,7 @@ class DiningHallHours extends Object with _$DiningHallHoursSerializerMixin {
   int mealOrdinal;
 
   bool get isLimitedMenu => this.begin == this.limitedMenuBegin;
+  bool get isGrillClosed => this.begin == this.grillClosesAt;
   Meal get meal => Meal.fromOrdinal(mealOrdinal);
 
   TimeOfDay get beginTime => timeFromHour(begin);

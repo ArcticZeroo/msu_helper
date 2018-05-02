@@ -7,6 +7,7 @@ import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_hours.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_menu.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_venue.dart';
+import 'package:msu_helper/api/dining_hall/structures/food_item.dart';
 import 'package:msu_helper/api/dining_hall/time.dart';
 import 'package:msu_helper/config/settings_config.dart';
 import 'package:msu_helper/util/DateUtil.dart';
@@ -14,6 +15,7 @@ import 'package:msu_helper/util/TextUtil.dart';
 import 'package:msu_helper/widgets/dining_hall/hours_table.dart';
 import 'package:msu_helper/widgets/dining_hall/menu/venue_display.dart';
 import 'package:msu_helper/widgets/material_card.dart';
+import 'package:msu_helper/widgets/wrappable_text.dart';
 import '../../api/settings/provider.dart' as settingsProvider;
 
 import '../../api/dining_hall/provider.dart' as diningHallProvider;
@@ -30,19 +32,21 @@ class HallInfoPage extends StatefulWidget {
 class HallInfoPageState extends State<HallInfoPage> {
   static final Widget loading = new Center(child: new Text('Loading menu...'));
 
-  Map<DiningHallVenue, bool> collapsedState = {};
+  Map<String, bool> collapsedState = {};
   MenuDate _date = new MenuDate();
   Meal _selectedMeal;
   DiningHallMenu _menuForMeal;
+  DiningHallMenu _comparisonMenu;
+  List<DiningHallVenue> _venues;
 
   bool failed = false;
 
   void setCollapsed(DiningHallVenue venue, bool isCollapsed) {
-    collapsedState[venue] = isCollapsed;
+    collapsedState[venue.name.toLowerCase()] = isCollapsed;
   }
 
   bool getCollapsed(DiningHallVenue venue) {
-    return collapsedState[venue] ?? settingsProvider.getCached(SettingsConfig.collapseVenuesByDefault);
+    return collapsedState[venue.name.toLowerCase()] ?? settingsProvider.getCached(SettingsConfig.collapseVenuesByDefault);
   }
 
   Future loadSelected() async {
@@ -70,6 +74,31 @@ class HallInfoPageState extends State<HallInfoPage> {
       });
 
       return;
+    }
+
+    try {
+      _comparisonMenu = await widget.diningHall.getComparisonMenu(_date, _selectedMeal);
+    } catch (e) {
+      print('Could not load comparison menu...');
+
+      if (e is Error) {
+        print(e.stackTrace);
+      } else {
+        print(e);
+      }
+    }
+
+    if (_comparisonMenu != null) {
+      Map<DiningHallVenue, List<FoodItem>> uniqueItems = widget.diningHall.findUniqueItems(_menuForMeal, _comparisonMenu);
+
+      for (DiningHallVenue venue in uniqueItems.keys) {
+        print('${venue.name}: ${uniqueItems[venue].length} uniques');
+      }
+
+      _venues = List.from(_menuForMeal.venues);
+      _venues.sort((a, b) => uniqueItems[b].length - uniqueItems[a].length);
+    } else {
+      _venues = _menuForMeal.venues;
     }
 
     setState(() {
@@ -114,7 +143,7 @@ class HallInfoPageState extends State<HallInfoPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         new IconButton(
-            icon: new Icon(Icons.arrow_back),
+            icon: new Icon(Icons.arrow_back, color: Colors.lightGreen,),
             onPressed: () {
               _date.back();
               loadSelected();
@@ -124,10 +153,10 @@ class HallInfoPageState extends State<HallInfoPage> {
               _date.now();
               loadSelected();
             },
-            child: new Text('Today')
+            child: new Text('Go To Today', style: new TextStyle(color: Colors.green))
         ),
         new IconButton(
-            icon: new Icon(Icons.arrow_forward),
+            icon: new Icon(Icons.arrow_forward, color: Colors.lightGreen),
             onPressed: () {
               _date.forward();
               loadSelected();
@@ -149,9 +178,9 @@ class HallInfoPageState extends State<HallInfoPage> {
             children: <Widget>[
               new Container(
                   padding: const EdgeInsets.all(6.0),
-                  child: new Icon(Icons.today)
+                  child: new Icon(Icons.today, color: Colors.lightGreen)
               ),
-              new Text('Select Date')
+              new Text('Select Date', style: new TextStyle(color: Colors.green),)
             ],
           ),
         )
@@ -160,13 +189,13 @@ class HallInfoPageState extends State<HallInfoPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         new Container(
-            child: new Text('Meal:'),
+            child: new Text('Meal:', style: new TextStyle(color: Colors.green),),
             margin: const EdgeInsets.only(right: 8.0)
         ),
         new DropdownButton<Meal>(
             value: _selectedMeal,
             items: Meal.asList().map((meal) => new DropdownMenuItem(
-                child: new Text(meal.name),
+                child: new Text(meal.name, style: new TextStyle(color: Colors.lightGreen),),
                 value: meal)
             ).toList(),
             onChanged: (Meal selected) {
@@ -176,6 +205,53 @@ class HallInfoPageState extends State<HallInfoPage> {
         )
       ],
     ));
+
+    DiningHallHours hoursForMeal = getHoursForMeal();
+
+    if (hoursForMeal.closed) {
+      if (_menuForMeal != null && !_menuForMeal.closed) {
+        children.add(new Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            new Container(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: new Icon(Icons.warning, color: Colors.deepOrange),
+            ),
+            new WrappableWidget(new Text('The dining hall\'s schedule suggests that it is closed for this meal time.'))
+          ],
+        ));
+      }
+    } else {
+      List<String> mealServingText = [];
+      String startString = DateUtil.formatTimeOfDay(hoursForMeal.beginTime);
+      String endString = DateUtil.formatTimeOfDay(hoursForMeal.endTime);
+
+      if (hoursForMeal.isNow()) {
+        mealServingText.add('This meal is currently being served from $startString to $endString');
+      } else {
+        mealServingText.add('This meal will be served from $startString to $endString');
+      }
+
+      if (hoursForMeal.limitedMenuBegin != null && hoursForMeal.limitedMenuBegin != -1) {
+        if (hoursForMeal.isLimitedMenu) {
+          mealServingText.add('This meal is served with a limited menu.');
+        } else {
+          mealServingText.add('This meal serves limited menu from ${DateUtil.formatTimeOfDay(hoursForMeal.limitedMenuTime)} to $endString');
+        }
+      }
+
+      if (hoursForMeal.grillClosesAt != null && hoursForMeal.grillClosesAt != -1) {
+        if (hoursForMeal.isGrillClosed) {
+          mealServingText.add('The grill is closed during this meal.');
+        } else {
+          mealServingText.add('The grill closes during this meal from ${DateUtil.formatTimeOfDay(hoursForMeal.limitedMenuTime)} to $endString');
+        }
+      }
+
+      children.add(new Column(
+        children: mealServingText.map((s) => new Text(s)).toList(),
+      ));
+    }
 
     return new Container(
       margin: const EdgeInsets.symmetric(vertical: 16.0),
@@ -203,27 +279,7 @@ class HallInfoPageState extends State<HallInfoPage> {
       return new Center(child: new Text('The dining hall is closed for this meal time.'));
     }
 
-    VenueDisplay display = new VenueDisplay(_menuForMeal.venues[i], this);
-
-    if (getHoursForMeal().closed) {
-      return new Column(
-          children: <Widget>[
-            new Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                new Container(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: new Icon(Icons.warning),
-                ),
-                new Center(child: new Text('The dining hall\'s schedule suggests that it is closed for this meal time.'))
-              ],
-            ),
-            display
-          ]
-      );
-    }
-
-    return display;
+    return new VenueDisplay(_venues[i], this);
   }
 
   @override
