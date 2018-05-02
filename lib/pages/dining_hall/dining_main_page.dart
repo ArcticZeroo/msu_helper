@@ -17,17 +17,6 @@ class DiningMainPageState extends Reloadable<DiningMainPage> {
   List<DiningHall> diningHalls;
   bool failed = false;
 
-  Future<DateTime> selectTime(BuildContext context) async {
-    final DateTime dateTime = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime.now().subtract(Duration(days: 1)),
-        lastDate: DateTime.now().add(Duration(days: 7))
-    );
-
-    return dateTime;
-  }
-
   @override
   void initState() {
     super.initState();

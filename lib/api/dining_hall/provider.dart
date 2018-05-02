@@ -64,13 +64,11 @@ List<DiningHall> diningListFromJson(List<dynamic> parsedJson) {
 }
 
 Future<List<DiningHall>> retrieveDiningListFromDatabase() async {
-  String jsonString = await jsonProvider.retrieveJsonFromDb(Identifier.diningHall, double.infinity);
+  List<dynamic> storedJson = await jsonProvider.retrieveJsonFromDb(Identifier.diningHall, double.infinity);
 
-  if (jsonString == null) {
+  if (storedJson == null) {
     return null;
   }
-
-  List<dynamic> storedJson = json.decode(jsonString);
 
   return diningListFromJson(storedJson);
 }

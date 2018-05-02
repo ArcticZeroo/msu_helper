@@ -6,10 +6,11 @@ part './dining_hall_venue.g.dart';
 @JsonSerializable()
 class DiningHallVenue extends Object with _$DiningHallVenueSerializerMixin {
   DiningHallVenue({
-    this.venueName, this.description, this.menu
+    this.name, this.description, this.menu
   });
 
-  final String venueName;
+  @JsonKey(name: 'venueName')
+  final String name;
   final String description;
   final List<FoodItem> menu;
 

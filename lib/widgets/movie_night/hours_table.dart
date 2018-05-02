@@ -37,7 +37,7 @@ class HoursTableState extends State<HoursTable> {
     showtimeDaysList.sort((a, b) => a.compareTo(b));
 
     List<String> header = [''];
-    header.addAll(showtimeDaysList.map((dayInt) => DateUtil.getWeekday(from)))
+    //header.addAll(showtimeDaysList.map((dayInt) => DateUtil.getWeekday(from)))
 
     List<TableRow> rows = <TableRow>[];
 

@@ -8,7 +8,7 @@ part of 'dining_hall_venue.dart';
 
 DiningHallVenue _$DiningHallVenueFromJson(Map<String, dynamic> json) =>
     new DiningHallVenue(
-        venueName: json['venueName'] as String,
+        name: json['venueName'] as String,
         description: json['description'] as String,
         menu: (json['menu'] as List)
             ?.map((e) => e == null
@@ -17,11 +17,11 @@ DiningHallVenue _$DiningHallVenueFromJson(Map<String, dynamic> json) =>
             ?.toList());
 
 abstract class _$DiningHallVenueSerializerMixin {
-  String get venueName;
+  String get name;
   String get description;
   List<FoodItem> get menu;
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'venueName': venueName,
+        'venueName': name,
         'description': description,
         'menu': menu
       };

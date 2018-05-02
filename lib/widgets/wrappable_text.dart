@@ -1,15 +1,15 @@
 import 'package:flutter/cupertino.dart';
 
-class WrappableText extends StatelessWidget {
-  final Text text;
+class WrappableWidget extends StatelessWidget {
+  final Widget widget;
 
-  WrappableText(this.text);
+  WrappableWidget(this.widget);
 
   @override
   Widget build(BuildContext context) {
     return new Flexible(
       child: new Column(
-        children: <Widget>[text],
+        children: <Widget>[widget],
       ),
     );
   }

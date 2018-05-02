@@ -47,7 +47,7 @@ class FoodTruckPageState extends State<FoodTruckPage> {
         padding: const EdgeInsets.all(4.0),
         child: new Icon(icon, color: Colors.black54),
       ),
-      new WrappableText(
+      new WrappableWidget(
           new Text(text, style: MaterialCard.subtitleStyle)
       )
     ]);
