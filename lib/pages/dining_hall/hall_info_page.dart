@@ -11,6 +11,7 @@ import 'package:msu_helper/util/DateUtil.dart';
 import 'package:msu_helper/util/TextUtil.dart';
 import 'package:msu_helper/widgets/dining_hall/hours_table.dart';
 import 'package:msu_helper/widgets/dining_hall/menu/menu_display.dart';
+import 'package:msu_helper/widgets/dining_hall/menu/venue_display.dart';
 import 'package:msu_helper/widgets/material_card.dart';
 
 import '../../api/dining_hall/provider.dart' as diningHallProvider;
@@ -133,6 +134,7 @@ class HallInfoPageState extends State<HallInfoPage> {
             }
           },
           child: new Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               new Container(
                 padding: const EdgeInsets.all(6.0),
@@ -143,9 +145,35 @@ class HallInfoPageState extends State<HallInfoPage> {
           ),
         )
     ));
+    children.add(new Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        new Container(
+          child: new Text('Meal:'),
+          margin: const EdgeInsets.only(right: 8.0)
+        ),
+        new DropdownButton<Meal>(
+            value: _selectedMeal,
+            items: Meal.asList().map((meal) => new DropdownMenuItem(
+                child: new Text(meal.name),
+                value: meal)
+            ).toList(),
+            onChanged: (Meal selected) {
+              _selectedMeal = selected;
+              loadSelected();
+            }
+        )
+      ],
+    ));
 
-    return new Column(
-      children: children,
+    return new Container(
+      margin: const EdgeInsets.symmetric(vertical: 16.0),
+      child: new MaterialCard(
+        body: new Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: children,
+        ),
+      ),
     );
   }
 
@@ -157,29 +185,68 @@ class HallInfoPageState extends State<HallInfoPage> {
     loadSelected();
   }
 
+  Widget buildMenuItem(int i) {
+    print('Building menu item index $i');
+
+    if (_menuForMeal.closed) {
+      return new Center(child: new Text('The dining hall is closed for this meal time.'));
+    }
+
+    VenueDisplay display = new VenueDisplay(_menuForMeal.venues[i]);
+
+    if (getHoursForMeal().closed) {
+      return new Column(
+        children: <Widget>[
+          new Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new Container(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: new Icon(Icons.warning),
+              ),
+              new Center(child: new Text('The dining hall\'s schedule suggests that it is closed for this meal time.'))
+            ],
+          ),
+          display
+        ]
+      );
+    }
+
+    return display;
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<Widget> viewChildren = [
+    List<Widget> columnChildren = [
       new HoursTable(widget.diningHall),
-      new Divider(),
-      buildMenuHeader(context)
+      buildMenuHeader(context),
     ];
 
+    int items;
     if (failed) {
-      viewChildren.add(new Center(child: new Text('Could not load menu.')));
+      columnChildren.add(new Center(child: new Text('Could not load menu.')));
+      items = columnChildren.length;
     } else if (_selectedMeal == null || _menuForMeal == null) {
-      viewChildren.add(loading);
+      columnChildren.add(loading);
+      items = columnChildren.length;
     } else {
-      viewChildren.add(new MenuDisplay(_menuForMeal));
+      items = (_menuForMeal.closed) ? columnChildren.length + 1 : _menuForMeal.venues.length + columnChildren.length;
     }
 
     return new Scaffold(
         appBar: new AppBar(
           title: new Text('${widget.diningHall.hallName} - Menu/Hours'),
         ),
-        body: new ListView(
-          padding: const EdgeInsets.all(12.0),
-          children: viewChildren,
+        body: new ListView.builder(
+          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+          itemCount: items,
+          itemBuilder: (context, i) {
+            if (i < columnChildren.length) {
+              return columnChildren[i];
+            }
+
+            return buildMenuItem(i - columnChildren.length);
+          },
         )
     );
   }

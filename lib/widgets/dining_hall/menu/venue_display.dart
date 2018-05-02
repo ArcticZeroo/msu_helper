@@ -26,6 +26,7 @@ class VenueDisplayState extends State<VenueDisplay> {
     }
 
     return new Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: children,
     );
   }
@@ -42,9 +43,12 @@ class VenueDisplayState extends State<VenueDisplay> {
         title: new Text(foodItem.name),
         subtitle: foodItem.allergens.length == 0 ? null : new Text('Contains: ${foodItem.allergens.join(', ')}'),
         trailing: new Row(
-          children: foodItem.preferences.map((a) => new CircleAvatar(
-            backgroundImage: new AssetImage('assets/dining/${a.toLowerCase().split(' ').join('_')}.png'),
-            maxRadius: 8.0,
+          children: foodItem.preferences.map((a) => new Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            child: new CircleAvatar(
+              backgroundImage: new AssetImage('assets/dining/${a.toLowerCase().split(' ').join('_')}.png'),
+              maxRadius: 8.0,
+            ),
           )).toList(),
         ),
       ));
@@ -60,11 +64,9 @@ class VenueDisplayState extends State<VenueDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    return new Column(
-      children: <Widget>[
-        buildTitle(),
-        buildMenu()
-      ]
+    return new MaterialCard(
+      title: buildTitle(),
+      body: buildMenu(),
     );
   }
 }
