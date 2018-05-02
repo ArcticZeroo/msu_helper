@@ -2,15 +2,24 @@ name: msu_helper
 description: Handy MSU utilities
 
 dependencies:
-  android_intent: any
-  shared_preferences: any
   url_launcher: any
+  intl: any
+  sqflite: any
+  path_provider: any
+  path: any
+  events: any
+  json_annotation: ^0.2.3
+  http: any
+  shared_preferences: any
+  synchronized: any
   flutter:
     sdk: flutter
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  build_runner: any
+  json_serializable: ^0.5.0
 
 
 # For information on the generic Dart part of this file, see the
@@ -23,6 +32,11 @@ flutter:
   # included with your application, so that you can use the icons in
   # the Icons class.
   uses-material-design: true
+  assets:
+    - assets/dining/msu_beef.png
+    - assets/dining/msu_pork.png
+    - assets/dining/vegan.png
+    - assets/dining/vegetarian.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

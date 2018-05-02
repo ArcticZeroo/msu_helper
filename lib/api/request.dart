@@ -1,53 +1,37 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'package:http/http.dart' as http;
 
-Future toUTF8(HttpClientResponse res) async {
-  Stream stream = res.transform(UTF8.decoder);
-
-  String responseText = "";
-
-  await for (var str in stream) {
-    responseText += str;
-  }
-
-  print(responseText);
-
-  return responseText;
-}
-
-Future makeRestRequest(String url) async {
-  HttpClient client = new HttpClient();
-
-  HttpClientRequest req;
+Future makeRestRequest(String url, [Duration timeout = const Duration(seconds: 10)]) async {
+  http.Response res;
   try {
-    req = (await client.getUrl(Uri.parse(url)));
+    if (timeout != null) {
+      res = await http.get(url).timeout(timeout);
+    } else {
+      res = await http.get(url);
+    }
   } catch (e) {
     return new Future.error(e);
   }
-
-  HttpClientResponse res;
-  try {
-    res = await req.close();
-  } catch (e) {
-    return new Future.error(e);
-  }
-
-  String responseText;
-  try {
-    responseText = await toUTF8(res);
-  } catch (e) {
-    return new Future.error(e);
-  }
-
-  Map decoded = JSON.decode(responseText);
 
   if (!res.statusCode.toString().startsWith('2')) {
-    return new Future.error('Request unsuccessful: ${decoded.containsKey('error') ? '(${res.statusCode}) ${decoded['error']}' : res.statusCode}');
+    return new Future.error('Request to $url unsuccessful: ${res.statusCode}');
   }
 
-  if (decoded.containsKey('error')) {
-    return new Future.error('Request returned an error: ${decoded['error']}');
+  if (res.body.length == 0) {
+    return new Future.error('Empty response.');
+  }
+
+  dynamic decoded = json.decode(res.body);
+
+  if (decoded == null) {
+    return new Future.error('Empty JSON response.');
+  }
+
+  if (decoded is Map) {
+    if ((decoded as Map<String, dynamic>).containsKey('error')) {
+      return new Future.error('Request returned an error: ${decoded['error']}');
+    }
   }
 
   return decoded;
