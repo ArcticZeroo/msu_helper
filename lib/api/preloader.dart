@@ -30,6 +30,8 @@ Future preloadPrimaryData() async {
     preload(movieNightProvider.retrieveMovies(), 'movie night listing'),
   ];
 
+  settingsProvider.populate();
+
   bool diningHallComplete;
   Future diningHallFuture = diningHallProvider.retrieveDiningList()
       .then((_) {

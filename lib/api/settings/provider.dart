@@ -10,7 +10,9 @@ Map<String, SettingsNotifier> settingCache = new Map();
 
 void populate() {
   for (SettingData data in SettingsConfig.allSettings) {
-    addNotifierToCacheMap(data);
+    if (!settingCache.containsKey(data.key)) {
+      addNotifierToCacheMap(data);
+    }
   }
 }
 
