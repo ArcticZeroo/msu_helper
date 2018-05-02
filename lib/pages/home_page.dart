@@ -19,14 +19,12 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     print('Building homepage');
     return new Center(
-      // This is a column instead of a ListView since I want it to be centered
-      child: new Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: new ListView(
+        padding: const EdgeInsets.only(top: 24.0),
         children: <Widget>[
           new Container(
-            padding: const EdgeInsets.only(bottom: 32.0),
-            child: new Text('Tap one of the below widgets to visit its page!'),
+            padding: const EdgeInsets.only(bottom: 24.0),
+            child: new Center(child: new Text('Tap one of the below widgets to visit its page!')),
           ),
           new FoodTruckMiniWidget(widget),
           new DiningHallMiniWidget(widget),
