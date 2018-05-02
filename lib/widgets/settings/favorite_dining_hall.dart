@@ -50,7 +50,7 @@ class _FavoriteDiningHallState extends State<FavoriteDiningHall> {
   List<DropdownMenuItem<DiningHall>> buildItems() {
     return diningHalls.map((diningHall) => new DropdownMenuItem(
       value: diningHall,
-      child: new Text(diningHall.hallName)
+      child: diningHall.hallName.split(' ').length > 2 ? new Text(diningHall.hallName) : new Text(diningHall.hallName)
     )).toList();
   }
 
@@ -67,7 +67,7 @@ class _FavoriteDiningHallState extends State<FavoriteDiningHall> {
     return new DropdownButton<DiningHall>(
       items: buildItems(),
       value: selected,
-      hint: new Text('Dining Hall Selection'),
+      hint: new Text('Select'),
       onChanged: (DiningHall value) {
         setState(() {
           selected = value;
