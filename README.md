@@ -8,11 +8,11 @@ Current features:
 
 * Food truck locations/times
 * Movie night locations/times
-* Google maps integration
-* An overcomplicated equation to determine priority of a given event
+* Google maps integration (kind of)
+* Dining hall hours and menus
 
 Planned features:
 
 * Movie information (like ratings, description, etc.)
 * Google calendar integration
-* Dining hall hours (and potentially menus)
+* Dining hall food search, which does a campus-wide search of food during a given time
