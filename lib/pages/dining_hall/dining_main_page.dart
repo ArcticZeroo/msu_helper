@@ -1,10 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:msu_helper/api/dining_hall/controller.dart';
 import 'package:msu_helper/api/dining_hall/provider.dart';
+import 'package:msu_helper/api/dining_hall/relevant.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/reloadable.dart';
+import 'package:msu_helper/api/settings/provider.dart';
 import 'package:msu_helper/pages/dining_hall/hall_info_page.dart';
+import 'package:msu_helper/util/ListUtil.dart';
+import 'package:msu_helper/widgets/material_card.dart';
+import '../../api/settings/provider.dart' as settingsProvider;
+import '../../config/settings_config.dart';
 
 class DiningMainPage extends StatefulWidget {
   static const String reloadableCategory = 'dining_info';
@@ -15,17 +22,23 @@ class DiningMainPage extends StatefulWidget {
 
 class DiningMainPageState extends Reloadable<DiningMainPage> {
   List<DiningHall> diningHalls;
+  DiningHall favoriteHall;
   bool failed = false;
 
   @override
   void initState() {
     super.initState();
     load();
+
+    addSettingListener(SettingsConfig.favoriteDiningHall, (String last) {
+      load();
+    });
   }
 
   Future load() async {
     try {
       diningHalls = await retrieveDiningList();
+      favoriteHall = await retrieveFavoriteHall();
     } catch (e) {
       setState(() {
         failed = true;
@@ -36,6 +49,38 @@ class DiningMainPageState extends Reloadable<DiningMainPage> {
     setState(() {
       failed = false;
     });
+  }
+
+  Widget buildDiningHallButton(DiningHall diningHall) {
+    return new InkWell(
+      child: new Container(
+        decoration: new BoxDecoration(color: Colors.lightGreen[200]),
+        padding: const EdgeInsets.all(8.0),
+        margin: const EdgeInsets.all(8.0),
+        child: new Column(
+          children: ListUtil.add(
+              [new Container(
+                margin: const EdgeInsets.only(bottom: 12.0),
+                child: new Center(
+                    child: new Text(diningHall.hallName,
+                        style: new TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.black87,
+                            fontWeight: FontWeight.w500
+                        )
+                    )),
+              )],
+              getSuperRelevantLines(diningHall).map((s) => new Center(child: new Text(s))).toList()
+          ),
+        ),
+      ),
+      onTap: () {
+        Navigator.push(
+            context,
+            new MaterialPageRoute(builder: (context) => new HallInfoPage(diningHall))
+        );
+      },
+    );
   }
 
   @override
@@ -52,24 +97,41 @@ class DiningMainPageState extends Reloadable<DiningMainPage> {
       );
     }
 
-    return new Column(
-      children: <Widget>[
-        new Center(
-          child: new Text('Tap a dining hall to see its menu and hours!')
-        ),
-        new Column(
-          children: diningHalls.map((diningHall) => new ListTile(
-            leading: new Icon(Icons.restaurant),
-            title: new Text(diningHall.hallName),
-            onTap: () {
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(builder: (context) => new HallInfoPage(diningHall))
-              );
-            },
-          )).toList(),
+    List<Widget> children = <Widget>[
+      new Container(
+        padding: const EdgeInsets.all(12.0),
+        child: new Center(child: new Text('Tap a dining hall to view its menu/hours!')),
+      ),
+    ];
+
+    if (favoriteHall != null) {
+      children.add(new Column(
+        children: <Widget>[
+          new Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new Container(
+                padding: const EdgeInsets.all(6.0),
+                child: new Icon(Icons.star),
+              ),
+              new Text('Favorite Hall')
+            ],
+          ),
+          buildDiningHallButton(favoriteHall)
+        ],
+      ));
+    }
+
+    children.add(new Expanded(
+        child: new GridView.count(
+          crossAxisCount: 2,
+          childAspectRatio: 1.8,
+          children: diningHalls.map(buildDiningHallButton).toList(),
         )
-      ],
+    ));
+
+    return new Column(
+      children: children,
     );
   }
 }

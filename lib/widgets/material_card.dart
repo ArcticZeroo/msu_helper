@@ -21,13 +21,15 @@ class MaterialCard extends StatelessWidget {
   final List<Widget> actions;
   final Widget body;
   final VoidCallback onTap;
+  final Color backgroundColor;
 
   MaterialCard({
     this.title,
     this.subtitle,
     this.actions,
     this.body,
-    this.onTap
+    this.onTap,
+    this.backgroundColor
   });
 
   @override
@@ -86,6 +88,7 @@ class MaterialCard extends StatelessWidget {
     );
 
     return new Card(
+      color: backgroundColor,
       child: new InkWell(
           onTap: onTap,
           child: cardChild

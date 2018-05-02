@@ -40,9 +40,6 @@ class _FavoriteDiningHallState extends State<FavoriteDiningHall> {
   Future init() async {
     diningHalls = await diningHallProvider.retrieveDiningList();
 
-    print('Got dining halls');
-    print('There are ${diningHalls.length}');
-
     DiningHall favoriteHall = await retrieveFavoriteHall();
 
     setState(() {
@@ -60,16 +57,12 @@ class _FavoriteDiningHallState extends State<FavoriteDiningHall> {
   @override
   Widget build(BuildContext context) {
     if (failed) {
-      print('Dining hall loading failed');
       return new Text('Unable to load dining halls.');
     }
 
     if (diningHalls == null || diningHalls.length == 0) {
-      print('Dining halls have not yet loaded');
       return new Text('Loading dining halls...');
     }
-
-    print('Loading a dropdown');
 
     return new DropdownButton<DiningHall>(
       items: buildItems(),

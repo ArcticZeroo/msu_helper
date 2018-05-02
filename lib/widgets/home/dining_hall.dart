@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:msu_helper/api/dining_hall/controller.dart';
+import 'package:msu_helper/api/dining_hall/relevant.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_hours.dart';
 import 'package:msu_helper/api/dining_hall/time.dart';
@@ -53,20 +54,8 @@ class _DiningHallMiniWidgetState extends Reloadable<DiningHallMiniWidget> {
 
     // Reloads when the favorite dining hall is set
     addSettingListener(SettingsConfig.favoriteDiningHall, (String last) {
-      print('Dining hall favorite setting has updated, last value was $last');
-
-      if (last == null) {
-        return;
-      }
-
       load();
     });
-  }
-
-  String _formatOpenNext(MenuDate menuDate, DiningHallHours mealHours) {
-    return 'It opens for ${mealHours.meal.name} '
-        'on ${DateUtil.getWeekday(menuDate.time)} '
-        'at ${DateUtil.formatTimeOfDay(mealHours.beginTime)}';
   }
 
   Future _retrieveDataAndUpdate() async {
@@ -81,95 +70,8 @@ class _DiningHallMiniWidgetState extends Reloadable<DiningHallMiniWidget> {
 
     text = ['Your favorite: ${favoriteHall.hallName}'];
 
-    MenuDate menuDate = new MenuDate();
-    List<DiningHallHours> hoursToday = menuDate.getDayHours(favoriteHall);
-
-    // If it's closed today
-    if (DiningHallHours.isFullyClosed(hoursToday)) {
-      text.add('It\'s closed today.');
-
-      for (int i = 1; i < 7; i++) {
-        menuDate.forward();
-
-        List<DiningHallHours> nextHours = menuDate.getDayHours(favoriteHall);
-        if (!DiningHallHours.isFullyClosed(nextHours)) {
-          DiningHallHours relevant = MenuDate.getFirstRelevant(
-              nextHours,
-              new TimeOfDay(hour: 0, minute: 0)
-          );
-
-          if (relevant != null) {
-            setState(() {
-              text.add(_formatOpenNext(menuDate, relevant));
-            });
-          } else {
-            setState(() {});
-          }
-
-          return;
-        }
-      }
-
-      setState(() {
-        text.add('It doesn\'t look like it will be open again this week.');
-      });
-
-      return;
-    } else {
-      print('Dining hall ${favoriteHall.hallName} is not fully closed today (${menuDate.weekday})');
-    }
-
-    TimeOfDay timeNow = TimeOfDay.now();
-    DiningHallHours relevant = MenuDate.getFirstRelevant(hoursToday, timeNow);
-
-    if (relevant != null) {
-      if (relevant.isNow()) {
-        setState(() {
-          text.add(
-            'It\'s currently serving ${relevant.meal.name} '
-            'until ${DateUtil.formatTimeOfDay(relevant.endTime)}'
-          );
-        });
-      } else {
-        setState(() {
-          text.add(
-            'It will serve ${relevant.meal.name} '
-            'at ${DateUtil.formatTimeOfDay(relevant.beginTime)}'
-          );
-        });
-      }
-      return;
-    }
-
-    for (int i = 1; i < 7; i++) {
-      menuDate.forward();
-
-      List<DiningHallHours> nextHours = menuDate.getDayHours(favoriteHall);
-      if (!DiningHallHours.isFullyClosed(nextHours)) {
-        DiningHallHours relevant = MenuDate.getFirstRelevant(
-            nextHours,
-            new TimeOfDay(hour: 0, minute: 0)
-        );
-
-        if (relevant != null) {
-          setState(() {
-            text.add(
-              'It will serve ${relevant.meal.name} on '
-              '${DateUtil.getWeekday(menuDate.time)} at ${DateUtil.formatTimeOfDay(relevant.beginTime)}'
-            );
-          });
-        } else {
-          setState(() {
-            text.add('The next opening can\'t be found.');
-          });
-        }
-
-        return;
-      }
-    }
-
     setState(() {
-      text.add('The next opening can\'t be found.');
+      text.addAll(getSuperRelevantLines(favoriteHall));
     });
   }
 
@@ -182,7 +84,7 @@ class _DiningHallMiniWidgetState extends Reloadable<DiningHallMiniWidget> {
       text: text,
       bottomBar: widget.homePage.bottomBar,
       index: 2,
-      active: !hasFailed && favoriteHall != null
+      active: !hasFailed
     );
   }
 }
