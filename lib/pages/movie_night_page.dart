@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:msu_helper/api/movie_night/structures/movie.dart';
 import 'package:msu_helper/api/movie_night/provider.dart' as movieProvider;
 import 'package:msu_helper/widgets/material_card.dart';
+import 'package:msu_helper/widgets/movie_night/movie_display.dart';
 
 class MovieNightPage extends StatefulWidget {
   @override
@@ -37,21 +38,7 @@ class MovieNightPageState extends State<MovieNightPage> {
   }
 
   Widget buildMovie(Movie movie) {
-    List<Widget> lines = [];
-
-
-
-    return new Container(
-        padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0, bottom: 4.0),
-        child: new MaterialCard(
-          title: new Text(movie.title, style: MaterialCard.titleStyle),
-          subtitle: new Text('${movie.showings.length} showing${movie.showings.length == 1 ? '' : 's'} this week'),
-          body: new Column(
-            children: lines,
-          ),
-          onTap: null,
-        )
-    );
+    return new MovieDisplay(movie);
   }
 
   @override

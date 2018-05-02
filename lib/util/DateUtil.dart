@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:msu_helper/util/ListUtil.dart';
 import 'package:msu_helper/util/NumberUtil.dart';
+import 'package:msu_helper/util/TextUtil.dart';
 
 class DateUtil {
   static const WEEKDAYS = [
@@ -31,6 +32,10 @@ class DateUtil {
     }
 
     return WEEKDAY_ABBREVIATIONS[index];
+  }
+
+  static int getWeekdayValue(String weekday) {
+    return WEEKDAYS[WEEKDAY_NAMES.indexOf(weekday.toLowerCase())];
   }
 
   static String toTimeString(DateTime from) {
@@ -78,5 +83,9 @@ class DateUtil {
     }
 
     return differenceString;
+  }
+
+  static String formatDateFully(DateTime from) {
+    return new DateFormat("EEEE, MMMM d'${TextUtil.getOrdinalSuffix(from.day)}', y").format(from);
   }
 }

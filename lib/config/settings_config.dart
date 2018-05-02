@@ -27,8 +27,23 @@ class SettingsConfig {
           'others take up your precious space!'
   );
 
+  static const SettingData showHallHours = const BooleanSetting(
+      key: 'diningHall_showHallHours',
+      defaultValue: true,
+      title: 'Show Hall Hours',
+      description: 'Those pesky dining hall hours take up precious real estate.'
+  );
+
+  static const SettingData intelligentVenueOrdering = const BooleanSetting(
+      key: 'diningHall_intelligentVenueOrdering',
+      defaultValue: true,
+      title: 'Intelligent Venue Ordering',
+      description: 'If this is enabled, venues will be ordered based on how many "unique" items it has. '
+          'This means a venue where the items always stay the same will be on the bottom.'
+  );
 
   static const List<SettingData> allSettings = const [
-    favoriteDiningHall, collapseDiningHallHours, showVenueDescriptions, collapseVenuesByDefault
+    favoriteDiningHall, collapseDiningHallHours, showVenueDescriptions, collapseVenuesByDefault,
+    showHallHours, intelligentVenueOrdering
   ];
 }

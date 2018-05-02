@@ -35,10 +35,12 @@ class SettingsPageState extends State<SettingsPage> {
               subtitle: new Text(SettingsConfig.favoriteDiningHall.description),
               trailing: new FavoriteDiningHall(),
             ),
-            new Divider(),
+            new Divider(color: Colors.black38,),
             new Center(child: new Text('Dining Halls')),
-            new BooleanSettingWidget(SettingsConfig.showVenueDescriptions),
-            new BooleanSettingWidget(SettingsConfig.collapseVenuesByDefault),
+            new BooleanSettingWidget(SettingsConfig.showVenueDescriptions, new Icon(Icons.edit)),
+            new BooleanSettingWidget(SettingsConfig.collapseVenuesByDefault, new Icon(Icons.remove_red_eye)),
+            new BooleanSettingWidget(SettingsConfig.showHallHours, new Icon(Icons.timer)),
+            new BooleanSettingWidget(SettingsConfig.intelligentVenueOrdering, new Icon(Icons.lightbulb_outline))
           ],
         ),
       )

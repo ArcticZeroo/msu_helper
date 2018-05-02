@@ -5,7 +5,7 @@ import 'package:msu_helper/api/food_truck/structures/food_truck_stop.dart';
 import 'package:msu_helper/util/DateUtil.dart';
 import 'package:msu_helper/util/TextUtil.dart';
 import 'package:msu_helper/widgets/material_card.dart';
-import 'package:msu_helper/widgets/wrappable_text.dart';
+import 'package:msu_helper/widgets/wrappable_widget.dart';
 
 class FoodTruckPage extends StatefulWidget {
   @override
@@ -24,7 +24,6 @@ class FoodTruckPageState extends State<FoodTruckPage> {
   }
 
   load() async {
-    print('Loading food truck info for page...');
     try {
       _stops = (await foodTruckProvider.retrieveStops()) ?? [];
     } catch (e) {
@@ -73,8 +72,6 @@ class FoodTruckPageState extends State<FoodTruckPage> {
             '${DateUtil.toTimeString(stop.startDate)} - ${DateUtil.toTimeString(stop.endDate)}'
         )
     );
-
-    print(stop);
 
     if (stop.isCancelled) {
       lines.add(getIconRow(Icons.mood_bad, 'This stop has been cancelled'));

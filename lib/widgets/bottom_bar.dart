@@ -29,7 +29,6 @@ class MainBottomBar {
     }
 
     setState(() {
-      print('Setting page to $index');
       _position = index;
     });
   }

@@ -5,13 +5,14 @@ import '../../api/settings/provider.dart' as settingsProvider;
 
 class BooleanSettingWidget extends StatelessWidget {
   final SettingData data;
+  final Icon icon;
 
-  BooleanSettingWidget(this.data);
+  BooleanSettingWidget(this.data, this.icon);
 
   @override
   Widget build(BuildContext context) {
     return new ListTile(
-      leading: new Icon(Icons.edit),
+      leading: icon,
       title: new Text(data.title),
       subtitle: new Text(data.description),
       trailing: new BooleanSettingSwitch(data),

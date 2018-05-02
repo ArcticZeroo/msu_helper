@@ -15,7 +15,7 @@ import 'package:msu_helper/util/TextUtil.dart';
 import 'package:msu_helper/widgets/dining_hall/hours_table.dart';
 import 'package:msu_helper/widgets/dining_hall/menu/venue_display.dart';
 import 'package:msu_helper/widgets/material_card.dart';
-import 'package:msu_helper/widgets/wrappable_text.dart';
+import 'package:msu_helper/widgets/wrappable_widget.dart';
 import '../../api/settings/provider.dart' as settingsProvider;
 
 import '../../api/dining_hall/provider.dart' as diningHallProvider;
@@ -76,28 +76,32 @@ class HallInfoPageState extends State<HallInfoPage> {
       return;
     }
 
-    try {
-      _comparisonMenu = await widget.diningHall.getComparisonMenu(_date, _selectedMeal);
-    } catch (e) {
-      print('Could not load comparison menu...');
+    if (settingsProvider.getCached(SettingsConfig.intelligentVenueOrdering)) {
+      try {
+        _comparisonMenu = await widget.diningHall.getComparisonMenu(_date, _selectedMeal);
+      } catch (e) {
+        print('Could not load comparison menu...');
 
-      if (e is Error) {
-        print(e.stackTrace);
-      } else {
-        print(e);
+        if (e is Error) {
+          print(e.stackTrace);
+        } else {
+          print(e);
+        }
+      }
+
+      if (_comparisonMenu != null) {
+        Map<DiningHallVenue, List<FoodItem>> uniqueItems = widget.diningHall.findUniqueItems(_menuForMeal, _comparisonMenu);
+
+        for (DiningHallVenue venue in uniqueItems.keys) {
+          print('${venue.name}: ${uniqueItems[venue].length} uniques');
+        }
+
+        _venues = List.from(_menuForMeal.venues);
+        _venues.sort((a, b) => uniqueItems[b].length - uniqueItems[a].length);
       }
     }
 
-    if (_comparisonMenu != null) {
-      Map<DiningHallVenue, List<FoodItem>> uniqueItems = widget.diningHall.findUniqueItems(_menuForMeal, _comparisonMenu);
-
-      for (DiningHallVenue venue in uniqueItems.keys) {
-        print('${venue.name}: ${uniqueItems[venue].length} uniques');
-      }
-
-      _venues = List.from(_menuForMeal.venues);
-      _venues.sort((a, b) => uniqueItems[b].length - uniqueItems[a].length);
-    } else {
+    if (_venues == null) {
       _venues = _menuForMeal.venues;
     }
 
@@ -138,7 +142,7 @@ class HallInfoPageState extends State<HallInfoPage> {
   Widget buildMenuHeader(BuildContext context) {
     List<Widget> children = [];
 
-    children.add(new Text('Date: ${new DateFormat("EEEE, MMMM d'${TextUtil.getOrdinalSuffix(_date.time.day)}', y").format(_date.time)}'));
+    children.add(new Text('Date: ${DateUtil.formatDateFully(_date.time)}'));
     children.add(new Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -273,8 +277,6 @@ class HallInfoPageState extends State<HallInfoPage> {
   }
 
   Widget buildMenuItem(int i) {
-    print('Building menu item index $i');
-
     if (_menuForMeal.closed) {
       return new Center(child: new Text('The dining hall is closed for this meal time.'));
     }
@@ -284,10 +286,13 @@ class HallInfoPageState extends State<HallInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> columnChildren = [
-      new HoursTable(widget.diningHall),
-      buildMenuHeader(context),
-    ];
+    List<Widget> columnChildren = [];
+
+    if (settingsProvider.getCached(SettingsConfig.showHallHours)) {
+      columnChildren.add(new HoursTable(widget.diningHall));
+    }
+
+    columnChildren.add(buildMenuHeader(context));
 
     int items;
     if (failed) {

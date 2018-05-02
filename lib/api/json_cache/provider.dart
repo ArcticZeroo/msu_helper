@@ -13,7 +13,6 @@ Lock jsonLock = new Lock();
 
 Future retrieveJsonFromDb(String key, [num expireTime = ExpireTime.THIRTY_MINUTES]) async {
   return jsonLock.synchronized(() async {
-    print('Retrieving stored json for $key');
     Database db = await MainDatabase.getDbInstance();
 
     List<Map<String, dynamic>> rows = await db.query(TableName.jsonCache,
@@ -36,8 +35,6 @@ Future retrieveJsonFromDb(String key, [num expireTime = ExpireTime.THIRTY_MINUTE
           where: 'name = ?', whereArgs: [key]);
       return null;
     }
-
-    print('$key\'s value was last retrieved at ${DateTime.fromMillisecondsSinceEpoch(retrieved)}');
 
     return json.decode(row['json']);
   });
