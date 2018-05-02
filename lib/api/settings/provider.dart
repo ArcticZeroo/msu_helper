@@ -95,6 +95,10 @@ Future<T> retrieveSetting<T>(SettingData<T> data) async {
   Map<String, dynamic> row = rows[0];
   String value = row['value'] as String;
 
+  if (!settingCache.containsKey(data.key)) {
+    addNotifierToCacheMap(data);
+  }
+
   settingCache[data.key].setValue(value);
 
   return data.decode(value);
@@ -117,6 +121,10 @@ Future saveSetting(SettingData data, dynamic value) async {
       'name': data.key,
       'value': encoded
     });
+  }
+
+  if (!settingCache.containsKey(data.key)) {
+    addNotifierToCacheMap(data);
   }
 
   settingCache[data.key].setValue(encoded);
