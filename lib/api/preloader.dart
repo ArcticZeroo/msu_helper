@@ -9,70 +9,47 @@ import 'food_truck/provider.dart' as foodTruckProvider;
 import 'dining_hall/provider.dart' as diningHallProvider;
 import 'movie_night/provider.dart' as movieNightProvider;
 
+Future preload(Future future, String name) {
+  return future.then((_) => print('Preloaded $name.')).catchError((e) {
+    print('Could not preload $name...');
+
+    if (e is Error) {
+      print(e.stackTrace);
+    }
+  });
+}
+
 Future preloadPrimaryData() async {
   DateTime startTime = DateTime.now();
 
   print('Preloading primary data...');
 
-  // Preload all user settings. This is done first!
-  try {
-    await settingsProvider.loadAllSettings();
-  } catch (e) {
-    print('Could not preload user settings...');
+  List<Future> loadFutures = [
+    preload(settingsProvider.loadAllSettings(), 'user settings'),
+    preload(foodTruckProvider.retrieveStops(), 'food truck stops'),
+    preload(movieNightProvider.retrieveMovies(), 'movie night listing'),
+  ];
 
-    if (e is Error) {
-      print(e.stackTrace);
-    }
-  }
+  bool diningHallComplete;
+  Future diningHallFuture = diningHallProvider.retrieveDiningList()
+      .then((_) {
+        diningHallComplete = true;
+        return _;
+      })
+      .catchError((e) {
+        diningHallComplete = false;
+        return e;
+      });
 
-  print('Preloaded user settings.');
+  loadFutures.add(preload(diningHallFuture, 'dining hall list'));
 
-  // Preload the single-retrieval datasets,
-  // but their preloading is not necessary
-  // so it's OK for it to fail
-  try {
-    await foodTruckProvider.retrieveStops();
-  } catch (e) {
-    print('Could not preload food truck stops...');
-
-    if (e is Error) {
-      print(e.stackTrace);
-    }
-  }
-
-  print('Preloaded food truck stops.');
-
-  try {
-    await movieNightProvider.retrieveMovies();
-  } catch (e) {
-    print('Could not preload movies...');
-
-    if (e is Error) {
-      print(e.stackTrace);
-    }
-  }
-
-  print('Preloaded movie night information.');
-
-  
-  try {
-    await diningHallProvider.retrieveDiningList();
-  } catch (e) {
-    print('Could not preload dining halls...');
-
-    if (e is Error) {
-      print(e.stackTrace);
-    }
-
-    // This is necessary to have preloaded
-    // in order to load the menus, so return
-    // if secondary data shouldn't be preloaded
-    throw e;
-  }
-
-  print('Preloaded dining hall information.');
+  await Future.wait(loadFutures);
 
   print('Primary data preload complete in ${DateTime.now().difference(startTime).inMilliseconds}ms');
+
+  if (!diningHallComplete) {
+    throw new Error();
+  }
 }
 
 Future preloadSecondaryData() async {

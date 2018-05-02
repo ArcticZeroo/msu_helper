@@ -6,13 +6,15 @@ import 'package:msu_helper/api/dining_hall/meal.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_hours.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_menu.dart';
+import 'package:msu_helper/api/dining_hall/structures/dining_hall_venue.dart';
 import 'package:msu_helper/api/dining_hall/time.dart';
+import 'package:msu_helper/config/settings_config.dart';
 import 'package:msu_helper/util/DateUtil.dart';
 import 'package:msu_helper/util/TextUtil.dart';
 import 'package:msu_helper/widgets/dining_hall/hours_table.dart';
-import 'package:msu_helper/widgets/dining_hall/menu/menu_display.dart';
 import 'package:msu_helper/widgets/dining_hall/menu/venue_display.dart';
 import 'package:msu_helper/widgets/material_card.dart';
+import '../../api/settings/provider.dart' as settingsProvider;
 
 import '../../api/dining_hall/provider.dart' as diningHallProvider;
 
@@ -28,15 +30,24 @@ class HallInfoPage extends StatefulWidget {
 class HallInfoPageState extends State<HallInfoPage> {
   static final Widget loading = new Center(child: new Text('Loading menu...'));
 
+  Map<DiningHallVenue, bool> collapsedState = {};
   MenuDate _date = new MenuDate();
   Meal _selectedMeal;
   DiningHallMenu _menuForMeal;
 
   bool failed = false;
 
+  void setCollapsed(DiningHallVenue venue, bool isCollapsed) {
+    collapsedState[venue] = isCollapsed;
+  }
+
+  bool getCollapsed(DiningHallVenue venue) {
+    return collapsedState[venue] ?? settingsProvider.getCached(SettingsConfig.collapseVenuesByDefault);
+  }
+
   Future loadSelected() async {
     if (!diningHallProvider.menuCache.hasValid(
-          diningHallProvider.serializeToKey(widget.diningHall, _date, _selectedMeal))) {
+        diningHallProvider.serializeToKey(widget.diningHall, _date, _selectedMeal))) {
       setState(() {
         failed = false;
         _menuForMeal = null;
@@ -78,7 +89,7 @@ class HallInfoPageState extends State<HallInfoPage> {
   }
 
   List<DiningHallHours> getHoursForDay() {
-    return widget.diningHall.hours[DateUtil.getWeekday(_date.time).toLowerCase()];
+    return widget.diningHall.getHoursForDay(_date);
   }
 
   DiningHallHours getHoursForMeal([Meal meal]) {
@@ -137,8 +148,8 @@ class HallInfoPageState extends State<HallInfoPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               new Container(
-                padding: const EdgeInsets.all(6.0),
-                child: new Icon(Icons.today)
+                  padding: const EdgeInsets.all(6.0),
+                  child: new Icon(Icons.today)
               ),
               new Text('Select Date')
             ],
@@ -149,8 +160,8 @@ class HallInfoPageState extends State<HallInfoPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         new Container(
-          child: new Text('Meal:'),
-          margin: const EdgeInsets.only(right: 8.0)
+            child: new Text('Meal:'),
+            margin: const EdgeInsets.only(right: 8.0)
         ),
         new DropdownButton<Meal>(
             value: _selectedMeal,
@@ -192,23 +203,23 @@ class HallInfoPageState extends State<HallInfoPage> {
       return new Center(child: new Text('The dining hall is closed for this meal time.'));
     }
 
-    VenueDisplay display = new VenueDisplay(_menuForMeal.venues[i]);
+    VenueDisplay display = new VenueDisplay(_menuForMeal.venues[i], this);
 
     if (getHoursForMeal().closed) {
       return new Column(
-        children: <Widget>[
-          new Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              new Container(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: new Icon(Icons.warning),
-              ),
-              new Center(child: new Text('The dining hall\'s schedule suggests that it is closed for this meal time.'))
-            ],
-          ),
-          display
-        ]
+          children: <Widget>[
+            new Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                new Container(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: new Icon(Icons.warning),
+                ),
+                new Center(child: new Text('The dining hall\'s schedule suggests that it is closed for this meal time.'))
+              ],
+            ),
+            display
+          ]
       );
     }
 

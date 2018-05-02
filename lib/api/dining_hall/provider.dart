@@ -18,21 +18,30 @@ import 'structures/dining_hall.dart';
 
 List<DiningHall> hallCache;
 Lock diningHallListLock = new Lock();
+final int expireTime = ExpireTime.THIRTY_MINUTES * 2;
 
 TimedCache<String, DiningHallMenu> menuCache = new TimedCache((String key) async {
   MenuMetadata deserialized = await deserializeFromKey(key);
 
   TimedCacheEntry<DiningHallMenu> fromDb = await retrieveMenuFromDatabase(deserialized.diningHall, deserialized.menuDate, deserialized.meal);
 
-  if (fromDb != null && fromDb.isValid() && !fromDb.value.closed) {
-    return fromDb;
+  if (fromDb != null && fromDb.isValid()) {
+    // If the cached menu entry says it's closed,
+    // only consider it invalid if the dining hall
+    // doesn't seem to suggest it should be closed
+    // (and therefore requires a refresh)
+    if (fromDb.value.closed && !deserialized.diningHall.getHoursForMeal(deserialized.menuDate, deserialized.meal).closed) {
+
+    } else {
+      return fromDb;
+    }
   }
 
   DiningHallMenu menu = await retrieveMenuFromWeb(deserialized.diningHall, deserialized.menuDate, deserialized.meal);
 
   await saveMenuToDb(deserialized.diningHall, deserialized.menuDate, deserialized.meal, menu);
 
-  return menu;
+  return new TimedCacheEntry(menu, expireTime: expireTime);
 }, 60*60*1000);
 
 class MenuMetadata {
@@ -120,7 +129,7 @@ Future<DiningHallMenu> retrieveMenuFromWeb(DiningHall diningHall, MenuDate date,
 
   Map<String, dynamic> response = (await makeRestRequest(url)) as Map<String, dynamic>;
 
-  return DiningHallMenu.fromJson(response);
+  return DiningHallMenu.fromJson(response).copyWith(diningHall: diningHall);
 }
 
 Future<TimedCacheEntry<DiningHallMenu>> retrieveMenuFromDatabase(DiningHall diningHall, MenuDate date, Meal meal) async {
@@ -141,7 +150,9 @@ Future<TimedCacheEntry<DiningHallMenu>> retrieveMenuFromDatabase(DiningHall dini
   Map<String, dynamic> result = results[0];
 
   int retrieved = result['retrieved'] as int;
-  DiningHallMenu diningHallMenu = DiningHallMenu.fromJson(json.decode(result['json']) as Map<String, dynamic>);
+  DiningHallMenu diningHallMenu = DiningHallMenu
+      .fromJson(json.decode(result['json']) as Map<String, dynamic>)
+      .copyWith(diningHall: diningHall);
 
   int elapsedMs = DateTime.now().millisecondsSinceEpoch - retrieved;
   if (diningHallMenu.closed) {
@@ -164,7 +175,11 @@ Future<TimedCacheEntry<DiningHallMenu>> retrieveMenuFromDatabase(DiningHall dini
   }
 
   // The entry is valid
-  return new TimedCacheEntry<DiningHallMenu>(diningHallMenu, added: retrieved);
+  return new TimedCacheEntry<DiningHallMenu>(
+      diningHallMenu,
+      added: retrieved,
+      expireTime: expireTime
+  );
 }
 
 Future saveMenuToDb(DiningHall diningHall, MenuDate date, Meal meal, DiningHallMenu menu) async {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:msu_helper/api/settings/setting_data.dart';
 import 'package:msu_helper/config/settings_config.dart';
 import 'package:msu_helper/widgets/settings/favorite_dining_hall.dart';
-import 'package:msu_helper/widgets/settings/venue_descriptions.dart';
+import 'package:msu_helper/widgets/settings/boolean_setting.dart';
 
 class SettingsPage extends StatefulWidget {
   static const String reloadableCategory = 'settings_dependent';
@@ -37,12 +37,8 @@ class SettingsPageState extends State<SettingsPage> {
             ),
             new Divider(),
             new Center(child: new Text('Dining Halls')),
-            new ListTile(
-              leading: new Icon(Icons.edit),
-              title: new Text(SettingsConfig.showVenueDescriptions.title),
-              subtitle: new Text(SettingsConfig.showVenueDescriptions.description),
-              trailing: new VenueDescriptions(),
-            ),
+            new BooleanSettingWidget(SettingsConfig.showVenueDescriptions),
+            new BooleanSettingWidget(SettingsConfig.collapseVenuesByDefault),
           ],
         ),
       )

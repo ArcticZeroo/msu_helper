@@ -19,7 +19,16 @@ class SettingsConfig {
       description: 'Some of them are pretty long. You can disable them here!'
   );
 
+  static const SettingData collapseVenuesByDefault = const BooleanSetting(
+      key: 'diningHall_collapseVenuesByDefault',
+      defaultValue: false,
+      title: 'Collapse Venues By Default',
+      description: 'If you have a favorite venue, don\'t let the '
+          'others take up your precious space!'
+  );
+
+
   static const List<SettingData> allSettings = const [
-    favoriteDiningHall, collapseDiningHallHours, showVenueDescriptions
+    favoriteDiningHall, collapseDiningHallHours, showVenueDescriptions, collapseVenuesByDefault
   ];
 }

@@ -2,10 +2,14 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-Future makeRestRequest(String url) async {
+Future makeRestRequest(String url, [Duration timeout = const Duration(seconds: 10)]) async {
   http.Response res;
   try {
-    res = await http.get(url);
+    if (timeout != null) {
+      res = await http.get(url).timeout(timeout);
+    } else {
+      res = await http.get(url);
+    }
   } catch (e) {
     return new Future.error(e);
   }

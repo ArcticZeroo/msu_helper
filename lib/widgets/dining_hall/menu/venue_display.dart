@@ -3,6 +3,7 @@ import 'package:msu_helper/api/dining_hall/structures/dining_hall_venue.dart';
 import 'package:msu_helper/api/dining_hall/structures/food_item.dart';
 import 'package:msu_helper/api/reloadable.dart';
 import 'package:msu_helper/config/settings_config.dart';
+import 'package:msu_helper/pages/dining_hall/hall_info_page.dart';
 import 'package:msu_helper/pages/settings_page.dart';
 import 'package:msu_helper/util/TextUtil.dart';
 import 'package:msu_helper/widgets/material_card.dart';
@@ -11,8 +12,9 @@ import '../../../api/settings/provider.dart' as settingsProvider;
 
 class VenueDisplay extends StatefulWidget {
   final DiningHallVenue venue;
+  final HallInfoPageState page;
 
-  VenueDisplay(this.venue);
+  VenueDisplay(this.venue, this.page);
 
   @override
   State<StatefulWidget> createState() => new VenueDisplayState();
@@ -20,7 +22,7 @@ class VenueDisplay extends StatefulWidget {
 
 class VenueDisplayState extends Reloadable<VenueDisplay> {
   Widget _menu;
-  bool collapsed = false;
+  bool collapsed;
 
   VenueDisplayState() : super([SettingsPage.reloadableCategory]);
 
@@ -33,6 +35,13 @@ class VenueDisplayState extends Reloadable<VenueDisplay> {
       children.add(new Text(widget.venue.description, style: MaterialCard.subtitleStyle));
     }
 
+    void toggleCollapsed() {
+      setState(() {
+        collapsed = !collapsed;
+        widget.page.setCollapsed(widget.venue, collapsed);
+      });
+    }
+
     return new InkWell(
       child: new Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -43,19 +52,11 @@ class VenueDisplayState extends Reloadable<VenueDisplay> {
           )),
           new IconButton(
               icon: new Icon(collapsed ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up),
-              onPressed: () {
-                setState(() {
-                  collapsed = !collapsed;
-                });
-              }
+              onPressed: toggleCollapsed
           )
         ],
       ),
-      onTap: () {
-        setState(() {
-          collapsed = !collapsed;
-        });
-      },
+      onTap: toggleCollapsed,
     );
   }
 
@@ -88,6 +89,12 @@ class VenueDisplayState extends Reloadable<VenueDisplay> {
         children: children,
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    collapsed = widget.page.getCollapsed(widget.venue);
   }
 
   @override

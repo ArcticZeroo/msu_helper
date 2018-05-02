@@ -5,6 +5,7 @@ import 'package:msu_helper/api/dining_hall/controller.dart';
 import 'package:msu_helper/api/dining_hall/provider.dart';
 import 'package:msu_helper/api/dining_hall/relevant.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
+import 'package:msu_helper/api/dining_hall/structures/dining_hall_venue.dart';
 import 'package:msu_helper/api/reloadable.dart';
 import 'package:msu_helper/api/settings/provider.dart';
 import 'package:msu_helper/pages/dining_hall/hall_info_page.dart';
@@ -54,7 +55,16 @@ class DiningMainPageState extends Reloadable<DiningMainPage> {
   Widget buildDiningHallButton(DiningHall diningHall) {
     return new InkWell(
       child: new Container(
-        decoration: new BoxDecoration(color: Colors.lightGreen[200]),
+        decoration: new BoxDecoration(
+            color: Colors.lightGreen[200],
+          boxShadow: [
+            new BoxShadow(
+              color: Colors.black12,
+              offset: const Offset(0.0, 1.0),
+              blurRadius: 4.0
+            )
+          ]
+        ),
         padding: const EdgeInsets.all(8.0),
         margin: const EdgeInsets.all(8.0),
         child: new Column(
@@ -107,17 +117,19 @@ class DiningMainPageState extends Reloadable<DiningMainPage> {
     if (favoriteHall != null) {
       children.add(new Column(
         children: <Widget>[
+          new Divider(),
           new Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               new Container(
                 padding: const EdgeInsets.all(6.0),
-                child: new Icon(Icons.star),
+                child: new Icon(Icons.star, color: Colors.yellow),
               ),
               new Text('Favorite Hall')
             ],
           ),
-          buildDiningHallButton(favoriteHall)
+          buildDiningHallButton(favoriteHall),
+          new Divider()
         ],
       ));
     }
