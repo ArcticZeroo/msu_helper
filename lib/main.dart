@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:msu_helper/api/preloader.dart';
+import 'package:msu_helper/pages/home_page.dart';
+import 'package:msu_helper/pages/preloading_page.dart';
 
 import './util/TextUtil.dart';
 import './pages/main_page.dart';
 
 void main() {
-  preloadPrimaryData()
-    .then((_) {
-      preloadSecondaryData();
-    })
-    .whenComplete(() {
-      runApp(new MsuHelperApp());
-    });
+  runApp(new MsuHelperApp());
 }
 
 class MsuHelperApp extends StatelessWidget {
@@ -24,7 +20,10 @@ class MsuHelperApp extends StatelessWidget {
         primarySwatch: Colors.green,
         accentColor: Colors.greenAccent
       ),
-      home: new MainPage()
+      home: new PreloadingPage(),
+      routes: {
+        'home': (context) => new MainPage()
+      },
     );
   }
 }
