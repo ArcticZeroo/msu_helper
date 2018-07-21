@@ -54,13 +54,20 @@ class PreloadingPage extends StatelessWidget {
   }
 
   Future preload() async {
+    List<Future> primaryFutures = [];
+
     for (String name in primaryLoaders.keys) {
-      try {
-        print('Preloading data for $name...');
-        await preloadSingle(primaryLoaders[name]);
-      } catch (e) {
-        print('Could not preload data for $name');
-      }
+      print('Preloading data for $name...');
+      primaryFutures.add(
+          preloadSingle(primaryLoaders[name])
+          .catchError((e) => print('Could not preload data for $name'))
+      );
+    }
+
+    try {
+      await Future.wait(primaryFutures);
+    } catch (e) {
+      print('Loading failed for a future');
     }
   }
 
