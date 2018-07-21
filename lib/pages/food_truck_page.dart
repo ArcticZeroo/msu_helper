@@ -4,6 +4,7 @@ import 'package:msu_helper/api/food_truck/provider.dart' as foodTruckProvider;
 import 'package:msu_helper/api/food_truck/structures/food_truck_stop.dart';
 import 'package:msu_helper/util/DateUtil.dart';
 import 'package:msu_helper/util/TextUtil.dart';
+import 'package:msu_helper/widgets/error_card.dart';
 import 'package:msu_helper/widgets/material_card.dart';
 import 'package:msu_helper/widgets/wrappable_widget.dart';
 
@@ -121,23 +122,10 @@ class FoodTruckPageState extends State<FoodTruckPage> {
     );
   }
 
-  Widget buildErrorCard(String text) {
-    return new Center(
-      child:  new Container(
-        padding: const EdgeInsets.all(32.0),
-        child: new Text(text, style: new TextStyle(color: Colors.white)),
-        decoration: new BoxDecoration(
-          color: Colors.deepOrange,
-          borderRadius: const BorderRadius.all(const Radius.circular(8.0))
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     if (failed) {
-      return buildErrorCard('Could not load food truck data.');
+      return new ErrorCardWidget('Could not load food truck data.');
     }
 
     if (_stops == null) {
@@ -149,7 +137,7 @@ class FoodTruckPageState extends State<FoodTruckPage> {
     List<Widget> columnChildren = <Widget>[];
 
     if (_stops.length == 0) {
-      return buildErrorCard('No stops found.');
+      return new ErrorCardWidget('No stops found.');
     }
 
     DateTime now = DateTime.now();
@@ -158,7 +146,7 @@ class FoodTruckPageState extends State<FoodTruckPage> {
     List<FoodTruckStop> notToday = _stops.where((stop) => !today.contains(stop) && stop.startDate.isAfter(now)).toList();
 
     if (today.isEmpty && notToday.isEmpty) {
-      return buildErrorCard('All stops listed have passed.');
+      return new ErrorCardWidget('All stops listed have passed.');
     }
 
     final TextStyle titleStyle = const TextStyle(
