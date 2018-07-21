@@ -27,4 +27,20 @@ class Movie extends Object with _$MovieSerializerMixin {
 
     return showings;
   }
+
+  static MovieShowing findLatestShowing(List<Movie> fromMovies) {
+    MovieShowing latestShowing;
+    for (Movie movie in fromMovies) {
+      // Copy it so we don't modify the original ref
+      var showings = List.of(movie.showings);
+
+      showings.sort((a, b) => b.date.compareTo(a.date));
+
+      if (latestShowing == null || latestShowing.date.isBefore(showings.first.date)) {
+        latestShowing = showings.first;
+      }
+    }
+
+    return latestShowing;
+  }
 }
