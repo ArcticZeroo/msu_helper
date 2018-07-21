@@ -121,12 +121,23 @@ class FoodTruckPageState extends State<FoodTruckPage> {
     );
   }
 
+  Widget buildErrorCard(String text) {
+    return new Center(
+      child:  new Container(
+        padding: const EdgeInsets.all(32.0),
+        child: new Text(text, style: new TextStyle(color: Colors.white)),
+        decoration: new BoxDecoration(
+          color: Colors.deepOrange,
+          borderRadius: const BorderRadius.all(const Radius.circular(8.0))
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (failed) {
-      return new Center(
-        child: new Text('Could not load food truck data.'),
-      );
+      return buildErrorCard('Could not load food truck data.');
     }
 
     if (_stops == null) {
@@ -138,10 +149,7 @@ class FoodTruckPageState extends State<FoodTruckPage> {
     List<Widget> columnChildren = <Widget>[];
 
     if (_stops.length == 0) {
-      return new Center(
-          child: new Text('No stops found.',
-          style: MaterialCard.subtitleStyle)
-      );
+      return buildErrorCard('No stops found.');
     }
 
     DateTime now = DateTime.now();
@@ -150,9 +158,7 @@ class FoodTruckPageState extends State<FoodTruckPage> {
     List<FoodTruckStop> notToday = _stops.where((stop) => !today.contains(stop) && stop.startDate.isAfter(now)).toList();
 
     if (today.isEmpty && notToday.isEmpty) {
-      return new Center(
-        child: new Text('All stops listed have passed.'),
-      );
+      return buildErrorCard('All stops listed have passed.');
     }
 
     final TextStyle titleStyle = const TextStyle(
