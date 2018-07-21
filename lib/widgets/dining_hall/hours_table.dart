@@ -199,6 +199,7 @@ class HoursTableState extends State<HoursTable> {
   @override
   Widget build(BuildContext context) {
     return new MaterialCard(
+      backgroundColor: Colors.green[200],
       title: new InkWell(
         child: new Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
