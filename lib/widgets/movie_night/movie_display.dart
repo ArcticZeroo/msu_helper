@@ -55,7 +55,7 @@ class MovieDisplayState extends State<MovieDisplay> {
         child: new Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            new Text(location),
+            new Text(location, style: new TextStyle(fontSize: 16.0)),
             new Container(
               padding: const EdgeInsets.only(left: 8.0, top: 4.0),
               child: new Column(
@@ -85,7 +85,7 @@ class MovieDisplayState extends State<MovieDisplay> {
     return new Container(
       padding: const EdgeInsets.all(8.0),
       child: new MaterialCard(
-          backgroundColor: Colors.green[300],
+          backgroundColor: Colors.green[200],
           title: new InkWell(
               child: new Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
