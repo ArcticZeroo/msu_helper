@@ -20,8 +20,8 @@ class MsuHelperApp extends StatelessWidget {
         primarySwatch: Colors.green,
         accentColor: Colors.greenAccent
       ),
-      home: new PreloadingPage(),
       routes: {
+        '/': (context) => new PreloadingPage(),
         'home': (context) => new MainPage()
       },
     );

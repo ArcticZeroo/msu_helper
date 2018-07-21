@@ -55,7 +55,23 @@ class SettingsPageState extends State<SettingsPage> {
             new BooleanSettingWidget(SettingsConfig.showVenueDescriptions, new Icon(Icons.edit)),
             new BooleanSettingWidget(SettingsConfig.collapseVenuesByDefault, new Icon(Icons.remove_red_eye)),
             new BooleanSettingWidget(SettingsConfig.showHallHours, new Icon(Icons.timer)),
-            new BooleanSettingWidget(SettingsConfig.intelligentVenueOrdering, new Icon(Icons.lightbulb_outline))
+            new BooleanSettingWidget(SettingsConfig.intelligentVenueOrdering, new Icon(Icons.lightbulb_outline)),
+            new Divider(color: Colors.black38),
+            new Center(child: new Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                new Icon(Icons.warning, color: Colors.deepOrange),
+                buildTitle('Experimental')
+              ])
+            ),
+            new ListTile(
+                leading: new Icon(Icons.refresh),
+                title: new Text('Refresh Data'),
+                subtitle: new Text('Something gone wrong? Tap here to return to the preloading page to reload data.'),
+                onTap: () {
+                  Navigator.of(context).pushReplacementNamed('/');
+                },
+            )
           ],
         ),
       )
