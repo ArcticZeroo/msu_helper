@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:msu_helper/api/preloader.dart';
-import 'package:msu_helper/pages/home_page.dart';
 import 'package:msu_helper/pages/preloading_page.dart';
 
 import './util/TextUtil.dart';
