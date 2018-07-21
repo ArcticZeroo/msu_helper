@@ -56,7 +56,7 @@ class DiningMainPageState extends Reloadable<DiningMainPage> {
     return new InkWell(
       child: new Container(
         decoration: new BoxDecoration(
-            color: Colors.lightGreen[200],
+            color: Colors.green[300],
           boxShadow: [
             new BoxShadow(
               color: Colors.black12,

@@ -48,13 +48,24 @@ class FoodTruckMiniWidgetState extends Reloadable<FoodTruckMiniWidget> {
 
     FoodTruckStop mostRelevant = await foodTruckController.retrieveMostRelevant();
 
+    if (mostRelevant == null) {
+      setState(() {
+        text = ['All stops listed have already passed.'];
+      });
+
+      return;
+    }
+
     setState(() {
       text = [
         '${stops.length} stop${stops.length == 1 ? '' : 's'} coming up.'
       ];
+      
+      DateTime twoDaysFromNow = DateUtil.zeroOutDay(DateTime.now()).add(new Duration(days: 2));
+      bool shouldAddDate = mostRelevant.startDate.isAtSameMomentAs(twoDaysFromNow) || mostRelevant.startDate.isAfter(twoDaysFromNow);
 
       if (mostRelevant != null) {
-        text.add('Next is at ${DateUtil.toTimeString(mostRelevant.startDate)} at ${mostRelevant.shortName}');
+        text.add('Next is ${shouldAddDate ? 'on ${DateUtil.getWeekday(mostRelevant.startDate)} ' : ''}at ${DateUtil.toTimeString(mostRelevant.startDate)} at ${mostRelevant.shortName}');
       }
     });
   }

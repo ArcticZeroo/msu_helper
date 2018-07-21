@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:msu_helper/api/settings/setting_data.dart';
 import 'package:msu_helper/config/settings_config.dart';
+import 'package:msu_helper/widgets/material_card.dart';
 import 'package:msu_helper/widgets/settings/favorite_dining_hall.dart';
 import 'package:msu_helper/widgets/settings/boolean_setting.dart';
 
@@ -12,6 +13,15 @@ class SettingsPage extends StatefulWidget {
 }
 
 class SettingsPageState extends State<SettingsPage> {
+  Widget buildTitle(String text) {
+    return new Container(
+      padding: const EdgeInsets.all(4.0),
+      child: new Center(
+        child: new Text(text),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -28,12 +38,17 @@ class SettingsPageState extends State<SettingsPage> {
         padding: const EdgeInsets.all(16.0),
         child: new ListView(
           children: <Widget>[
-            new Center(child: new Text('Home Page')),
+            buildTitle('Home Page'),
             new ListTile(
               leading: new Icon(Icons.restaurant),
-              title: new Text(SettingsConfig.favoriteDiningHall.title),
-              subtitle: new Text(SettingsConfig.favoriteDiningHall.description),
-              trailing: new FavoriteDiningHall(),
+              title: new Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  new Text(SettingsConfig.favoriteDiningHall.title),
+                  new Text(SettingsConfig.favoriteDiningHall.description, style: MaterialCard.subtitleStyle)
+                ],
+              ),
+              subtitle: new FavoriteDiningHall(),
             ),
             new Divider(color: Colors.black38,),
             new Center(child: new Text('Dining Halls')),

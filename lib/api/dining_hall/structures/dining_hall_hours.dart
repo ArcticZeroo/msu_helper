@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:msu_helper/api/dining_hall/meal.dart';
 import 'package:msu_helper/util/DateUtil.dart';
+import 'package:msu_helper/util/MapUtil.dart';
 import 'package:msu_helper/util/NumberUtil.dart';
 
 part './dining_hall_hours.g.dart';
@@ -9,23 +10,35 @@ part './dining_hall_hours.g.dart';
 @JsonSerializable()
 class DiningHallHours extends Object with _$DiningHallHoursSerializerMixin {
   DiningHallHours({
+    this.extra,
+    this.closeTimesRaw,
+    this.openTimesRaw,
     this.closed = false,
     this.begin = -1.0,
     this.end = -1.0,
     this.limitedMenuBegin = -1.0,
     this.grillClosesAt = -1.0,
     this.mealOrdinal = -1,
-    this.extra
-  });
+    })
+      : this.closeTimes = MapUtil.mapValues(closeTimesRaw, (v) => timeFromHour(v)),
+        this.openTimes = MapUtil.mapValues(openTimesRaw, (v) => timeFromHour(v));
 
   final bool closed;
-  double begin;
-  double end;
-  double limitedMenuBegin;
-  double grillClosesAt;
-  String extra;
+  final double begin;
+  final double end;
+  final double limitedMenuBegin;
+  final double grillClosesAt;
+  final String extra;
   @JsonKey(name: 'meal')
-  int mealOrdinal;
+  final int mealOrdinal;
+  @JsonKey(name: 'closeTimes')
+  final Map<String, num> closeTimesRaw;
+  @JsonKey(name: 'openTimes')
+  final Map<String, num> openTimesRaw;
+  @JsonKey(ignore: true)
+  final Map<String, TimeOfDay> closeTimes;
+  @JsonKey(ignore: true)
+  final Map<String, TimeOfDay> openTimes;
 
   bool get isLimitedMenu => this.begin == this.limitedMenuBegin;
   bool get isGrillClosed => this.begin == this.grillClosesAt;
@@ -47,7 +60,7 @@ class DiningHallHours extends Object with _$DiningHallHoursSerializerMixin {
     if (startCompare < 0) {
       return false;
     }
-    
+
     double endCompare = DateUtil.compareTime(now, endTime);
 
     // If the double is negative, now is before endTime

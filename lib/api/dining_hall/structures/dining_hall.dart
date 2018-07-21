@@ -8,6 +8,7 @@ import 'package:msu_helper/api/dining_hall/structures/dining_hall_venue.dart';
 import 'package:msu_helper/api/dining_hall/structures/food_item.dart';
 import 'package:msu_helper/api/dining_hall/time.dart';
 import 'package:msu_helper/util/DateUtil.dart';
+import 'package:msu_helper/util/UrlUtil.dart';
 
 import '../provider.dart' as diningHallProvider;
 
@@ -92,6 +93,10 @@ class DiningHall extends Object with _$DiningHallSerializerMixin {
     }
 
     return diningHallProvider.retrieveMenu(this, newDate, meal);
+  }
+
+  void openInMaps() {
+    UrlUtil.openMapsToLocation(this.hallName);
   }
 
   @override

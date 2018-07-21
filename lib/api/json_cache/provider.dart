@@ -41,6 +41,10 @@ Future retrieveJsonFromDb(String key, [num expireTime = ExpireTime.THIRTY_MINUTE
 }
 
 Future saveJsonToDb(String key, dynamic object) async {
+  if (object == null) {
+    throw new Exception('Object to save to $key is null');
+  }
+
   if (object is! String) {
     object = json.encode(object);
   }

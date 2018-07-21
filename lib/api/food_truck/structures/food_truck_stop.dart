@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:json_annotation/json_annotation.dart';
+import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/point.dart';
 import 'package:msu_helper/util/UrlUtil.dart';
+import 'package:msu_helper/api/dining_hall/provider.dart' as diningHallProvider;
 
 part './food_truck_stop.g.dart';
 
@@ -26,13 +30,25 @@ class FoodTruckStop extends Object with _$FoodTruckStopSerializerMixin {
 
   factory FoodTruckStop.fromJson(Map<String, dynamic> json) => _$FoodTruckStopFromJson(json);
 
-  void openMaps() {
-    if (location == null || location.isNull) {
-      UrlUtil.openMapsToLocation(mapsLocation);
+  Future openMaps() async {
+    if (!(location ?? new Point()).isNull) {
+      UrlUtil.openMapsToCoordinates(location.x, location.y);
       return;
     }
 
-    UrlUtil.openMapsToCoordinates(location.x, location.y);
+    List<DiningHall> diningHalls = await diningHallProvider.retrieveDiningList();
+
+    DiningHall mentionedHall = diningHalls.firstWhere(
+            (hall) => this.mapsLocation.toLowerCase().contains(hall.searchName),
+        orElse: () => null
+    );
+
+    if (mentionedHall != null) {
+      mentionedHall.openInMaps();
+      return;
+    }
+
+    UrlUtil.openMapsToLocation(mapsLocation);
   }
 
   bool get isNow {

@@ -67,9 +67,17 @@ class MovieNightPageState extends State<MovieNightPage> {
             orElse: () => null
         ) != null).toList();
 
+    DateTime latestShowing = Movie.findLatestShowing(_movies)?.date;
+
+    bool hasBeenAtLeastOneWeek = (latestShowing == null) || DateTime.now().difference(latestShowing).inDays >= 7;
+
     String title;
-    if (moviesNotPassed.length == 0 && Movie.NOT_YET_POSTED_DAYS.contains(now.weekday)) {
-      title = "Last Week's Movies";
+    if (moviesNotPassed.length == 0 && (Movie.NOT_YET_POSTED_DAYS.contains(now.weekday) || hasBeenAtLeastOneWeek)) {
+      if (hasBeenAtLeastOneWeek) {
+        title = "Listed Movies";
+      } else {
+        title = "Last Week's Movies";
+      }
     } else {
       title = "This Week's Movies";
     }

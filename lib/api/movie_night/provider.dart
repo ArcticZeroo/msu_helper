@@ -51,16 +51,18 @@ void setCached(List<Movie> movies) {
 Future<List<Movie>> retrieveMovies() async {
   return movieLock.synchronized(() async {
     if (movieCache != null && movieCache.isValid()) {
-      return movieCache.value;
+      return List.unmodifiable(movieCache.value);
     }
 
     List<Movie> fromDb = await retrieveMoviesFromDb();
 
     if (fromDb != null && fromDb.length != 0) {
       setCached(fromDb);
-      return fromDb;
+      return List.unmodifiable(fromDb);
     }
 
-    return retrieveMoviesFromWebAndSave();
+    var movies = await retrieveMoviesFromWebAndSave();
+
+    return List.unmodifiable(movies);
   });
 }

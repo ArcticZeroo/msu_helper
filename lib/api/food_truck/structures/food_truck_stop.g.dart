@@ -3,7 +3,7 @@
 part of 'food_truck_stop.dart';
 
 // **************************************************************************
-// Generator: JsonSerializableGenerator
+// JsonSerializableGenerator
 // **************************************************************************
 
 FoodTruckStop _$FoodTruckStopFromJson(Map<String, dynamic> json) =>

@@ -9,14 +9,18 @@ import 'food_truck/provider.dart' as foodTruckProvider;
 import 'dining_hall/provider.dart' as diningHallProvider;
 import 'movie_night/provider.dart' as movieNightProvider;
 
-Future preload(Future future, String name) {
-  return future.then((_) => print('Preloaded $name.')).catchError((e) {
+Future preload(Future future, String name) async {
+  try {
+    await future;
+    print('Preloaded $name.');
+  } catch (e) {
     print('Could not preload $name...');
 
     if (e is Error) {
+      print(e.toString());
       print(e.stackTrace);
     }
-  });
+  }
 }
 
 Future preloadPrimaryData() async {
@@ -32,16 +36,13 @@ Future preloadPrimaryData() async {
 
   settingsProvider.populate();
 
-  bool diningHallComplete;
-  Future diningHallFuture = diningHallProvider.retrieveDiningList()
-      .then((_) {
-        diningHallComplete = true;
-        return _;
-      })
-      .catchError((e) {
-        diningHallComplete = false;
-        return e;
-      });
+  bool diningHallComplete = true;
+  Future diningHallFuture = diningHallProvider.retrieveDiningList();
+  try {
+    await diningHallFuture;
+  } catch (e) {
+    diningHallComplete = false;
+  }
 
   loadFutures.add(preload(diningHallFuture, 'dining hall list'));
 
@@ -59,9 +60,9 @@ Future preloadSecondaryData() async {
 
   List<DiningHall> diningHalls = await diningHallProvider.retrieveDiningList();
 
-  MenuDate menuDate = MenuDate();
+  MenuDate menuDate = new MenuDate();
 
-  // For every day in the next week,
+  // For the next 3 days in the week (more can be loaded in demand)
   for (int i = 0; i < 3; i++) {
     List<Future> menuFutures = <Future>[];
 
@@ -69,27 +70,25 @@ Future preloadSecondaryData() async {
     for (DiningHall diningHall in diningHalls) {
       // For every meal this dining hall serves on this day
       for (Meal meal in Meal.asList()) {
-        try {
-          // Add it to the list without awaiting so we can do lots of requests in a short amount of time
-          menuFutures.add(diningHallProvider.retrieveMenu(diningHall, menuDate, meal));
-        } catch (e) {
-          // Doesn't HAVE to preload
-          continue;
-        }
+        // Add it to the list without awaiting so we can do lots of requests in a short amount of time
+        // No need to catch yet, since we will await it in a second
+        menuFutures.add(diningHallProvider.retrieveMenu(diningHall, menuDate, meal));
       }
     }
 
     try {
       await Future.wait(menuFutures);
+
+      print('Preloaded all menus for ${menuDate.weekday}');
     } catch (e) {
-      print('Could not preload menus...');
+      print('Could not preload menus for ${menuDate.weekday}');
 
       if (e is Error) {
         print(e.stackTrace);
       }
-    }
 
-    print('Preloaded all menus for ${menuDate.weekday}');
+      menuFutures.forEach((future) => future.timeout(new Duration()));
+    }
 
     menuDate.forward();
   }

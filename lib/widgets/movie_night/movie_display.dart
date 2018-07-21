@@ -55,7 +55,7 @@ class MovieDisplayState extends State<MovieDisplay> {
         child: new Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            new Text(location),
+            new Text(location, style: new TextStyle(fontSize: 16.0)),
             new Container(
               padding: const EdgeInsets.only(left: 8.0, top: 4.0),
               child: new Column(
@@ -82,27 +82,31 @@ class MovieDisplayState extends State<MovieDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialCard(
-        title: new InkWell(
-            child: new Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                new Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    new Text(widget.movie.title, style: MaterialCard.titleStyle),
-                    new Text('${widget.movie.showings.length} showing${widget.movie.showings.length == 1 ? '' : 's'} listed')
-                  ],
-                ),
-                new IconButton(
-                    icon: new Icon(collapsed ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up, color: Colors.black38, size: 24.0),
-                    onPressed: toggleCollapsed
-                )
-              ],
-            ),
-            onTap: toggleCollapsed
-        ),
-        body: collapsed ? null : buildBody()
+    return new Container(
+      padding: const EdgeInsets.all(8.0),
+      child: new MaterialCard(
+          backgroundColor: Colors.green[200],
+          title: new InkWell(
+              child: new Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  new Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      new Text(widget.movie.title, style: MaterialCard.titleStyle),
+                      new Text('${widget.movie.showings.length} showing${widget.movie.showings.length == 1 ? '' : 's'} listed')
+                    ],
+                  ),
+                  new IconButton(
+                      icon: new Icon(collapsed ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up, color: Colors.black38, size: 24.0),
+                      onPressed: toggleCollapsed
+                  )
+                ],
+              ),
+              onTap: toggleCollapsed
+          ),
+          body: collapsed ? null : buildBody()
+      ),
     );
   }
 }

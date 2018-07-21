@@ -3,7 +3,7 @@
 part of 'movie.dart';
 
 // **************************************************************************
-// Generator: JsonSerializableGenerator
+// JsonSerializableGenerator
 // **************************************************************************
 
 Movie _$MovieFromJson(Map<String, dynamic> json) => new Movie(
@@ -16,11 +16,8 @@ Movie _$MovieFromJson(Map<String, dynamic> json) => new Movie(
     (json['locations'] as List)?.map((e) => e as String)?.toList(),
     json['groupedShowings'] == null
         ? null
-        : new Map<String, List<int>>.fromIterables(
-            (json['groupedShowings'] as Map<String, dynamic>).keys,
-            (json['groupedShowings'] as Map)
-                .values
-                .map((e) => (e as List)?.map((e) => e as int)?.toList())))
+        : groupedShowingsFromJson(
+            json['groupedShowings'] as Map<String, dynamic>))
   ..nextShowing = json['nextShowing'] == null
       ? null
       : new MovieShowing.fromJson(json['nextShowing'] as Map<String, dynamic>);
@@ -37,10 +34,7 @@ abstract class _$MovieSerializerMixin {
         'locations': locations,
         'groupedShowings': groupedShowings == null
             ? null
-            : new Map<String, dynamic>.fromIterables(
-                groupedShowings.keys,
-                groupedShowings.values
-                    .map((e) => e?.map((e) => e?.millisecondsSinceEpoch)?.toList())),
+            : groupedShowingsToJson(groupedShowings),
         'nextShowing': nextShowing
       };
 }

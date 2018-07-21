@@ -3,7 +3,7 @@
 part of 'dining_hall_venue.dart';
 
 // **************************************************************************
-// Generator: JsonSerializableGenerator
+// JsonSerializableGenerator
 // **************************************************************************
 
 DiningHallVenue _$DiningHallVenueFromJson(Map<String, dynamic> json) =>

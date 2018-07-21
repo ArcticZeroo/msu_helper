@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:msu_helper/api/dining_hall/meal.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_hours.dart';
@@ -11,9 +10,10 @@ import 'package:msu_helper/api/dining_hall/structures/food_item.dart';
 import 'package:msu_helper/api/dining_hall/time.dart';
 import 'package:msu_helper/config/settings_config.dart';
 import 'package:msu_helper/util/DateUtil.dart';
-import 'package:msu_helper/util/TextUtil.dart';
+import 'package:msu_helper/util/UrlUtil.dart';
 import 'package:msu_helper/widgets/dining_hall/hours_table.dart';
 import 'package:msu_helper/widgets/dining_hall/menu/venue_display.dart';
+import 'package:msu_helper/widgets/error_card.dart';
 import 'package:msu_helper/widgets/material_card.dart';
 import 'package:msu_helper/widgets/wrappable_widget.dart';
 import '../../api/settings/provider.dart' as settingsProvider;
@@ -147,7 +147,7 @@ class HallInfoPageState extends State<HallInfoPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         new IconButton(
-            icon: new Icon(Icons.arrow_back, color: Colors.lightGreen,),
+            icon: new Icon(Icons.arrow_back, color: Colors.lightGreen[900],),
             onPressed: () {
               _date.back();
               loadSelected();
@@ -157,10 +157,10 @@ class HallInfoPageState extends State<HallInfoPage> {
               _date.now();
               loadSelected();
             },
-            child: new Text('Go To Today', style: new TextStyle(color: Colors.green))
+            child: new Text('Go To Today', style: new TextStyle(color: Colors.green[700]))
         ),
         new IconButton(
-            icon: new Icon(Icons.arrow_forward, color: Colors.lightGreen),
+            icon: new Icon(Icons.arrow_forward, color: Colors.lightGreen[900]),
             onPressed: () {
               _date.forward();
               loadSelected();
@@ -182,9 +182,9 @@ class HallInfoPageState extends State<HallInfoPage> {
             children: <Widget>[
               new Container(
                   padding: const EdgeInsets.all(6.0),
-                  child: new Icon(Icons.today, color: Colors.lightGreen)
+                  child: new Icon(Icons.today, color: Colors.green[800])
               ),
-              new Text('Select Date', style: new TextStyle(color: Colors.green),)
+              new Text('Select Date', style: new TextStyle(color: Colors.green[900]),)
             ],
           ),
         )
@@ -193,13 +193,13 @@ class HallInfoPageState extends State<HallInfoPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         new Container(
-            child: new Text('Meal:', style: new TextStyle(color: Colors.green),),
+            child: new Text('Meal:', style: new TextStyle(color: Colors.green[800])),
             margin: const EdgeInsets.only(right: 8.0)
         ),
         new DropdownButton<Meal>(
             value: _selectedMeal,
             items: Meal.asList().map((meal) => new DropdownMenuItem(
-                child: new Text(meal.name, style: new TextStyle(color: Colors.lightGreen),),
+                child: new Text(meal.name, style: new TextStyle(color: Colors.lightGreen[900])),
                 value: meal)
             ).toList(),
             onChanged: (Meal selected) {
@@ -260,6 +260,7 @@ class HallInfoPageState extends State<HallInfoPage> {
     return new Container(
       margin: const EdgeInsets.symmetric(vertical: 16.0),
       child: new MaterialCard(
+        backgroundColor: Colors.green[100],
         body: new Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: children,
@@ -278,7 +279,7 @@ class HallInfoPageState extends State<HallInfoPage> {
 
   Widget buildMenuItem(int i) {
     if (_menuForMeal.closed) {
-      return new Center(child: new Text('The dining hall is closed for this meal time.'));
+      return new ErrorCardWidget('The dining hall is closed for this meal time.');
     }
 
     return new VenueDisplay(_venues[i], this);
@@ -308,6 +309,15 @@ class HallInfoPageState extends State<HallInfoPage> {
     return new Scaffold(
         appBar: new AppBar(
           title: new Text('${widget.diningHall.hallName} - Menu/Hours'),
+          actions: <Widget>[
+            new IconButton(
+                icon: const Icon(Icons.location_on),
+                onPressed: () {
+                  UrlUtil.openMapsToLocation(widget.diningHall.hallName);
+                },
+                tooltip: 'Search in Maps'
+            )
+          ],
         ),
         body: new ListView.builder(
           padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),

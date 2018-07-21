@@ -3,7 +3,7 @@
 part of 'food_item.dart';
 
 // **************************************************************************
-// Generator: JsonSerializableGenerator
+// JsonSerializableGenerator
 // **************************************************************************
 
 FoodItem _$FoodItemFromJson(Map<String, dynamic> json) => new FoodItem(

@@ -7,7 +7,7 @@ class Point extends Object with _$PointSerializerMixin {
   double x;
   double y;
   
-  Point(this.x, this.y);
+  Point([this.x = 0.0, this.y = 0.0]);
 
   factory Point.fromJson(Map<String, dynamic> json) => _$PointFromJson(json);
 

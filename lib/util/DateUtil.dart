@@ -88,4 +88,14 @@ class DateUtil {
   static String formatDateFully(DateTime from) {
     return new DateFormat("EEEE, MMMM d'${TextUtil.getOrdinalSuffix(from.day)}', y").format(from);
   }
+
+  static DateTime zeroOutDay(DateTime from) {
+    return from.subtract(new Duration(
+      hours: from.hour,
+      minutes: from.minute,
+      seconds: from.second,
+      milliseconds: from.millisecond,
+      microseconds: from.microsecond
+    ));
+  }
 }
