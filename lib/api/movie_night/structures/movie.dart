@@ -17,8 +17,13 @@ Map<String, List<DateTime>> groupedShowingsFromJson(Map<String, dynamic> raw) {
   return showings;
 }
 
-Map<String, List<int>> groupedShowingsToJson(Map<String, List<DateTime>> showings) {
-  return showings == null ? null : new Map.fromIterables(showings.keys, showings.values.map((v) => v.map((d) => d.millisecondsSinceEpoch)));
+Map<String, dynamic> groupedShowingsToJson(Map<String, List<DateTime>> groupedShowings) {
+  return groupedShowings == null
+      ? null
+      : new Map<String, dynamic>.fromIterables(
+      groupedShowings.keys,
+      groupedShowings.values
+          .map((e) => e?.map((e) => e?.millisecondsSinceEpoch)?.toList()));
 }
 
 @JsonSerializable()
