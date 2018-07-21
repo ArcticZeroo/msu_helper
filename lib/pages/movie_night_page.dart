@@ -74,7 +74,7 @@ class MovieNightPageState extends State<MovieNightPage> {
     String title;
     if (moviesNotPassed.length == 0 && (Movie.NOT_YET_POSTED_DAYS.contains(now.weekday) || hasBeenAtLeastOneWeek)) {
       if (hasBeenAtLeastOneWeek) {
-        title = "Listed Movies";
+        title = "Old Listed Movies";
       } else {
         title = "Last Week's Movies";
       }
