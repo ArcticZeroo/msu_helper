@@ -3,7 +3,7 @@
 part of 'point.dart';
 
 // **************************************************************************
-// Generator: JsonSerializableGenerator
+// JsonSerializableGenerator
 // **************************************************************************
 
 Point _$PointFromJson(Map<String, dynamic> json) =>

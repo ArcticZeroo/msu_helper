@@ -9,23 +9,29 @@ part './dining_hall_hours.g.dart';
 @JsonSerializable()
 class DiningHallHours extends Object with _$DiningHallHoursSerializerMixin {
   DiningHallHours({
+    this.extra,
+    this.closeTimesRaw,
+    this.openTimesRaw,
     this.closed = false,
     this.begin = -1.0,
     this.end = -1.0,
     this.limitedMenuBegin = -1.0,
     this.grillClosesAt = -1.0,
     this.mealOrdinal = -1,
-    this.extra
   });
 
   final bool closed;
-  double begin;
-  double end;
-  double limitedMenuBegin;
-  double grillClosesAt;
-  String extra;
+  final double begin;
+  final double end;
+  final double limitedMenuBegin;
+  final double grillClosesAt;
+  final String extra;
   @JsonKey(name: 'meal')
-  int mealOrdinal;
+  final int mealOrdinal;
+  @JsonKey(name: 'closeTimes')
+  final Map<String, num> closeTimesRaw;
+  @JsonKey(name: 'openTimes')
+  final Map<String, num> openTimesRaw;
 
   bool get isLimitedMenu => this.begin == this.limitedMenuBegin;
   bool get isGrillClosed => this.begin == this.grillClosesAt;

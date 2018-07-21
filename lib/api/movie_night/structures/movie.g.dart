@@ -3,7 +3,7 @@
 part of 'movie.dart';
 
 // **************************************************************************
-// Generator: JsonSerializableGenerator
+// JsonSerializableGenerator
 // **************************************************************************
 
 Movie _$MovieFromJson(Map<String, dynamic> json) => new Movie(
