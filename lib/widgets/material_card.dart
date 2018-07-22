@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 import 'package:msu_helper/util/ObjectUtil.dart';
 
 class MaterialCard extends StatelessWidget {
   static const titleStyle = const TextStyle(
-    fontSize: 24.0,
-    color: Colors.black87
+      fontSize: 24.0,
+      color: Colors.black87
   );
   static const subtitleStyle = const TextStyle(
-    fontSize: 14.0,
-    color: Colors.black54
+      fontSize: 14.0,
+      color: Colors.black54
   );
   static const bodyStyle = const TextStyle(
-    fontSize: 14.0,
-    color: Colors.black87
+      fontSize: 14.0,
+      color: Colors.black87
   );
 
   final Widget title;
@@ -53,7 +52,7 @@ class MaterialCard extends StatelessWidget {
     }
 
     EdgeInsets bodyPadding = const EdgeInsets.only(
-      left: 16.0, right: 16.0
+        left: 16.0, right: 16.0
     );
 
     if (actions != null && actions.length != 0) {

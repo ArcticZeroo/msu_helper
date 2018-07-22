@@ -3,42 +3,40 @@ import 'package:msu_helper/widgets/material_card.dart';
 
 class CollapsibleCard extends StatefulWidget {
   final Widget title;
-  final Builder bodyBuilder;
+  final Widget body;
+  final ValueNotifier<bool> isCollapsed;
 
-  const CollapsibleCard({Key key, this.title, this.bodyBuilder}) : super(key: key);
-  CollapsibleCard.stringTitle({Key key, String title, Builder bodyBuilder})
-      : this(key: key, title: new Text(title), bodyBuilder: bodyBuilder);
-  CollapsibleCard.staticBody({Key key, Widget title, Widget body})
-      : this(key: key, title: title, bodyBuilder: new Builder(builder: (ctx) => body));
+  CollapsibleCard({Key key, this.title, this.body, bool initial = false}) :
+        this.isCollapsed = new ValueNotifier(initial),
+        super(key: key);
 
   @override
   _CollapsibleCardState createState() => new _CollapsibleCardState();
 }
 
 class _CollapsibleCardState extends State<CollapsibleCard> {
-  bool _isCollapsed;
-
   @override
   Widget build(BuildContext context) {
     return new MaterialCard(
       title: new InkWell(
         child: new Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             widget.title,
             new IconButton(
-                icon: new Icon(_isCollapsed ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up),
+                icon: new Icon(widget.isCollapsed.value ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up),
                 onPressed: null,
-                tooltip: _isCollapsed ? 'Expand' : 'Collapse'
+                tooltip: widget.isCollapsed.value ? 'Expand' : 'Collapse'
             )
           ],
         ),
         onTap: () {
           setState(() {
-            _isCollapsed = !_isCollapsed;
+            widget.isCollapsed.value = !widget.isCollapsed.value;
           });
         },
       ),
-      body: _isCollapsed ? null : widget.bodyBuilder.build(context),
+      body: widget.isCollapsed.value ? null : widget.body.build(context),
     );
   }
 }
