@@ -72,6 +72,7 @@ class VenueDisplayState extends Reloadable<VenueDisplay> {
         title: new Text(foodItem.name),
         subtitle: foodItem.allergens.length == 0 ? null : new Text('Contains: ${foodItem.allergens.join(', ')}'),
         trailing: new Row(
+          mainAxisSize: MainAxisSize.min,
           children: foodItem.preferences.map((a) => new Container(
             padding: const EdgeInsets.symmetric(horizontal: 4.0),
             child: new CircleAvatar(
