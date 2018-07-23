@@ -13,6 +13,8 @@ abstract class Reloadable<T extends StatefulWidget> extends State<T> {
       : _categories = categories.map((c) => c.toLowerCase()).toList();
 
 
+  bool get canSetState => !_disposed && mounted;
+
   @override
   void initState() {
     super.initState();
@@ -35,17 +37,13 @@ abstract class Reloadable<T extends StatefulWidget> extends State<T> {
   }
 
   void reload(Map<String, dynamic> params) {
-    if (_disposed) {
-      return;
-    }
-
     setState(() {});
   }
 
   static void triggerReload([List<String> categories = const [defaultCategory], Map<String, dynamic> params = const {}]) {
     print('[Reloadable] triggering reload of categories $categories');
 
-    List<Reloadable> reloaded = new List();
+    Set<Reloadable> reloaded = new Set();
 
     for (String category in categories) {
       category = category.toLowerCase();
@@ -58,7 +56,12 @@ abstract class Reloadable<T extends StatefulWidget> extends State<T> {
 
       for (Reloadable reloadable in reloadablesInCategory) {
         // Prevent reloading a State more than once
+        // per call of triggerReload
         if (reloaded.contains(reloadable)) {
+          continue;
+        }
+
+        if (!reloadable.canSetState) {
           continue;
         }
 
