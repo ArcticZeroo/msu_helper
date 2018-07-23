@@ -5,6 +5,7 @@ class CollapsibleCard extends StatefulWidget {
   final Widget title;
   final Widget body;
   final Color backgroundColor;
+  final Color arrowColor;
   final ValueNotifier<bool> isCollapsed;
 
   CollapsibleCard({
@@ -12,6 +13,7 @@ class CollapsibleCard extends StatefulWidget {
     this.title,
     this.body,
     this.backgroundColor,
+    this.arrowColor,
     bool initial = false
   }) :
         this.isCollapsed = new ValueNotifier(initial),
@@ -32,7 +34,10 @@ class _CollapsibleCardState extends State<CollapsibleCard> {
           children: <Widget>[
             widget.title,
             new IconButton(
-                icon: new Icon(widget.isCollapsed.value ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up),
+                icon: new Icon(
+                    widget.isCollapsed.value ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up,
+                    color: widget.arrowColor
+                ),
                 onPressed: null,
                 tooltip: widget.isCollapsed.value ? 'Expand' : 'Collapse'
             )
