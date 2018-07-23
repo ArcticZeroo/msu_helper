@@ -4,9 +4,16 @@ import 'package:msu_helper/widgets/material_card.dart';
 class CollapsibleCard extends StatefulWidget {
   final Widget title;
   final Widget body;
+  final Color backgroundColor;
   final ValueNotifier<bool> isCollapsed;
 
-  CollapsibleCard({Key key, this.title, this.body, bool initial = false}) :
+  CollapsibleCard({
+    Key key,
+    this.title,
+    this.body,
+    this.backgroundColor,
+    bool initial = false
+  }) :
         this.isCollapsed = new ValueNotifier(initial),
         super(key: key);
 
@@ -18,6 +25,7 @@ class _CollapsibleCardState extends State<CollapsibleCard> {
   @override
   Widget build(BuildContext context) {
     return new MaterialCard(
+      backgroundColor: widget.backgroundColor,
       title: new InkWell(
         child: new Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
