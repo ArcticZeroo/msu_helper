@@ -49,7 +49,7 @@ class VenueDisplayState extends Reloadable<VenueDisplay> {
           padding: const EdgeInsets.symmetric(horizontal: 4.0),
           child: new CircleAvatar(
             backgroundImage: new AssetImage('assets/dining/${a.toLowerCase().split(' ').join('_')}.png'),
-            maxRadius: 8.0,
+            maxRadius: 12.0,
           ),
         )).toList(),
       ),
@@ -59,9 +59,8 @@ class VenueDisplayState extends Reloadable<VenueDisplay> {
   Widget buildMenu() {
     return new Container(
         padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
-        child: new ListView.builder(
-          itemCount: widget.venue.menu.length,
-          itemBuilder: (ctx, i) => buildFoodItem(widget.venue.menu[i]),
+        child: new Column(
+          children: widget.venue.menu.map(buildFoodItem).toList(),
         )
     );
   }
@@ -69,8 +68,14 @@ class VenueDisplayState extends Reloadable<VenueDisplay> {
   @override
   void initState() {
     super.initState();
+    print('Venue should start as collapsed=${widget.page.getCollapsed(widget.venue)}');
     collapsibleCard = new CollapsibleCard(
-      title: new Column(children: getTitleChildren()),
+      title: new WrappableWidget(
+          new Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: getTitleChildren()
+          )
+      ),
       body: buildMenu(),
       initial: widget.page.getCollapsed(widget.venue),
     );
