@@ -36,7 +36,7 @@ class _CollapsibleCardState extends State<CollapsibleCard> {
           });
         },
       ),
-      body: widget.isCollapsed.value ? null : widget.body.build(context),
+      body: widget.isCollapsed.value ? null : widget.body,
     );
   }
 }
