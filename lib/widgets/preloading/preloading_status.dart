@@ -5,7 +5,7 @@ class PreloadingStatusWidget extends StatelessWidget {
   final double _iconSize = 24.0;
 
   final String _text;
-  final FutureStatus _status;
+  final AsyncSnapshot _status;
 
   PreloadingStatusWidget(this._text, this._status);
 
@@ -26,25 +26,31 @@ class PreloadingStatusWidget extends StatelessWidget {
     );
   }
 
-  Widget getStatusIcon(FutureStatus status) {
-    switch (status) {
-      case FutureStatus.running:
+  Widget getStatusIcon(AsyncSnapshot snapshot) {
+    switch (snapshot.connectionState) {
+      case ConnectionState.active:
+      case ConnectionState.waiting:
         return buildProgressIndicator();
-      case FutureStatus.done:
-        return buildCircleAvatar(Colors.green, new Icon(
-          Icons.done,
-          color: Colors.white,
-          size: _iconSize * 0.75,
-        ));
-      case FutureStatus.failed:
-        return buildCircleAvatar(Colors.redAccent, new Icon(
-          Icons.close,
-          color: Colors.white,
-          size: _iconSize * 0.75,
-        ));
-      case FutureStatus.idle:
+      case ConnectionState.done:
+        Color color = snapshot.hasError ? Colors.redAccent : Colors.green;
+        IconData icon = snapshot.hasError ? Icons.close : Icons.done;
+
+        return buildCircleAvatar(
+            color,
+            new Icon(
+              icon,
+              color: Colors.white,
+              size: _iconSize * 0.75,
+            )
+        );
       default:
-        return buildProgressIndicator(Colors.grey[400]);
+        // Yeah this is stupid, but it's easier than writing a bunch of
+        // unnecessary padding around just an Icon so I can have a little
+        // dot inside the same radius as the other circle avatars
+        return buildCircleAvatar(
+            Colors.white,
+            new Icon(Icons.fiber_manual_record, color: Colors.grey[400])
+        );
     }
   }
 

@@ -68,42 +68,14 @@ class PreloadingPage extends StatelessWidget {
     });
   }
 
-  Future preloadSingle(PreloadingWidget widget) {
-    var completer = new Completer();
-
-    onStatusChange() {
-      FutureStatus newStatus = widget.status.value;
-
-      if (newStatus == FutureStatus.done) {
-        completer.complete();
-      } else if (newStatus == FutureStatus.failed) {
-        completer.completeError(null);
-      } else {
-        return;
-      }
-
-      widget.status.removeListener(onStatusChange);
-    }
-
-    widget.status.addListener(onStatusChange);
-
-    if (widget.status.value.index > FutureStatus.preload.index) {
-      onStatusChange();
-    } else {
-      widget.status.value = FutureStatus.preload;
-    }
-
-    return completer.future;
-  }
-
   Future preloadPrimary() async {
     List<Future> primaryFutures = [];
 
     for (String name in primaryLoaders.keys) {
       print('Preloading data for $name...');
       primaryFutures.add(
-          preloadSingle(primaryLoaders[name])
-              .catchError((e) => print('Could not preload data for $name'))
+          primaryLoaders[name].start()
+              .catchError((e) => print('Could not preload data for $name: $e'))
       );
     }
 
@@ -116,16 +88,18 @@ class PreloadingPage extends StatelessWidget {
 
   Future preloadSecondary() async {
     try {
-      await preloadSingle(secondaryLoaders[Identifier.diningHall]);
+      await secondaryLoaders[Identifier.diningHall].start();
     } catch (e) {
-      print('Loading of dining hall menus failed');
+      print('Loading of dining hall menus failed: $e');
     }
   }
 
   Future preload() async {
     await preloadPrimary();
 
-    if (primaryLoaders[Identifier.diningHall].status.value == FutureStatus.failed) {
+    try {
+      await primaryLoaders[Identifier.diningHall].future.value;
+    } catch (e) {
       return;
     }
 
