@@ -18,4 +18,10 @@ class ListUtil {
 
     return copy;
   }
+
+  static void insertBetween<T>(List<T> list, T e) {
+    for (int i = 0; i < list.length - 2; i += 2) {
+      list.insert(i, e);
+    }
+  }
 }

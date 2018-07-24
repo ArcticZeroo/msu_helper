@@ -5,18 +5,20 @@ import 'package:msu_helper/util/NumberUtil.dart';
 import 'package:msu_helper/util/TextUtil.dart';
 
 class DateUtil {
-  static const WEEKDAYS = [
+  static const List<int> WEEKDAYS = [
     DateTime.sunday, DateTime.monday, DateTime.tuesday, DateTime.wednesday,
     DateTime.thursday, DateTime.friday, DateTime.saturday,
   ];
 
-  static const WEEKDAY_NAMES = [
+  static const List<String> WEEKDAY_NAMES = [
     'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'
   ];
 
-  static const WEEKDAY_ABBREVIATIONS = [
+  static const List<String> WEEKDAY_ABBREVIATIONS = [
     'sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'
   ];
+
+  static const Duration EASTERN_TIMEZONE_OFFSET = const Duration(hours: -5);
 
   static String getAbbreviation(dynamic from) {
     int index;
@@ -97,5 +99,29 @@ class DateUtil {
       milliseconds: from.millisecond,
       microseconds: from.microsecond
     ));
+  }
+
+  static Map<String, List<DateTime>> groupByWeekday(List<DateTime> dates) {
+    Map<String, List<DateTime>> datesByWeekday = {};
+
+    for (DateTime showing in dates) {
+      String weekday = DateUtil.getWeekday(showing);
+
+      if (!datesByWeekday.containsKey(weekday)) {
+        datesByWeekday[weekday] = [];
+      }
+
+      datesByWeekday[weekday].add(showing);
+    }
+
+    List<String> sortedWeekdays = datesByWeekday.keys.toList();
+    sortedWeekdays.sort((a, b) => DateUtil.getWeekdayValue(a) - DateUtil.getWeekdayValue(b));
+
+    for (String weekday in sortedWeekdays) {
+      List<DateTime> showingsForWeekday = datesByWeekday[weekday];
+      showingsForWeekday.sort((a, b) => a.compareTo(b));
+    }
+
+    return datesByWeekday;
   }
 }
