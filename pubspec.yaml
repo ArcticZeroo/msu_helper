@@ -2,6 +2,7 @@ name: msu_helper
 description: Handy MSU utilities
 
 dependencies:
+  android_intent: any
   url_launcher: any
   intl: any
   sqflite: any
@@ -20,6 +21,7 @@ dev_dependencies:
     sdk: flutter
   build_runner: any
   json_serializable: ^0.5.0
+  #flutter_launch_icons: any
 
 
 # For information on the generic Dart part of this file, see the
@@ -68,3 +70,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies, 
   # see https://flutter.io/custom-fonts/#from-packages
+
+flutter_icons:
+  android: true
+  ios: false
+  image_path: "assets/logo.png"
+  adaptive_icon_background: "#8BC34A"
+  adaptive_icon_foreground: "assets/foreground.png"
