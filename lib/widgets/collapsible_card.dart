@@ -23,7 +23,42 @@ class CollapsibleCard extends StatefulWidget {
   _CollapsibleCardState createState() => new _CollapsibleCardState();
 }
 
-class _CollapsibleCardState extends State<CollapsibleCard> {
+class _CollapsibleCardState extends State<CollapsibleCard> with SingleTickerProviderStateMixin {
+  AnimationController _animationController;
+
+  _CollapsibleCardState() {
+    _animationController = new AnimationController(vsync: this, duration: new Duration(milliseconds: 100));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (!widget.isCollapsed.value) {
+      showChildren();
+    }
+  }
+
+  void showChildren() {
+    if (_animationController.value == 0) {
+      _animationController.forward();
+    }
+  }
+
+  void hideChildren() {
+    if (_animationController.value != 0) {
+      _animationController.reverse();
+    }
+  }
+
+  void updateChildrenVisibility() {
+    if (widget.isCollapsed.value) {
+      hideChildren();
+    } else {
+      showChildren();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return new MaterialCard(
@@ -46,10 +81,14 @@ class _CollapsibleCardState extends State<CollapsibleCard> {
         onTap: () {
           setState(() {
             widget.isCollapsed.value = !widget.isCollapsed.value;
+            updateChildrenVisibility();
           });
         },
       ),
-      body: widget.isCollapsed.value ? null : widget.body,
+      body: new SizeTransition(
+        sizeFactor: _animationController,
+        child: widget.body,
+      ),
     );
   }
 }
