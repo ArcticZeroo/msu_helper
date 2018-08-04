@@ -127,7 +127,7 @@ class PreloadingPage extends StatelessWidget {
       )
     ];
 
-    preload().timeout(new Duration(seconds: 15)).then((_) {
+    preload().timeout(new Duration(seconds: 15)).whenComplete(() {
       Navigator.of(context).pushReplacementNamed('home');
     });
 
