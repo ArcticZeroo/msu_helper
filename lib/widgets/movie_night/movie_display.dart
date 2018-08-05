@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:msu_helper/api/movie_night/structures/movie.dart';
 import 'package:msu_helper/api/movie_night/structures/movie_showing.dart';
 import 'package:msu_helper/util/DateUtil.dart';
-import 'package:msu_helper/widgets/collapsible_card.dart';
+import 'package:msu_helper/widgets/collapsible/collapsible_card.dart';
+import 'package:msu_helper/widgets/collapsible/collapsible_custom.dart';
 import 'package:msu_helper/widgets/material_card.dart';
 
 class MovieDisplay extends StatefulWidget {
@@ -143,10 +144,10 @@ class MovieDisplayState extends State<MovieDisplay> {
             buildNumberIndicator(widget.movie.showings.length)
           ],
         ),
-      cardBorderRadius: const BorderRadius.only(
-          topLeft: borderRadius,
-          topRight: borderRadius
-      )
+        cardBorderRadius: const BorderRadius.only(
+            topLeft: borderRadius,
+            topRight: borderRadius
+        )
     );
   }
 
@@ -222,23 +223,21 @@ class MovieDisplayState extends State<MovieDisplay> {
         .map(buildWeekdayRow)
         .toList(growable: false);
 
-    return new Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          buildLocationCard(location, showings.length),
-          buildMiniCard(
-              Colors.green[200],
-              new Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: weekdayChildren,
-              ),
-              cardBorderRadius: const BorderRadius.only(
-                  bottomLeft: borderRadius,
-                  bottomRight: borderRadius
-              )
+    return new CollapsibleCustom(
+      title: buildLocationCard(location, showings.length),
+      body: buildMiniCard(
+          Colors.green[200],
+          new Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: weekdayChildren,
+          ),
+          cardBorderRadius: const BorderRadius.only(
+              bottomLeft: borderRadius,
+              bottomRight: borderRadius
           )
-        ]
+      ),
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch
     );
   }
 

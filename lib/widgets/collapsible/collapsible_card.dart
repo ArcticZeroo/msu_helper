@@ -27,7 +27,10 @@ class _CollapsibleCardState extends State<CollapsibleCard> with SingleTickerProv
   AnimationController _animationController;
 
   _CollapsibleCardState() {
-    _animationController = new AnimationController(vsync: this, duration: new Duration(milliseconds: 100));
+    _animationController = new AnimationController(
+        vsync: this,
+        duration: new Duration(milliseconds: 100)
+    );
   }
 
   @override

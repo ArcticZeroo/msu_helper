@@ -6,7 +6,7 @@ import 'package:msu_helper/config/settings_config.dart';
 import 'package:msu_helper/pages/dining_hall/dining_hall_page.dart';
 import 'package:msu_helper/pages/settings_page.dart';
 import 'package:msu_helper/util/TextUtil.dart';
-import 'package:msu_helper/widgets/collapsible_card.dart';
+import 'package:msu_helper/widgets/collapsible/collapsible_card.dart';
 import 'package:msu_helper/widgets/material_card.dart';
 import 'package:msu_helper/widgets/wrappable_widget.dart';
 import '../../../api/settings/provider.dart' as settingsProvider;
