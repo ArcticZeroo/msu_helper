@@ -203,22 +203,6 @@ class MovieDisplayState extends State<MovieDisplay> {
   }
 
   Widget buildWeekdayRow(List<DateTime> dates) {
-    /*List<Widget> columnRows = [];
-    List<DateTime> copiedDays = List.from(dayTimes);
-
-    while (copiedDays.length > 0) {
-      int remaining = min(timesPerRow, copiedDays.length);
-
-      List<DateTime> next = copiedDays.sublist(0, remaining);
-
-      columnRows.add(new Row(
-        mainAxisSize: MainAxisSize.min,
-        children: next.map(buildTimeCard).toList(),
-      ));
-
-      copiedDays = copiedDays.sublist(remaining);
-    }*/
-
     return new Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
