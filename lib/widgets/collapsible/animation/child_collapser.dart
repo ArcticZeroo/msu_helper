@@ -51,6 +51,8 @@ class _ChildCollapserState extends State<ChildCollapser> with SingleTickerProvid
   }
 
   void updateVisibility() {
+    print('Updating visibility to ${widget.isCollapsed.value ? 'collapsed' : 'shown'}');
+
     if (widget.isCollapsed.value) {
       hideChildren();
     } else {

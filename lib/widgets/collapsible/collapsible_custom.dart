@@ -36,6 +36,8 @@ class _CollapsibleCustomState extends State<CollapsibleCustom> {
       initial: widget.isCollapsed.value,
       collapseController: widget.isCollapsed,
     );
+
+    widget.isCollapsed.addListener(() { print('Widget isCollapsed has changed to ${widget.isCollapsed.value}'); });
   }
 
   @override
@@ -47,6 +49,7 @@ class _CollapsibleCustomState extends State<CollapsibleCustom> {
         new InkWell(
           child: widget.title,
           onTap: () {
+            print('Ink well was tapped at ${DateTime.now().millisecondsSinceEpoch}, and isCollapsed is ${widget.isCollapsed.value ? 'collapsed' : 'shown'}');
             widget.isCollapsed.value = !widget.isCollapsed.value;
           },
         ),
