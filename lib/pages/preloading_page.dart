@@ -26,49 +26,13 @@ class PreloadingPage extends StatelessWidget {
     primaryLoaders[Identifier.movieNight] = new PreloadingWidget('Movie Night Listings', movieNightProvider.retrieveMovies);
     primaryLoaders[Identifier.diningHall] = new PreloadingWidget('Available Dining Halls + Hours', diningHallProvider.retrieveDiningList);
 
-    secondaryLoaders[Identifier.diningHall] = new PreloadingWidget('Dining Hall Menus', () async {
-      print('Preloading secondary data...');
-
-      List<DiningHall> diningHalls = await diningHallProvider.retrieveDiningList();
-
-      MenuDate menuDate = new MenuDate();
-
-      // For the next 3 days in the week (more can be loaded in demand)
-      for (int i = 0; i < 3; i++) {
-        List<Future> menuFutures = <Future>[];
-
-        // Load every dining hall's menus on this day
-        for (DiningHall diningHall in diningHalls) {
-          // For every meal this dining hall serves on this day
-          for (Meal meal in Meal.asList()) {
-            // Add it to the list without awaiting so we can do lots of requests in a short amount of time
-            // No need to catch yet, since we will await it in a second
-            menuFutures.add(diningHallProvider.retrieveMenu(diningHall, menuDate, meal));
-          }
-        }
-
-        try {
-          await Future.wait(menuFutures);
-
-          print('Preloaded all menus for ${menuDate.weekday}');
-        } catch (e) {
-          print('Could not preload menus for ${menuDate.weekday}');
-
-          if (e is Error) {
-            print(e.stackTrace);
-          }
-
-          menuFutures.forEach((future) => future.timeout(new Duration()));
-        }
-
-        menuDate.forward();
-      }
-
-      print('Preloaded all dining hall menus.');
-    });
+    secondaryLoaders[Identifier.diningHall] = new PreloadingWidget('Dining Hall Menus', preloadHallMenus);
   }
 
   Future preloadPrimary() async {
+    print('---------------');
+    print('Primary preload initializing...');
+
     for (String name in primaryLoaders.keys) {
       print('Preloading data for $name...');
 
@@ -78,14 +42,64 @@ class PreloadingPage extends StatelessWidget {
         print('Could not load data for $name: $e');
       }
     }
+
+    print('Primary preload complete');
+    print('---------------');
+  }
+
+  Future preloadHallMenus() async {
+    print('Preloading secondary data...');
+
+    List<DiningHall> diningHalls = await diningHallProvider.retrieveDiningList();
+
+    MenuDate menuDate = new MenuDate();
+
+    // For the next 3 days in the week (more can be loaded in demand)
+    for (int i = 0; i < 3; i++) {
+      List<Future> menuFutures = <Future>[];
+
+      // Load every dining hall's menus on this day
+      for (DiningHall diningHall in diningHalls) {
+        // For every meal this dining hall serves on this day
+        for (Meal meal in Meal.asList()) {
+          // Add it to the list without awaiting so we can do lots of requests in a short amount of time
+          // No need to catch yet, since we will await it in a second
+          menuFutures.add(diningHallProvider.retrieveMenu(diningHall, menuDate, meal));
+        }
+      }
+
+      try {
+        await Future.wait(menuFutures);
+
+        print('Preloaded all menus for ${menuDate.weekday}');
+      } catch (e) {
+        print('Could not preload menus for ${menuDate.weekday}');
+
+        if (e is Error) {
+          print(e.stackTrace);
+        }
+
+        menuFutures.forEach((future) => future.timeout(new Duration()));
+      }
+
+      menuDate.forward();
+    }
+
+    print('Preloaded all dining hall menus.');
   }
 
   Future preloadSecondary() async {
+    print('---------------');
+    print('Secondary preload initializing...');
+
     try {
       await secondaryLoaders[Identifier.diningHall].start();
     } catch (e) {
       print('Loading of dining hall menus failed: $e');
     }
+
+    print('Secondary preload complete');
+    print('---------------');
   }
 
   Future preload() async {
@@ -105,8 +119,8 @@ class PreloadingPage extends StatelessWidget {
     List<Widget> columnChildren = <Widget>[
       new Container(
         decoration: new BoxDecoration(
-          color: Colors.green[600],
-          borderRadius: const BorderRadius.all(const Radius.circular(6.0))
+            color: Colors.green[600],
+            borderRadius: const BorderRadius.all(const Radius.circular(6.0))
         ),
         padding: const EdgeInsets.all(16.0),
         margin: const EdgeInsets.only(bottom: 16.0),
@@ -127,7 +141,9 @@ class PreloadingPage extends StatelessWidget {
       )
     ];
 
-    preload().timeout(new Duration(seconds: 15)).whenComplete(() {
+    preload()
+        .timeout(new Duration(seconds: 15))
+        .whenComplete(() {
       Navigator.of(context).pushReplacementNamed('home');
     });
 
