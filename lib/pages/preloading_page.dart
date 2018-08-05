@@ -47,42 +47,43 @@ class PreloadingPage extends StatelessWidget {
     print('---------------');
   }
 
+  Future preloadMenusForDay(MenuDate date) async {
+    var menuDate = new MenuDate(date.time);
+
+    print('Preloading menus for ${menuDate.weekday}');
+    try {
+      await diningHallProvider.retrieveMenusForDayFromWeb(menuDate);
+    } catch (e) {
+      throw e;
+    }
+    print('Preloaded menus for ${menuDate.weekday}');
+  }
+
   Future preloadHallMenus() async {
     print('Preloading secondary data...');
 
-    List<DiningHall> diningHalls = await diningHallProvider.retrieveDiningList();
-
     MenuDate menuDate = new MenuDate();
+    List<Future> menuFutures = <Future>[];
 
     // For the next 3 days in the week (more can be loaded in demand)
     for (int i = 0; i < 3; i++) {
-      List<Future> menuFutures = <Future>[];
-
-      // Load every dining hall's menus on this day
-      for (DiningHall diningHall in diningHalls) {
-        // For every meal this dining hall serves on this day
-        for (Meal meal in Meal.asList()) {
-          // Add it to the list without awaiting so we can do lots of requests in a short amount of time
-          // No need to catch yet, since we will await it in a second
-          menuFutures.add(diningHallProvider.retrieveMenu(diningHall, menuDate, meal));
-        }
-      }
-
-      try {
-        await Future.wait(menuFutures);
-
-        print('Preloaded all menus for ${menuDate.weekday}');
-      } catch (e) {
-        print('Could not preload menus for ${menuDate.weekday}');
-
-        if (e is Error) {
-          print(e.stackTrace);
-        }
-
-        menuFutures.forEach((future) => future.timeout(new Duration()));
-      }
+      menuFutures.add(preloadMenusForDay(menuDate));
 
       menuDate.forward();
+    }
+
+    try {
+      await Future.wait(menuFutures);
+
+      print('Preloaded all menus');
+    } catch (e) {
+      print('Could not preload menus');
+
+      if (e is Error) {
+        print(e.stackTrace);
+      }
+
+      menuFutures.forEach((future) => future.timeout(new Duration()));
     }
 
     print('Preloaded all dining hall menus.');

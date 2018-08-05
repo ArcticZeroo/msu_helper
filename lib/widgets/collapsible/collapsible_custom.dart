@@ -14,9 +14,10 @@ class CollapsibleCustom extends StatefulWidget {
     this.body,
     this.mainAxisAlignment,
     this.crossAxisAlignment,
+    ValueNotifier collapseController,
     bool initial = false
   }) :
-        this.isCollapsed = new ValueNotifier(initial),
+        this.isCollapsed = collapseController ?? new ValueNotifier(initial),
         super(key: key);
 
   @override

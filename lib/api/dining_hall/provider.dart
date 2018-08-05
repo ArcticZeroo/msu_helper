@@ -48,7 +48,7 @@ class MenuMetadata {
   final DiningHall diningHall;
   final MenuDate menuDate;
   final Meal meal;
-  
+
   MenuMetadata(this.diningHall, this.menuDate, this.meal);
 }
 
@@ -122,6 +122,10 @@ Future<List<DiningHall>> retrieveDiningList() async {
   });
 }
 
+DiningHallMenu _diningHallMenuFromJson(Map<String, dynamic> json, DiningHall diningHall) {
+  return DiningHallMenu.fromJson(json).copyWith(diningHall: diningHall);
+}
+
 Future<DiningHallMenu> retrieveMenuFromWeb(DiningHall diningHall, MenuDate date, Meal meal) async {
   String dateString = date.getFormatted();
 
@@ -129,7 +133,81 @@ Future<DiningHallMenu> retrieveMenuFromWeb(DiningHall diningHall, MenuDate date,
 
   Map<String, dynamic> response = (await makeRestRequest(url)) as Map<String, dynamic>;
 
-  return DiningHallMenu.fromJson(response).copyWith(diningHall: diningHall);
+  return _diningHallMenuFromJson(response, diningHall);
+}
+
+Future<Map<DiningHall, List<DiningHallMenu>>> retrieveMenusForDayFromWeb(MenuDate date) async {
+  String dateString = date.getFormatted();
+
+  String url = PageRoute.join([PageRoute.getDining(PageRoute.MENU), 'all', dateString]);
+
+  Map<String, dynamic> response = (await makeRestRequest(url)) as Map<String, dynamic>;
+
+  Map<String, DiningHall> searchNameToHall = {};
+  List<DiningHall> diningHalls = await retrieveDiningList();
+
+  for (DiningHall diningHall in diningHalls) {
+    searchNameToHall[diningHall.searchName] = diningHall;
+  }
+
+  Map<DiningHall, List<DiningHallMenu>> menusForDay = {};
+
+  for (String hallSearchName in response.keys) {
+    DiningHall diningHall = searchNameToHall[hallSearchName];
+
+    List<dynamic> jsonHallMenus = response[hallSearchName] as List<dynamic>;
+    List<DiningHallMenu> hallMenus = [];
+
+    for (var json in jsonHallMenus) {
+      Map<String, dynamic> jsonMenu = json as Map<String, dynamic>;
+
+      hallMenus.add(_diningHallMenuFromJson(
+          jsonMenu,
+          diningHall
+      ));
+    }
+
+    menusForDay[diningHall] = hallMenus;
+  }
+
+  return menusForDay;
+}
+
+Future saveManyMenusToDbAndCache(Map<DiningHall, List<DiningHallMenu>> diningHallToMenus, MenuDate date) async {
+  Database db = await MainDatabase.getDbInstance();
+
+  String dateString = date.getFormatted();
+  String where = "searchName in (?) AND date = ?";
+
+  // Clear out all old entries so we don't have to
+  // deal with an over complex insert or update type deal
+  await db.delete(
+      TableName.diningHallMenu,
+      where: where,
+      whereArgs: [
+        diningHallToMenus.keys.map((diningHall) => diningHall.searchName).join(','),
+        dateString
+      ]
+  );
+
+  int retrieved = DateTime.now().millisecondsSinceEpoch;
+
+  List<String> values = [];
+
+  for (var entry in diningHallToMenus.entries) {
+    DiningHall diningHall = entry.key;
+    String searchName = entry.key.searchName;
+    int menuCount = entry.value.length;
+    for (int i = 0; i < menuCount; i++) {
+      DiningHallMenu menu = entry.value[i];
+      String menuJson = json.encode(menu);
+
+      values.add('($searchName, $dateString, $i, $retrieved, $menuJson)');
+      menuCache.put(serializeToKey(diningHall, date, Meal.fromOrdinal(i)), menu, added: retrieved);
+    }
+  }
+
+  await db.rawInsert("INSERT INTO ${TableName.diningHallMenu}(searchName, date, meal, retrieved, json) VALUES ${values.join(',')}");
 }
 
 Future<TimedCacheEntry<DiningHallMenu>> retrieveMenuFromDatabase(DiningHall diningHall, MenuDate date, Meal meal) async {
