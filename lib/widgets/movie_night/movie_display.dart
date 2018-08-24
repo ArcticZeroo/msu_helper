@@ -223,29 +223,29 @@ class MovieDisplayState extends State<MovieDisplay> {
         .map(buildWeekdayRow)
         .toList(growable: false);
 
-    return new CollapsibleCustom(
-      title: buildLocationCard(location, showings.length),
-      body: buildMiniCard(
-          Colors.green[200],
-          new Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: weekdayChildren,
-          ),
-          cardBorderRadius: const BorderRadius.only(
-              bottomLeft: borderRadius,
-              bottomRight: borderRadius
-          )
-      ),
+    return new Column(
+      children: [
+        buildLocationCard(location, showings.length),
+        buildMiniCard(
+            Colors.green[200],
+            new Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: weekdayChildren,
+            ),
+            cardBorderRadius: const BorderRadius.only(
+                bottomLeft: borderRadius,
+                bottomRight: borderRadius
+            )
+        )
+      ],
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch
     );
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    List<Widget> columnChildren = <Widget>[buildTitleCard()];
+    List<Widget> columnChildren = <Widget>[];
 
     for (var entry in widget.movie.groupedShowings.entries) {
       columnChildren.add(buildLocationShowingsCard(entry.key, entry.value));
@@ -253,8 +253,12 @@ class MovieDisplayState extends State<MovieDisplay> {
 
     return new Container(
       padding: const EdgeInsets.all(8.0),
-      child: new Column(
-        children: columnChildren.toList(),
+      child: new CollapsibleCustom(
+        isEnabled: false,
+        title: buildTitleCard(),
+        body: new Column(
+          children: columnChildren
+      ),
       ),
     );
   }
