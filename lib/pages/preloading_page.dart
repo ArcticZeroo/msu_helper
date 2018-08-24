@@ -50,12 +50,14 @@ class PreloadingPage extends StatelessWidget {
   Future preloadMenusForDay(MenuDate date) async {
     var menuDate = new MenuDate(date.time);
 
-    print('Preloading menus for ${menuDate.weekday}');
+    print('Preloading menus for ${menuDate.weekday} from the web');
+
     try {
       await diningHallProvider.retrieveMenusForDayFromWeb(menuDate);
     } catch (e) {
       throw e;
     }
+
     print('Preloaded menus for ${menuDate.weekday}');
   }
 
@@ -77,10 +79,12 @@ class PreloadingPage extends StatelessWidget {
 
       print('Preloaded all menus');
     } catch (e) {
-      print('Could not preload menus');
+      print('Could not preload menus:');
 
       if (e is Error) {
         print(e.stackTrace);
+      } else {
+        print(e.toString());
       }
 
       menuFutures.forEach((future) => future.timeout(new Duration()));
