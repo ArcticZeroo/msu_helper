@@ -136,6 +136,41 @@ Future<DiningHallMenu> retrieveMenuFromWeb(DiningHall diningHall, MenuDate date,
   return _diningHallMenuFromJson(response, diningHall);
 }
 
+/*Future<Map<DiningHall, List<DiningHallMenu>>> retrieveMenusForDayFromDb(MenuDate date) async {
+  Database db = await MainDatabase.getDbInstance();
+
+  var rows = await db.query(TableName.diningHallMenu,
+      columns: ['searchName', 'date', 'meal', 'json'],
+      where: 'date = ?',
+      whereArgs: [date.getFormatted()]
+  );
+
+  Map<DiningHall, List<Meal>> containedMeals = {};
+
+  for (var row in rows) {
+
+  }
+
+  Map<DiningHall, int> expectedMenusPerHall = {};
+
+  List<DiningHall> halls = await retrieveDiningList();
+  List<Meal> meals = Meal.asList();
+
+  for (var meal in meals) {
+    for (var hall in halls) {
+      var hours = hall.getHoursForMeal(date, meal);
+
+      if (hours != null || hours.closed) {
+        continue;
+      }
+
+      expectedMenusPerHall.update(hall, (v) => v + 1, ifAbsent: () => 1);
+    }
+  }
+}*/
+
+//TODO: Don't retrieve these menus unless necessary. It may be pertinent to switch from storing a single menu
+// to all the menus for a day or something
 Future<Map<DiningHall, List<DiningHallMenu>>> retrieveMenusForDayFromWeb(MenuDate date) async {
   String dateString = date.getFormatted();
 
