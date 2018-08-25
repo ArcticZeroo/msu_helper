@@ -38,6 +38,13 @@ class _ChildCollapserState extends State<ChildCollapser> with SingleTickerProvid
     widget.isCollapsed.addListener(updateVisibility);
   }
 
+  @override
+  void dispose() {
+    widget.isCollapsed.removeListener(updateVisibility);
+
+    super.dispose();
+  }
+
   void showChildren() {
     if (_animationController.value == 0) {
       _animationController.forward();

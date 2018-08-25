@@ -8,28 +8,20 @@ import 'package:msu_helper/widgets/collapsible/collapsible_card.dart';
 import 'package:msu_helper/widgets/collapsible/collapsible_custom.dart';
 import 'package:msu_helper/widgets/material_card.dart';
 
-class MovieDisplay extends StatefulWidget {
+class MovieDisplay extends StatelessWidget {
   final Movie movie;
-
-  MovieDisplay(this.movie);
-
-  @override
-  State<StatefulWidget> createState() => new MovieDisplayState();
-}
-
-class MovieDisplayState extends State<MovieDisplay> {
   static const Radius borderRadius = const Radius.circular(4.0);
   final Widget mediumSpacer = new Container(height: 8.0);
   final Widget smallSpacer = new Container(height: 4.0);
   final int timesPerRow = 2;
-
-  bool collapsed = false;
-
+  
+  MovieDisplay(this.movie);
+  
   Widget buildBody() {
     List<Widget> children = [];
 
-    for (String location in widget.movie.groupedShowings.keys) {
-      List<DateTime> showings = widget.movie.groupedShowings[location];
+    for (String location in movie.groupedShowings.keys) {
+      List<DateTime> showings = movie.groupedShowings[location];
 
       Map<String, List<DateTime>> showingsByWeekday = {};
 
@@ -94,9 +86,9 @@ class MovieDisplayState extends State<MovieDisplay> {
       new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-      new Text(widget.movie.title,
+      new Text(movie.title,
       style: MaterialCard.titleStyle.copyWith(color: Colors.white)),
-      new Text('${widget.movie.showings.length} showing${widget.movie.showings.length == 1 ? '' : 's'} listed',
+      new Text('${movie.showings.length} showing${movie.showings.length == 1 ? '' : 's'} listed',
       style: MaterialCard.subtitleStyle.copyWith(color: Colors.grey[300]))
       ],
       )
@@ -138,10 +130,10 @@ class MovieDisplayState extends State<MovieDisplay> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             new Icon(Icons.movie, color: Colors.white),
-            new Text(widget.movie.title,
+            new Text(movie.title,
                 textAlign: TextAlign.center,
                 style: MaterialCard.titleStyle.copyWith(color: Colors.white)),
-            buildNumberIndicator(widget.movie.showings.length)
+            buildNumberIndicator(movie.showings.length)
           ],
         ),
         cardBorderRadius: const BorderRadius.only(
@@ -247,14 +239,14 @@ class MovieDisplayState extends State<MovieDisplay> {
   Widget build(BuildContext context) {
     List<Widget> columnChildren = <Widget>[];
 
-    for (var entry in widget.movie.groupedShowings.entries) {
+    for (var entry in movie.groupedShowings.entries) {
       columnChildren.add(buildLocationShowingsCard(entry.key, entry.value));
     }
 
     return new Container(
       padding: const EdgeInsets.all(8.0),
       child: new CollapsibleCustom(
-        isEnabled: false,
+        isEnabled: true,
         title: buildTitleCard(),
         body: new Column(
           children: columnChildren
