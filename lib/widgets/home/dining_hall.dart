@@ -61,6 +61,10 @@ class _DiningHallMiniWidgetState extends Reloadable<DiningHallMiniWidget> {
   Future _retrieveDataAndUpdate() async {
     favoriteHall = await retrieveFavoriteHall();
 
+    if (!mounted) {
+      return;
+    }
+
     if (favoriteHall == null) {
       setState(() {
         text = ['You don\'t have a favorite hall set! Add one in the settings.'];

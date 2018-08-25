@@ -48,7 +48,7 @@ class DateUtil {
     return new DateFormat("EEEE").format(from);
   }
 
-  static String formatTimeOfDay(TimeOfDay from, [int add = 1]) {
+  static String formatTimeOfDay(TimeOfDay from, [int add = 0]) {
     if (from.hour == 24) {
       return 'Midnight';
     }
