@@ -20,17 +20,11 @@ class VisibilityToggleWidget extends StatefulWidget {
 }
 
 class _VisibilityToggleState extends State<VisibilityToggleWidget> {
-  _VisibilityToggleState() {
-    print('Constructor for state has been called');
-  }
-
   @override
   void initState() {
-    print('Initializing state!');
     super.initState();
 
     widget._isVisibleController.addListener(() {
-      print('widget visibility has changed!');
       setState(() {});
     });
   }

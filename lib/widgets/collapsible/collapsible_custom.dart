@@ -21,9 +21,7 @@ class CollapsibleCustom extends StatefulWidget {
   }) :
         this.isCollapsed = collapseController ?? new ValueNotifier(initial),
         this.isEnabled = new ValueNotifier(isEnabled),
-        super(key: key) {
-    print('Creating a new collapsible custom element');
-  }
+        super(key: key);
 
   void setEnabled(bool value) {
     this.isEnabled.value = value;
@@ -45,8 +43,6 @@ class _CollapsibleCustomState extends State<CollapsibleCustom> {
       initial: widget.isCollapsed.value,
       collapseController: widget.isCollapsed,
     );
-
-    widget.isCollapsed.addListener(() { print('Widget isCollapsed has changed to ${widget.isCollapsed.value}'); });
   }
 
   @override
@@ -58,15 +54,11 @@ class _CollapsibleCustomState extends State<CollapsibleCustom> {
         new InkWell(
           child: widget.title,
           onTap: () {
-            print('Ink well was tapped at ${DateTime.now().millisecondsSinceEpoch}, and isCollapsed is ${widget.isCollapsed.value ? 'collapsed' : 'shown'}');
-
             if (!widget.isEnabled.value) {
-              print('not enabled');
               return;
             }
 
             setState(() {
-              print('setting state');
               widget.isCollapsed.value = !widget.isCollapsed.value;
             });
           },
