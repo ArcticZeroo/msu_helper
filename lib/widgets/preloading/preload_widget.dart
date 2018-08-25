@@ -29,11 +29,22 @@ class PreloadingWidget extends StatefulWidget {
 }
 
 class PreloadingWidgetState extends State<PreloadingWidget> {
+  void reload() {
+    setState(() {});
+  }
+
   @override
   void initState() {
-    widget.future.addListener(() => setState(() {}));
+    widget.future.addListener(this.reload);
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    widget.future.removeListener(this.reload);
+
+    super.dispose();
   }
 
   @override

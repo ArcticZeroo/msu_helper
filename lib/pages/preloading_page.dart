@@ -13,6 +13,7 @@ import 'package:msu_helper/api/settings/provider.dart' as settingsProvider;
 import 'package:msu_helper/api/food_truck/provider.dart' as foodTruckProvider;
 import 'package:msu_helper/api/dining_hall/provider.dart' as diningHallProvider;
 import 'package:msu_helper/api/movie_night/provider.dart' as movieNightProvider;
+import 'package:msu_helper/widgets/visibility_toggle.dart';
 
 class PreloadingPage extends StatelessWidget {
   final Map<String, PreloadingWidget> primaryLoaders = {};
@@ -119,8 +120,22 @@ class PreloadingPage extends StatelessWidget {
     await preloadSecondary();
   }
 
+  void openHomePage(BuildContext context) {
+    Navigator.of(context).pushReplacementNamed('home');
+  }
+
   @override
   Widget build(BuildContext context) {
+    VisibilityToggleWidget skipButton = new VisibilityToggleWidget(
+      child: new RaisedButton(
+        color: Colors.blue,
+          child: new Text('Skip'),
+          onPressed: () => openHomePage(context),
+        textColor: Colors.white
+      ),
+      isInitiallyVisible: false
+    );
+
     List<Widget> columnChildren = <Widget>[
       new Container(
         decoration: new BoxDecoration(
@@ -141,16 +156,27 @@ class PreloadingPage extends StatelessWidget {
       ),
       new Card(
         child: new Column(
-          children: primaryLoaders.values.toList()..addAll(secondaryLoaders.values),
+          children: <Widget>[]
+            ..addAll(primaryLoaders.values)
+            ..addAll(secondaryLoaders.values)
         ),
-      )
+      ),
+      skipButton
     ];
+
+    primaryLoaders[Identifier.settings].future.addListener(() {
+      Future settingsFuture = primaryLoaders[Identifier.settings].future.value;
+
+      settingsFuture.then((v) {
+        print('Settings has been loaded');
+        skipButton.isVisible = true;
+        return v;
+      });
+    });
 
     preload()
         .timeout(new Duration(seconds: 15))
-        .whenComplete(() {
-      Navigator.of(context).pushReplacementNamed('home');
-    });
+        .whenComplete(() => openHomePage(context));
 
     return new Scaffold(
       body: new Container(
