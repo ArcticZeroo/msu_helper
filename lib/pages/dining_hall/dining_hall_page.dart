@@ -38,6 +38,7 @@ class HallInfoPageState extends State<HallInfoPage> {
   DiningHallMenu _menuForMeal;
   DiningHallMenu _comparisonMenu;
   List<DiningHallVenue> _venues;
+  List<Widget> _venueDisplays;
 
   bool failed = false;
 
@@ -102,8 +103,10 @@ class HallInfoPageState extends State<HallInfoPage> {
     }
 
     if (_venues == null) {
-      _venues = _menuForMeal.venues;
+      _venues = _menuForMeal.venues ?? [];
     }
+
+    _venueDisplays = _venues?.map(buildMenuItem)?.toList();
 
     setState(() {
       failed = false;
@@ -252,6 +255,18 @@ class HallInfoPageState extends State<HallInfoPage> {
         }
       }
 
+      if (hoursForMeal.closeTimes != null && hoursForMeal.closeTimes.length != 0) {
+        for (var closingName in hoursForMeal.closeTimes.keys) {
+          mealServingText.add('$closingName will close at ${DateUtil.formatTimeOfDay(hoursForMeal.closeTimes[closingName])}');
+        }
+      }
+
+      if (hoursForMeal.openTimes != null && hoursForMeal.openTimes.length != 0) {
+        for (var openingName in hoursForMeal.openTimes.keys) {
+          mealServingText.add('$openingName will open at ${DateUtil.formatTimeOfDay(hoursForMeal.openTimes[openingName])}');
+        }
+      }
+
       children.add(new Column(
         children: mealServingText.map((s) => new Text(s)).toList(),
       ));
@@ -277,12 +292,12 @@ class HallInfoPageState extends State<HallInfoPage> {
     loadSelected();
   }
 
-  Widget buildMenuItem(int i) {
+  Widget buildMenuItem(DiningHallVenue venue) {
     if (_menuForMeal.closed) {
       return new ErrorCardWidget('The dining hall is closed for this meal time.');
     }
 
-    return new VenueDisplay(_venues[i], this);
+    return new VenueDisplay(venue, this);
   }
 
   @override
@@ -319,16 +334,10 @@ class HallInfoPageState extends State<HallInfoPage> {
             )
           ],
         ),
-        body: new ListView.builder(
-          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
-          itemCount: items,
-          itemBuilder: (context, i) {
-            if (i < columnChildren.length) {
-              return columnChildren[i];
-            }
-
-            return buildMenuItem(i - columnChildren.length);
-          },
+        body: new ListView(
+          children: <Widget>[]
+            ..addAll(columnChildren)
+            ..addAll(_venueDisplays ?? []),
         )
     );
   }
