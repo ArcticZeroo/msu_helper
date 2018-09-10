@@ -21,6 +21,7 @@ class MaterialCard extends StatelessWidget {
   final Widget body;
   final VoidCallback onTap;
   final Color backgroundColor;
+  final EdgeInsets cardPadding;
 
   MaterialCard({
     this.title,
@@ -28,7 +29,8 @@ class MaterialCard extends StatelessWidget {
     this.actions,
     this.body,
     this.onTap,
-    this.backgroundColor
+    this.backgroundColor,
+    this.cardPadding = const EdgeInsets.symmetric(vertical: 24.0)
   });
 
   @override
@@ -79,7 +81,7 @@ class MaterialCard extends StatelessWidget {
     }
 
     Widget cardChild = new Container(
-      padding: const EdgeInsets.symmetric(vertical: 24.0),
+      padding: cardPadding,
       child: new Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: columnChildren,
