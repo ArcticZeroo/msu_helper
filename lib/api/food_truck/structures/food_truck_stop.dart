@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:json_annotation/json_annotation.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
+import 'package:msu_helper/api/food_truck/enum/stop_state.dart';
 import 'package:msu_helper/api/point.dart';
 import 'package:msu_helper/util/UrlUtil.dart';
 import 'package:msu_helper/api/dining_hall/provider.dart' as diningHallProvider;
@@ -62,6 +63,31 @@ class FoodTruckStop extends Object with _$FoodTruckStopSerializerMixin {
     DateTime now = DateTime.now();
 
     return now.day == startDate.day && now.month == startDate.month && now.year == startDate.year;
+  }
+  
+  FoodTruckStopState get currentState {
+    if (isCancelled) {
+      return FoodTruckStopState.cancelled;
+    } else {
+      if (isToday) {
+        DateTime now = DateTime.now();
+
+        // Check if this stop has passed first so we can add the maps button in else
+        if (endDate.isBefore(now) || endDate.isAtSameMomentAs(now)) {
+          return FoodTruckStopState.passed;
+        } else {
+          // Check if start <= now < end
+          if (isNow) {
+            return FoodTruckStopState.active;
+            // Otherwise, since we know now is not after the end, it must be coming later than now
+          } else {
+            return FoodTruckStopState.arriving_soon;
+          }
+        }
+      }
+    }
+    // Stop has not passed, been cancelled, and is not today
+    return FoodTruckStopState.upcoming;
   }
 
   @override
