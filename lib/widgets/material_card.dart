@@ -22,6 +22,7 @@ class MaterialCard extends StatelessWidget {
   final VoidCallback onTap;
   final Color backgroundColor;
   final EdgeInsets cardPadding;
+  final EdgeInsets bodyPadding;
 
   MaterialCard({
     this.title,
@@ -30,7 +31,8 @@ class MaterialCard extends StatelessWidget {
     this.body,
     this.onTap,
     this.backgroundColor,
-    this.cardPadding = const EdgeInsets.symmetric(vertical: 24.0)
+    this.cardPadding = const EdgeInsets.symmetric(vertical: 24.0),
+    this.bodyPadding = const EdgeInsets.only(left: 16.0, right:16.0)
   });
 
   @override
@@ -53,12 +55,10 @@ class MaterialCard extends StatelessWidget {
       ));
     }
 
-    EdgeInsets bodyPadding = const EdgeInsets.only(
-        left: 16.0, right: 16.0
-    );
+    EdgeInsets desiredBodyPadding = bodyPadding;
 
     if (actions != null && actions.length != 0) {
-      bodyPadding = bodyPadding.copyWith(top: 16.0);
+      desiredBodyPadding = desiredBodyPadding.copyWith(top: 16.0);
 
       columnChildren.add(new Container(
         padding: const EdgeInsets.all(8.0),
@@ -75,7 +75,7 @@ class MaterialCard extends StatelessWidget {
 
     if (body != null) {
       columnChildren.add(new Container(
-        padding: bodyPadding,
+        padding: desiredBodyPadding,
         child: body,
       ));
     }
