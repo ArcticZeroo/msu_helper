@@ -10,13 +10,13 @@ class _AdditionalInfoData {
   final IconData icon;
   final Color color;
   final String text;
-  final bool flipTextColor;
+  final bool flipColor;
 
   _AdditionalInfoData({
     this.icon,
     this.text,
     this.color,
-    this.flipTextColor = true
+    this.flipColor = true
   });
 }
 
@@ -66,31 +66,58 @@ class StopDisplay extends StatelessWidget {
       additionalInfoData = new _AdditionalInfoData(
         icon: Icons.mood_bad,
         text: 'This stop has been cancelled',
-        color:
-      )
-      lines.add(getIconRow(Icons.mood_bad, 'This stop has been cancelled'));
+        color: Colors.blue[800]
+      );
     } else {
       if (stop.isToday) {
         DateTime now = DateTime.now();
 
         // Check if this stop has passed first so we can add the maps button in else
         if (stop.endDate.isBefore(now) || stop.endDate.isAtSameMomentAs(now)) {
-          lines.add(getIconRow(Icons.mood_bad, 'This stop has already passed'));
+          additionalInfoData = new _AdditionalInfoData(
+              icon: Icons.mood_bad,
+              text: 'This stop has already passed',
+              color: Colors.grey[800]
+          );
         } else {
           // Check if start <= now < end
           if (stop.isNow) {
-            lines.add(getIconRow(Icons.timer, 'It is currently here, and will leave in ${DateUtil.formatDifference(stop.endDate.difference(now))}'));
+            additionalInfoData = new _AdditionalInfoData(
+                icon: Icons.timer,
+                text: 'It is currently here, and will leave in ${DateUtil.formatDifference(stop.endDate.difference(now))}',
+                color: Colors.green[800]
+            );
             // Otherwise, since we know now is not after the end, it must be coming later than now
           } else {
-            lines.add(getIconRow(Icons.timer, 'It will be here in ${DateUtil.formatDifference(stop.startDate.difference(now))}'));
+            additionalInfoData = new _AdditionalInfoData(
+                icon: Icons.timer,
+                text: 'It will be here in ${DateUtil.formatDifference(stop.startDate.difference(now))}',
+                color: Colors.amber[800]
+            );
           }
         }
       }
     }
 
+    if (additionalInfoData != null) {
+      Color color = additionalInfoData.flipColor ? Colors.white : Colors.black54;
+
+      lines.add(new Container(
+        decoration: BoxDecoration(color: additionalInfoData.color),
+        padding: const EdgeInsets.all(4.0),
+        child: getIconRow(
+            additionalInfoData.icon,
+            additionalInfoData.text,
+            iconColor: color,
+          textColor: color
+        ),
+      ));
+    }
+
     return new Container(
         padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0, bottom: 4.0),
         child: new MaterialCard(
+          cardPadding: const EdgeInsets.all(0.0),
           body: new Column(
             children: lines,
           ),
