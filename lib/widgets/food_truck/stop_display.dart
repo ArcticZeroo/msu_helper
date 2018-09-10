@@ -64,9 +64,9 @@ class StopDisplay extends StatelessWidget {
     _AdditionalInfoData additionalInfoData = null;
     if (stop.isCancelled) {
       additionalInfoData = new _AdditionalInfoData(
-        icon: Icons.mood_bad,
-        text: 'This stop has been cancelled',
-        color: Colors.blue[800]
+          icon: Icons.mood_bad,
+          text: 'This stop has been cancelled',
+          color: Colors.blue[800]
       );
     } else {
       if (stop.isToday) {
@@ -99,19 +99,30 @@ class StopDisplay extends StatelessWidget {
       }
     }
 
+    List<Widget> columnChildren = [
+      new Container(
+          padding: const EdgeInsets.all(4.0),
+          child: new Column(
+            children: lines,
+          )
+      )
+    ];
+
     if (additionalInfoData != null) {
       Color color = additionalInfoData.flipColor ? Colors.white : Colors.black54;
 
-      lines.add(new Container(
-        decoration: BoxDecoration(color: additionalInfoData.color),
-        padding: const EdgeInsets.all(4.0),
-        child: getIconRow(
-            additionalInfoData.icon,
-            additionalInfoData.text,
-            iconColor: color,
-          textColor: color
-        ),
-      ));
+      columnChildren.add(
+          new Container(
+            decoration: BoxDecoration(color: additionalInfoData.color),
+            padding: const EdgeInsets.all(4.0),
+            child: getIconRow(
+                additionalInfoData.icon,
+                additionalInfoData.text,
+                iconColor: color,
+                textColor: color
+            ),
+          )
+      );
     }
 
     return new Container(
@@ -120,7 +131,7 @@ class StopDisplay extends StatelessWidget {
           cardPadding: const EdgeInsets.all(0.0),
           bodyPadding: const EdgeInsets.all(0.0),
           body: new Column(
-            children: lines,
+            children: columnChildren,
           ),
           onTap: stop.openMaps,
         )
