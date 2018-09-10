@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:msu_helper/config/identifier.dart';
+import 'package:msu_helper/config/settings_config.dart';
 import 'package:msu_helper/widgets/material_card.dart';
 import 'package:msu_helper/widgets/preloading/preload_widget.dart';
 
@@ -42,6 +43,8 @@ class PreloadingPage extends StatelessWidget {
       } catch (e) {
         print('Could not load data for $name: $e');
       }
+
+      print('Preloaded $name');
     }
 
     print('Primary preload complete');
@@ -126,14 +129,24 @@ class PreloadingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool hasGoneHome = false;
+
+    var goHome = () {
+      if (hasGoneHome) {
+        return false;
+      }
+      openHomePage(context);
+      hasGoneHome = true;
+    };
+
     VisibilityToggleWidget skipButton = new VisibilityToggleWidget(
-      child: new RaisedButton(
-        color: Colors.blue,
-          child: new Text('Skip'),
-          onPressed: () => openHomePage(context),
-        textColor: Colors.white
-      ),
-      isInitiallyVisible: false
+        child: new RaisedButton(
+            color: Colors.blue,
+            child: new Text('Skip'),
+            onPressed: goHome,
+            textColor: Colors.white
+        ),
+        isInitiallyVisible: false
     );
 
     List<Widget> columnChildren = <Widget>[
@@ -156,9 +169,9 @@ class PreloadingPage extends StatelessWidget {
       ),
       new Card(
         child: new Column(
-          children: <Widget>[]
-            ..addAll(primaryLoaders.values)
-            ..addAll(secondaryLoaders.values)
+            children: <Widget>[]
+              ..addAll(primaryLoaders.values)
+              ..addAll(secondaryLoaders.values)
         ),
       ),
       skipButton
@@ -168,15 +181,20 @@ class PreloadingPage extends StatelessWidget {
       Future settingsFuture = primaryLoaders[Identifier.settings].future.value;
 
       settingsFuture.then((v) {
-        print('Settings has been loaded');
-        skipButton.isVisible = true;
+        if (settingsProvider
+            .getCached(SettingsConfig.skipPreloadAutomatically)) {
+          goHome();
+        } else {
+          skipButton.isVisible = true;
+        }
+
         return v;
       });
     });
 
     preload()
         .timeout(new Duration(seconds: 15))
-        .whenComplete(() => openHomePage(context));
+        .whenComplete(goHome);
 
     return new Scaffold(
       body: new Container(

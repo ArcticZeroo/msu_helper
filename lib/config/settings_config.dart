@@ -2,14 +2,14 @@ import 'package:msu_helper/api/settings/setting_data.dart';
 
 class SettingsConfig {
   static const SettingData favoriteDiningHall = const StringSetting(
-      key: 'favoriteDiningHall',
-      title: 'Favorite Dining Hall',
-      description: 'Select your favorite dining hall!',
+    key: 'favoriteDiningHall',
+    title: 'Favorite Dining Hall',
+    description: 'Select your favorite dining hall!',
   );
 
   static const SettingData collapseDiningHallHours = const BooleanSetting(
-    key: 'diningHall_collapseHours',
-    defaultValue: false
+      key: 'diningHall_collapseHours',
+      defaultValue: false
   );
 
   static const SettingData showVenueDescriptions = const BooleanSetting(
@@ -40,6 +40,14 @@ class SettingsConfig {
       title: 'Intelligent Venue Ordering',
       description: 'If this is enabled, venues will be ordered based on how many "unique" items it has. '
           'This means a venue where the items always stay the same will be on the bottom.'
+  );
+
+  static const SettingData skipPreloadAutomatically = const BooleanSetting(
+      key: 'preload_skipPreloadAutomatically',
+      defaultValue: false,
+      title: 'Skip Preload Automatically',
+      description: 'If this is enabled, the "preload" state is always skipped after settings are loaded. '
+          'If preload is skipped, some pages may take extra time to load.'
   );
 
   static const List<SettingData> allSettings = const [

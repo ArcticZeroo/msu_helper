@@ -51,12 +51,15 @@ class SettingsPageState extends State<SettingsPage> {
               subtitle: new FavoriteDiningHall(),
             ),
             new Divider(color: Colors.black38,),
-            new Center(child: new Text('Dining Halls')),
+            // DINING HALL SETTINGS
+            buildTitle('Dining Halls'),
             new BooleanSettingWidget(SettingsConfig.showVenueDescriptions, new Icon(Icons.edit)),
             new BooleanSettingWidget(SettingsConfig.collapseVenuesByDefault, new Icon(Icons.remove_red_eye)),
             new BooleanSettingWidget(SettingsConfig.showHallHours, new Icon(Icons.timer)),
             new BooleanSettingWidget(SettingsConfig.intelligentVenueOrdering, new Icon(Icons.lightbulb_outline)),
+            // DINING HALL SETTINGS END
             new Divider(color: Colors.black38),
+            // EXPERIMENTAL SETTINGS
             new Center(child: new Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -71,7 +74,9 @@ class SettingsPageState extends State<SettingsPage> {
                 onTap: () {
                   Navigator.of(context).pushReplacementNamed('/');
                 },
-            )
+            ),
+            new BooleanSettingWidget(SettingsConfig.skipPreloadAutomatically, new Icon(Icons.fast_forward)),
+            // EXPERIMENTAL SETTINGS END
           ],
         ),
       )
