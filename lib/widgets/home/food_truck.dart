@@ -38,6 +38,10 @@ class FoodTruckMiniWidgetState extends Reloadable<FoodTruckMiniWidget> {
   Future load() async {
     List<FoodTruckStop> stops = await foodTruckProvider.retrieveStops();
 
+    if (!mounted) {
+      return;
+    }
+
     if (stops == null || stops.length == 0) {
       setState(() {
         text = ['No stops listed today.'];
