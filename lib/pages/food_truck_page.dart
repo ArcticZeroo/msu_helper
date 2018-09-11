@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:msu_helper/api/food_truck/provider.dart' as foodTruckProvider;
@@ -15,31 +17,13 @@ class FoodTruckPage extends StatefulWidget {
 }
 
 class FoodTruckPageState extends State<FoodTruckPage> {
-  List<FoodTruckStop> _stops;
-  bool failed = false;
+  Future<List<FoodTruckStop>> _stopLoader;
 
   @override
   void initState() {
     super.initState();
 
-    load();
-  }
-
-  load() async {
-    try {
-      _stops = (await foodTruckProvider.retrieveStops()) ?? [];
-    } catch (e) {
-      print('Could not load food truck stops:');
-      print(e);
-      setState(() {
-        failed = true;
-      });
-      return;
-    }
-
-    setState(() {
-      failed = false;
-    });
+    _stopLoader = foodTruckProvider.retrieveStops();
   }
 
   Widget getIconRow(IconData icon, String text) {
@@ -58,28 +42,17 @@ class FoodTruckPageState extends State<FoodTruckPage> {
     return new StopDisplay(stop);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (failed) {
-      return new ErrorCardWidget('Could not load food truck data.');
-    }
-
-    if (_stops == null) {
-      return new Center(
-        child: new Text('Loading stops...'),
-      );
-    }
-
+  Widget buildStopDisplays(List<FoodTruckStop> stops) {
     List<Widget> columnChildren = <Widget>[];
 
-    if (_stops.length == 0) {
+    if (stops == null || stops.length == 0) {
       return new ErrorCardWidget('No stops found.');
     }
 
     DateTime now = DateTime.now();
-    List<FoodTruckStop> today = _stops.where((stop) => stop.startDate.day == now.day && stop.startDate.month == now.month).toList();
+    List<FoodTruckStop> today = stops.where((stop) => stop.startDate.day == now.day && stop.startDate.month == now.month).toList();
     // Ignore old stops (ones from before today), we only want after today
-    List<FoodTruckStop> notToday = _stops.where((stop) => !today.contains(stop) && stop.startDate.isAfter(now)).toList();
+    List<FoodTruckStop> notToday = stops.where((stop) => !today.contains(stop) && stop.startDate.isAfter(now)).toList();
 
     if (today.isEmpty && notToday.isEmpty) {
       return new ErrorCardWidget('All stops listed have passed.');
@@ -122,15 +95,45 @@ class FoodTruckPageState extends State<FoodTruckPage> {
               ),
               onRefresh: () async {
                 try {
-                  _stops = await foodTruckProvider.retrieveStopsFromWebAndSave();
+                  _stopLoader = foodTruckProvider.retrieveStopsFromWebAndSave();
+                  await _stopLoader;
                 } catch (e) {
                   print('Could not refresh stops from web:');
                   print(e);
                 }
 
-                await load();
+                setState(() {});
               })
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new FutureBuilder(
+        future: _stopLoader,
+        builder: (ctx, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              if (snapshot.hasError) {
+                return new ErrorCardWidget('Could not load food truck data.');
+              } else {
+                var data = snapshot.data as List<FoodTruckStop>;
+                return buildStopDisplays(data);
+              }
+              break;
+            default:
+              return new Center(
+                child: new Container(
+                  decoration: new BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.all(Radius.circular(4.0))
+                  ),
+                  padding: const EdgeInsets.all(12.0),
+                  child: new Text('Loading...', style: new TextStyle(color: Colors.white))
+                ),
+              );
+          }
+        });
   }
 }
