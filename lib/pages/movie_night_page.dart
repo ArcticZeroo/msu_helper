@@ -14,6 +14,7 @@ class MovieNightPage extends StatefulWidget {
 
 class MovieNightPageState extends State<MovieNightPage> {
   Future<List<Movie>> _movieLoader;
+  Widget _movieDisplays;
 
   @override
   void initState() {
@@ -30,25 +31,28 @@ class MovieNightPageState extends State<MovieNightPage> {
     List<Widget> columnChildren = [];
 
     if (movies.length == 0) {
-      columnChildren.addAll([
-        new Center(child: new Text('No movies are posted.', style: MaterialCard.titleStyle)),
-        new Center(child: new Text('Check back later?', style: MaterialCard.subtitleStyle)),
-      ]);
+      columnChildren.add(new MaterialCard(
+          title: new Text('No movies are posted.'),
+          subtitle: new Text('Check back later?')));
     }
 
     DateTime now = DateTime.now();
-    List<Movie> moviesNotPassed = movies.where(
-            (movie) => movie.showings.firstWhere(
-                (showing) => showing.date.isAfter(now),
-            orElse: () => null
-        ) != null).toList();
+    List<Movie> moviesNotPassed = movies
+        .where((movie) =>
+            movie.showings.firstWhere((showing) => showing.date.isAfter(now),
+                orElse: () => null) !=
+            null)
+        .toList();
 
     DateTime latestShowing = Movie.findLatestShowing(movies)?.date;
 
-    bool hasBeenAtLeastOneWeek = (latestShowing == null) || DateTime.now().difference(latestShowing).inDays >= 7;
+    bool hasBeenAtLeastOneWeek = (latestShowing == null) ||
+        DateTime.now().difference(latestShowing).inDays >= 7;
 
     String title;
-    if (moviesNotPassed.length == 0 && (Movie.NOT_YET_POSTED_DAYS.contains(now.weekday) || hasBeenAtLeastOneWeek)) {
+    if (moviesNotPassed.length == 0 &&
+        (Movie.NOT_YET_POSTED_DAYS.contains(now.weekday) ||
+            hasBeenAtLeastOneWeek)) {
       if (hasBeenAtLeastOneWeek) {
         title = "Old Listed Movies";
       } else {
@@ -60,8 +64,8 @@ class MovieNightPageState extends State<MovieNightPage> {
 
     columnChildren.add(new Container(
         padding: const EdgeInsets.only(top: 16.0),
-        child: new Center(child: new Text(title, style: MaterialCard.titleStyle))
-    ));
+        child: new Center(
+            child: new Text(title, style: MaterialCard.titleStyle))));
     columnChildren.addAll(movies.map(buildMovie));
 
     return new Center(
@@ -86,8 +90,7 @@ class MovieNightPageState extends State<MovieNightPage> {
                   print('Could not refresh movies from web:');
                   print(e);
                 }
-              })
-      ),
+              })),
     );
   }
 
@@ -98,18 +101,20 @@ class MovieNightPageState extends State<MovieNightPage> {
       builder: (ctx, snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.done:
-            if (snapshot.hasError) {
+            if (_movieDisplays == null) {
+              var data = snapshot.data as List<Movie>;
+
+              _movieDisplays = buildPageDisplay(data);
+            } else if (snapshot.hasError) {
               return new Center(
-                  child: new ErrorCardWidget('Unable to load movies')
-              );
+                  child: new ErrorCardWidget('Unable to load movies'));
             }
 
-            var data = snapshot.data as List<Movie>;
-
-            return buildPageDisplay(data);
+            return _movieDisplays;
           default:
             return new Center(
               child: new Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   new Container(
                     padding: const EdgeInsets.all(8.0),
