@@ -101,7 +101,7 @@ class StopDisplay extends StatelessWidget {
 
     List<Widget> columnChildren = [
       new Container(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(16.0),
           child: new Column(
             children: lines,
           )
@@ -114,7 +114,7 @@ class StopDisplay extends StatelessWidget {
       columnChildren.add(
           new Container(
             decoration: BoxDecoration(color: additionalInfoData.color),
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16.0),
             child: getIconRow(
                 additionalInfoData.icon,
                 additionalInfoData.text,
