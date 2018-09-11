@@ -32,7 +32,7 @@ class StopDisplay extends StatelessWidget {
 
     return new Row(children: <Widget>[
       new Container(
-        padding: const EdgeInsets.all(4.0),
+        padding: const EdgeInsets.only(top: 4.0, bottom: 4.0, right: 12.0, left: 8.0),
         child: new Icon(icon, color: iconColor),
       ),
       new WrappableWidget(new Text(text, style: textStyle))
@@ -101,7 +101,7 @@ class StopDisplay extends StatelessWidget {
 
     List<Widget> columnChildren = [
       new Container(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(12.0),
           child: new Column(
             children: lines,
           )
@@ -114,7 +114,7 @@ class StopDisplay extends StatelessWidget {
       columnChildren.add(
           new Container(
             decoration: BoxDecoration(color: additionalInfoData.color),
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.only(left: 12.0, top: 8.0, bottom: 8.0, right: 4.0),
             child: getIconRow(
                 additionalInfoData.icon,
                 additionalInfoData.text,
