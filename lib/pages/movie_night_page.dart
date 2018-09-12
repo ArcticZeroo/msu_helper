@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:msu_helper/api/movie_night/structures/movie.dart';
 import 'package:msu_helper/api/movie_night/provider.dart' as movieProvider;
 import 'package:msu_helper/widgets/error_card.dart';
+import 'package:msu_helper/widgets/loading_widget.dart';
 import 'package:msu_helper/widgets/material_card.dart';
 import 'package:msu_helper/widgets/movie_night/movie_display.dart';
 
@@ -95,8 +96,7 @@ class MovieNightPageState extends State<MovieNightPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return new FutureBuilder(
+  Widget build(BuildContext context) => new FutureBuilder(
       future: _movieLoader,
       builder: (ctx, snapshot) {
         switch (snapshot.connectionState) {
@@ -112,20 +112,13 @@ class MovieNightPageState extends State<MovieNightPage> {
 
             return _movieDisplays;
           default:
-            return new Center(
-              child: new Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  new Container(
-                    padding: const EdgeInsets.all(8.0),
-                    child: new CircularProgressIndicator(),
-                  ),
-                  new Text('Loading movies...')
-                ],
-              ),
+            return new Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                new LoadingWidget(name: 'movies')
+              ],
             );
         }
       },
     );
-  }
 }

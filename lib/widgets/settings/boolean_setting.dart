@@ -44,7 +44,18 @@ class _VenueDescriptions extends State<BooleanSettingSwitch> {
     return new Switch(
         value: value,
         onChanged: (bool newValue) {
-          widget.data.save(newValue);
+          widget.data.save(newValue)
+          .then((_) {
+            print('Saved setting for key ${widget.data.key}');
+          })
+          .catchError((error) {
+            print('Could not save setting ${widget.data.key}');
+            print(error);
+
+            if (error is Error) {
+              print(error.stackTrace);
+            }
+          });
 
           setState(() {
             value = newValue;
