@@ -7,15 +7,15 @@ import 'package:msu_helper/pages/dining_hall/dining_hall_page.dart';
 import 'package:msu_helper/pages/settings_page.dart';
 import 'package:msu_helper/util/TextUtil.dart';
 import 'package:msu_helper/widgets/collapsible/collapsible_card.dart';
+import 'package:msu_helper/widgets/dining_hall/menu/menu_display_controller.dart';
 import 'package:msu_helper/widgets/material_card.dart';
 import 'package:msu_helper/widgets/wrappable_widget.dart';
 import '../../../api/settings/provider.dart' as settingsProvider;
 
 class VenueDisplay extends StatefulWidget {
   final DiningHallVenue venue;
-  final HallInfoPageState page;
 
-  VenueDisplay(this.venue, this.page);
+  VenueDisplay(this.venue);
 
   @override
   State<StatefulWidget> createState() => new VenueDisplayState();
@@ -68,7 +68,7 @@ class VenueDisplayState extends Reloadable<VenueDisplay> {
   @override
   void initState() {
     super.initState();
-    print('Venue should start as collapsed=${widget.page.getCollapsed(widget.venue)}');
+    print('Venue should start as collapsed=${MenuDisplayControllerWidget.isVenueCollapsed(widget.venue)}');
     collapsibleCard = new CollapsibleCard(
       title: new WrappableWidget(
           new Column(
@@ -77,13 +77,13 @@ class VenueDisplayState extends Reloadable<VenueDisplay> {
           )
       ),
       body: buildMenu(),
-      initial: widget.page.getCollapsed(widget.venue),
+      initial: MenuDisplayControllerWidget.isVenueCollapsed(widget.venue),
     );
 
     collapsibleCard.isCollapsed.addListener(() {
-      bool isNowCollapsed = collapsibleCard.isCollapsed.value;
+      bool shouldBeCollapsed = collapsibleCard.isCollapsed.value;
 
-      widget.page.setCollapsed(widget.venue, isNowCollapsed);
+      MenuDisplayControllerWidget.setVenueCollapsed(widget.venue, shouldBeCollapsed);
     });
   }
 

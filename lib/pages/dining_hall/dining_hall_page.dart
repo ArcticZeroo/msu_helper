@@ -12,8 +12,10 @@ import 'package:msu_helper/config/settings_config.dart';
 import 'package:msu_helper/util/DateUtil.dart';
 import 'package:msu_helper/util/UrlUtil.dart';
 import 'package:msu_helper/widgets/dining_hall/hours_table.dart';
+import 'package:msu_helper/widgets/dining_hall/menu/menu_display_controller.dart';
 import 'package:msu_helper/widgets/dining_hall/menu/venue_display.dart';
 import 'package:msu_helper/widgets/error_card.dart';
+import 'package:msu_helper/widgets/loading_widget.dart';
 import 'package:msu_helper/widgets/material_card.dart';
 import 'package:msu_helper/widgets/wrappable_widget.dart';
 import '../../api/settings/provider.dart' as settingsProvider;
@@ -30,87 +32,13 @@ class HallInfoPage extends StatefulWidget {
 }
 
 class HallInfoPageState extends State<HallInfoPage> {
-  static final Widget loading = new Center(child: new Text('Loading menu...'));
-
-  Map<String, bool> collapsedState = {};
-  MenuDate _date = new MenuDate();
+  MenuDisplayControllerWidget _menuDisplayController;
+  MenuDate _selectedDate = new MenuDate();
   Meal _selectedMeal;
-  DiningHallMenu _menuForMeal;
-  DiningHallMenu _comparisonMenu;
-  List<DiningHallVenue> _venues;
-  List<Widget> _venueDisplays;
 
-  bool failed = false;
-
-  void setCollapsed(DiningHallVenue venue, bool isCollapsed) {
-    collapsedState[venue.name.toLowerCase()] = isCollapsed;
-  }
-
-  bool getCollapsed(DiningHallVenue venue) {
-    return collapsedState[venue.name.toLowerCase()] ?? settingsProvider.getCached(SettingsConfig.collapseVenuesByDefault);
-  }
-
-  Future loadSelected() async {
-    if (!diningHallProvider.menuCache.hasValid(
-        diningHallProvider.serializeToKey(widget.diningHall, _date, _selectedMeal))) {
-      setState(() {
-        failed = false;
-        _menuForMeal = null;
-      });
-    }
-
-    try {
-      _menuForMeal = await diningHallProvider.retrieveMenu(widget.diningHall, _date, _selectedMeal);
-    } catch (e) {
-      print('Could not load dining hall menu...');
-
-      if (e is Error) {
-        print(e.stackTrace);
-      } else {
-        print(e);
-      }
-
-      setState(() {
-        failed = true;
-      });
-
-      return;
-    }
-
-    if (settingsProvider.getCached(SettingsConfig.intelligentVenueOrdering)) {
-      try {
-        _comparisonMenu = await widget.diningHall.getComparisonMenu(_date, _selectedMeal);
-      } catch (e) {
-        print('Could not load comparison menu...');
-
-        if (e is Error) {
-          print(e.stackTrace);
-        } else {
-          print(e);
-        }
-      }
-
-      if (_comparisonMenu != null) {
-        Map<DiningHallVenue, List<FoodItem>> uniqueItems = widget.diningHall.findUniqueItems(_menuForMeal, _comparisonMenu);
-
-        for (DiningHallVenue venue in uniqueItems.keys) {
-          print('${venue.name}: ${uniqueItems[venue].length} uniques');
-        }
-
-        _venues = List.from(_menuForMeal.venues);
-        _venues.sort((a, b) => uniqueItems[b].length - uniqueItems[a].length);
-      }
-    }
-
-    if (_venues == null) {
-      _venues = _menuForMeal.venues ?? [];
-    }
-
-    _venueDisplays = _venues?.map(buildMenuItem)?.toList();
-
-    setState(() {
-      failed = false;
-    });
+  void updateControllerValues() {
+    _menuDisplayController.menuDate = _selectedDate;
+    _menuDisplayController.meal = _selectedMeal;
   }
 
   Future<DateTime> selectTime(BuildContext context) async {
@@ -125,7 +53,7 @@ class HallInfoPageState extends State<HallInfoPage> {
   }
 
   List<DiningHallHours> getHoursForDay() {
-    return widget.diningHall.getHoursForDay(_date);
+    return widget.diningHall.getHoursForDay(_selectedDate);
   }
 
   DiningHallHours getHoursForMeal([Meal meal]) {
@@ -145,28 +73,28 @@ class HallInfoPageState extends State<HallInfoPage> {
   Widget buildMenuHeader(BuildContext context) {
     List<Widget> children = [];
 
-    children.add(new Text('Date: ${DateUtil.formatDateFully(_date.time)}'));
+    children.add(new Text('Date: ${DateUtil.formatDateFully(_selectedDate.time)}'));
     children.add(new Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         new IconButton(
             icon: new Icon(Icons.arrow_back, color: Colors.lightGreen[900],),
             onPressed: () {
-              _date.back();
-              loadSelected();
+              _selectedDate.back();
+              updateControllerValues();
             }),
         new FlatButton(
             onPressed: () {
-              _date.now();
-              loadSelected();
+              _selectedDate.now();
+              updateControllerValues();
             },
             child: new Text('Go To Today', style: new TextStyle(color: Colors.green[700]))
         ),
         new IconButton(
             icon: new Icon(Icons.arrow_forward, color: Colors.lightGreen[900]),
             onPressed: () {
-              _date.forward();
-              loadSelected();
+              _selectedDate.forward();
+              updateControllerValues();
             }),
       ],
     ));
@@ -176,8 +104,8 @@ class HallInfoPageState extends State<HallInfoPage> {
             DateTime selected = await selectTime(context);
 
             if (selected != null) {
-              _date = new MenuDate(selected);
-              loadSelected();
+              _selectedDate = new MenuDate(selected);
+              updateControllerValues();
             }
           },
           child: new Row(
@@ -207,7 +135,7 @@ class HallInfoPageState extends State<HallInfoPage> {
             ).toList(),
             onChanged: (Meal selected) {
               _selectedMeal = selected;
-              loadSelected();
+              updateControllerValues();
             }
         )
       ],
@@ -216,7 +144,8 @@ class HallInfoPageState extends State<HallInfoPage> {
     DiningHallHours hoursForMeal = getHoursForMeal();
 
     if (hoursForMeal.closed) {
-      if (_menuForMeal != null && !_menuForMeal.closed) {
+      //TODO: Fix this!
+      /*if (_menuForMeal != null && !_menuForMeal.closed) {
         children.add(new Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -227,7 +156,7 @@ class HallInfoPageState extends State<HallInfoPage> {
             new WrappableWidget(new Text('The dining hall\'s schedule suggests that it is closed for this meal time.'))
           ],
         ));
-      }
+      }*/
     } else {
       List<String> mealServingText = [];
       String startString = DateUtil.formatTimeOfDay(hoursForMeal.beginTime);
@@ -289,15 +218,11 @@ class HallInfoPageState extends State<HallInfoPage> {
     super.initState();
 
     _selectedMeal = findBestMealToday();
-    loadSelected();
-  }
-
-  Widget buildMenuItem(DiningHallVenue venue) {
-    if (_menuForMeal.closed) {
-      return new ErrorCardWidget('The dining hall is closed for this meal time.');
-    }
-
-    return new VenueDisplay(venue, this);
+    _menuDisplayController = new MenuDisplayControllerWidget(
+      diningHall: widget.diningHall,
+      menuDate: _selectedDate,
+      meal: _selectedMeal,
+    );
   }
 
   @override
@@ -309,17 +234,7 @@ class HallInfoPageState extends State<HallInfoPage> {
     }
 
     columnChildren.add(buildMenuHeader(context));
-
-    int items;
-    if (failed) {
-      columnChildren.add(new Center(child: new Text('Could not load menu.')));
-      items = columnChildren.length;
-    } else if (_selectedMeal == null || _menuForMeal == null) {
-      columnChildren.add(loading);
-      items = columnChildren.length;
-    } else {
-      items = (_menuForMeal.closed) ? columnChildren.length + 1 : _menuForMeal.venues.length + columnChildren.length;
-    }
+    columnChildren.add(_menuDisplayController);
 
     return new Scaffold(
         appBar: new AppBar(
@@ -330,15 +245,11 @@ class HallInfoPageState extends State<HallInfoPage> {
                 onPressed: () {
                   UrlUtil.openMapsToLocation(widget.diningHall.hallName);
                 },
-                tooltip: 'Search in Maps'
+                tooltip: 'Open in Maps'
             )
           ],
         ),
-        body: new ListView(
-          children: <Widget>[]
-            ..addAll(columnChildren)
-            ..addAll(_venueDisplays ?? []),
-        )
+        body: new ListView(children: columnChildren)
     );
   }
 }
