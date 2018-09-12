@@ -8,6 +8,7 @@ import 'package:msu_helper/util/DateUtil.dart';
 import 'package:msu_helper/util/TextUtil.dart';
 import 'package:msu_helper/widgets/error_card.dart';
 import 'package:msu_helper/widgets/food_truck/stop_display.dart';
+import 'package:msu_helper/widgets/loading_widget.dart';
 import 'package:msu_helper/widgets/material_card.dart';
 import 'package:msu_helper/widgets/wrappable_widget.dart';
 
@@ -123,16 +124,7 @@ class FoodTruckPageState extends State<FoodTruckPage> {
               }
               break;
             default:
-              return new Center(
-                child: new Container(
-                  decoration: new BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.all(Radius.circular(4.0))
-                  ),
-                  padding: const EdgeInsets.all(12.0),
-                  child: new Text('Loading...', style: new TextStyle(color: Colors.white))
-                ),
-              );
+              return new Center(child: new LoadingWidget(name: 'stops'));
           }
         });
   }
