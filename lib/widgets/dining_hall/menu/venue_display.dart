@@ -3,11 +3,10 @@ import 'package:msu_helper/api/dining_hall/structures/dining_hall_venue.dart';
 import 'package:msu_helper/api/dining_hall/structures/food_item.dart';
 import 'package:msu_helper/api/reloadable.dart';
 import 'package:msu_helper/config/settings_config.dart';
-import 'package:msu_helper/pages/dining_hall/dining_hall_page.dart';
 import 'package:msu_helper/pages/settings_page.dart';
 import 'package:msu_helper/util/TextUtil.dart';
 import 'package:msu_helper/widgets/collapsible/collapsible_card.dart';
-import 'package:msu_helper/widgets/dining_hall/menu/menu_display_controller.dart';
+import 'package:msu_helper/widgets/dining_hall/menu/menu_display.dart';
 import 'package:msu_helper/widgets/material_card.dart';
 import 'package:msu_helper/widgets/wrappable_widget.dart';
 import '../../../api/settings/provider.dart' as settingsProvider;
@@ -76,13 +75,13 @@ class VenueDisplayState extends Reloadable<VenueDisplay> {
           )
       ),
       body: buildMenu(),
-      initial: MenuDisplayControllerWidget.isVenueCollapsed(widget.venue),
+      initial: MenuDisplay.isVenueCollapsed(widget.venue),
     );
 
     collapsibleCard.isCollapsed.addListener(() {
       bool shouldBeCollapsed = collapsibleCard.isCollapsed.value;
 
-      MenuDisplayControllerWidget.setVenueCollapsed(widget.venue, shouldBeCollapsed);
+      MenuDisplay.setVenueCollapsed(widget.venue, shouldBeCollapsed);
     });
   }
 

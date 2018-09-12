@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-
 import 'package:msu_helper/api/dining_hall/meal.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_menu.dart';
@@ -9,14 +8,15 @@ import 'package:msu_helper/api/dining_hall/structures/dining_hall_venue.dart';
 import 'package:msu_helper/api/dining_hall/structures/food_item.dart';
 import 'package:msu_helper/api/dining_hall/time.dart';
 import 'package:msu_helper/config/settings_config.dart';
-
-import 'package:msu_helper/api/settings/provider.dart' as settingsProvider;
-import 'package:msu_helper/api/dining_hall/provider.dart' as diningHallProvider;
 import 'package:msu_helper/widgets/dining_hall/menu/venue_display.dart';
 import 'package:msu_helper/widgets/error_card.dart';
 import 'package:msu_helper/widgets/loading_widget.dart';
 
-class MenuDisplayControllerWidget extends StatefulWidget {
+import 'package:msu_helper/api/settings/provider.dart' as settingsProvider;
+import 'package:msu_helper/api/dining_hall/provider.dart' as diningHallProvider;
+
+
+class MenuDisplay extends StatelessWidget {
   static Map<String, bool> venueCollapseState = {};
 
   static String cleanVenueName(dynamic venue) {
@@ -42,72 +42,10 @@ class MenuDisplayControllerWidget extends StatefulWidget {
   }
 
   final DiningHall diningHall;
-  final ValueNotifier<MenuDate> _menuDate;
-  final ValueNotifier<Meal> _meal;
+  final MenuDate menuDate;
+  final Meal meal;
 
-  MenuDisplayControllerWidget({
-    this.diningHall,
-    Key key,
-    MenuDate menuDate,
-    Meal meal
-  }) :  _menuDate = new ValueNotifier(menuDate),
-        _meal = new ValueNotifier(meal),
-        super(key: key);
-
-  MenuDate get menuDate => _menuDate.value;
-  set menuDate(value) {
-    _menuDate.value = value;
-  }
-
-  Meal get meal => _meal.value;
-  set meal(value) {
-    _meal.value = value;
-  }
-
-  @override
-  MenuDisplayControllerState createState() => new MenuDisplayControllerState();
-}
-
-class MenuDisplayControllerState extends State<MenuDisplayControllerWidget> {
-  Future _menuLoader;
-  Widget _menuDisplay;
-
-  @override
-  initState() {
-    super.initState();
-
-    widget._menuDate.addListener(() {
-        updateMenu();
-    });
-
-    widget._meal.addListener(() {
-        updateMenu();
-    });
-
-    updateMenu();
-  }
-
-  void updateMenu() {
-    // If the menu is cached, just immediately update
-    // instead of letting it load for a short time
-    if (diningHallProvider.isMenuCached(
-      diningHall: widget.diningHall,
-      date: widget.menuDate,
-      meal: widget.meal
-    )) {
-      Future menuFuture = retrieveSortedMenu();
-      menuFuture.whenComplete(() {
-          setState(() {
-              _menuLoader = menuFuture;
-          });
-      });
-      return;
-    }
-
-    setState(() {
-      _menuLoader = retrieveSortedMenu();
-    });
-  }
+  MenuDisplay({Key key, this.diningHall, this.menuDate, this.meal}) : super(key: key);
 
   Future<List<DiningHallVenue>> sortVenues(DiningHallMenu loadedMenu) async {
     List<DiningHallVenue> venues = loadedMenu.venues;
@@ -116,7 +54,7 @@ class MenuDisplayControllerState extends State<MenuDisplayControllerWidget> {
       return venues;
     }
 
-    DiningHallMenu comparisonMenu = await DiningHallMenu.getComparisonMenu(widget.diningHall, widget.menuDate, widget.meal);
+    DiningHallMenu comparisonMenu = await DiningHallMenu.getComparisonMenu(diningHall, menuDate, meal);
 
     if (comparisonMenu == null) {
       return venues;
@@ -133,10 +71,14 @@ class MenuDisplayControllerState extends State<MenuDisplayControllerWidget> {
   }
 
   Future<List<DiningHallVenue>> retrieveSortedMenu() async {
-    DiningHallMenu menu = await diningHallProvider.retrieveMenu(widget.diningHall, widget.menuDate, widget.meal);
+    DiningHallMenu menu = await diningHallProvider.retrieveMenu(diningHall, menuDate, meal);
 
-    if (menu == null || menu.venues == null || menu.venues.isEmpty) {
-      throw new Exception('Invalid menu retrieved');
+    if (menu == null) {
+      throw new Exception('null menu was retrieved');
+    }
+
+    if (menu.venues == null || menu.venues.isEmpty) {
+      throw new Exception('venues for menu are null or empty');
     }
 
     List<DiningHallVenue> sortedVenues = await sortVenues(menu);
@@ -153,23 +95,24 @@ class MenuDisplayControllerState extends State<MenuDisplayControllerWidget> {
   @override
   Widget build(BuildContext context) {
     return new FutureBuilder(
-      future: _menuLoader,
+      future: retrieveSortedMenu(),
       builder: (ctx, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return new LoadingWidget(name: 'menu');
         }
 
         if (snapshot.hasError) {
+          if (snapshot.error is Error) {
+            print((snapshot.error as Error).stackTrace);
+          }
+          print(snapshot.error);
+
           return new ErrorCardWidget('Could not load menu.');
         }
 
-        if (_menuDisplay == null) {
-          List<DiningHallVenue> venues = snapshot.data as List<DiningHallVenue>;
+        List<DiningHallVenue> venues = snapshot.data as List<DiningHallVenue>;
 
-          _menuDisplay = buildMenuWidget(venues);
-        }
-
-        return _menuDisplay;
+        return buildMenuWidget(venues);
       },
     );
   }
