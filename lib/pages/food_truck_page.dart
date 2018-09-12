@@ -110,8 +110,7 @@ class FoodTruckPageState extends State<FoodTruckPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return new FutureBuilder(
+  Widget build(BuildContext context) => new FutureBuilder(
         future: _stopLoader,
         builder: (ctx, snapshot) {
           switch (snapshot.connectionState) {
@@ -124,8 +123,12 @@ class FoodTruckPageState extends State<FoodTruckPage> {
               }
               break;
             default:
-              return new Center(child: new LoadingWidget(name: 'stops'));
+              return new Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  new LoadingWidget(name: 'stops')
+                ],
+              );
           }
         });
-  }
 }

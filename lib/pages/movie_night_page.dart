@@ -96,8 +96,7 @@ class MovieNightPageState extends State<MovieNightPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return new FutureBuilder(
+  Widget build(BuildContext context) => new FutureBuilder(
       future: _movieLoader,
       builder: (ctx, snapshot) {
         switch (snapshot.connectionState) {
@@ -113,9 +112,13 @@ class MovieNightPageState extends State<MovieNightPage> {
 
             return _movieDisplays;
           default:
-            return new Center(child: new LoadingWidget(name: 'movies'));
+            return new Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                new LoadingWidget(name: 'movies')
+              ],
+            );
         }
       },
     );
-  }
 }
