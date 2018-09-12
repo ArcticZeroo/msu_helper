@@ -45,10 +45,10 @@ class DiningHallMenu extends Object with _$DiningHallMenuSerializerMixin {
 
     for (int i = 2; i < 7; i++) {
       if (diningHall.getHoursForMeal(newDate, meal).closed) {
-        print('The dining hall is closed for this meal on ${DateUtil.getWeekday(newDate.time)}');
+        print('The dining hall is closed for ${meal.name} on ${DateUtil.getWeekday(newDate.time)}');
         newDate.forward();
       } else {
-        print('The dining hall is open for this meal on ${DateUtil.getWeekday(newDate.time)}');
+        print('The dining hall is open for ${meal.name} on ${DateUtil.getWeekday(newDate.time)}');
         break;
       }
     }

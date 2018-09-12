@@ -12,7 +12,7 @@ import 'package:msu_helper/config/settings_config.dart';
 import 'package:msu_helper/util/DateUtil.dart';
 import 'package:msu_helper/util/UrlUtil.dart';
 import 'package:msu_helper/widgets/dining_hall/hours_table.dart';
-import 'package:msu_helper/widgets/dining_hall/menu/menu_display_controller.dart';
+import 'package:msu_helper/widgets/dining_hall/menu/menu_display.dart';
 import 'package:msu_helper/widgets/dining_hall/menu/venue_display.dart';
 import 'package:msu_helper/widgets/error_card.dart';
 import 'package:msu_helper/widgets/loading_widget.dart';
@@ -32,13 +32,27 @@ class HallInfoPage extends StatefulWidget {
 }
 
 class HallInfoPageState extends State<HallInfoPage> {
-  MenuDisplayControllerWidget _menuDisplayController;
+  Widget _menuDisplay;
   MenuDate _selectedDate = new MenuDate();
   Meal _selectedMeal;
 
-  void updateControllerValues() {
-    _menuDisplayController.menuDate = _selectedDate;
-    _menuDisplayController.meal = _selectedMeal;
+  void createMenuDisplay() {
+    if (getHoursForMeal().closed) {
+      _menuDisplay = new ErrorCardWidget('The dining hall is closed for this mealtime.');
+      return;
+    }
+
+    _menuDisplay = new MenuDisplay(
+      diningHall: widget.diningHall,
+      meal: _selectedMeal,
+      menuDate: _selectedDate,
+    );
+  }
+
+  void updateMenuDisplay() {
+    setState(() {
+      createMenuDisplay();
+    });
   }
 
   Future<DateTime> selectTime(BuildContext context) async {
@@ -81,12 +95,12 @@ class HallInfoPageState extends State<HallInfoPage> {
             icon: new Icon(Icons.arrow_back, color: Colors.lightGreen[900],),
             onPressed: () {
               _selectedDate.back();
-              updateControllerValues();
+              updateMenuDisplay();
             }),
         new FlatButton(
             onPressed: () {
               _selectedDate.now();
-              updateControllerValues();
+              updateMenuDisplay();
             },
             child: new Text('Go To Today', style: new TextStyle(color: Colors.green[700]))
         ),
@@ -94,7 +108,7 @@ class HallInfoPageState extends State<HallInfoPage> {
             icon: new Icon(Icons.arrow_forward, color: Colors.lightGreen[900]),
             onPressed: () {
               _selectedDate.forward();
-              updateControllerValues();
+              updateMenuDisplay();
             }),
       ],
     ));
@@ -105,7 +119,7 @@ class HallInfoPageState extends State<HallInfoPage> {
 
             if (selected != null) {
               _selectedDate = new MenuDate(selected);
-              updateControllerValues();
+              updateMenuDisplay();
             }
           },
           child: new Row(
@@ -134,8 +148,12 @@ class HallInfoPageState extends State<HallInfoPage> {
                 value: meal)
             ).toList(),
             onChanged: (Meal selected) {
+              if (_selectedMeal.ordinal == selected.ordinal) {
+                return;
+              }
+
               _selectedMeal = selected;
-              updateControllerValues();
+              updateMenuDisplay();
             }
         )
       ],
@@ -218,11 +236,7 @@ class HallInfoPageState extends State<HallInfoPage> {
     super.initState();
 
     _selectedMeal = findBestMealToday();
-    _menuDisplayController = new MenuDisplayControllerWidget(
-      diningHall: widget.diningHall,
-      menuDate: _selectedDate,
-      meal: _selectedMeal,
-    );
+    createMenuDisplay();
   }
 
   @override
@@ -234,7 +248,7 @@ class HallInfoPageState extends State<HallInfoPage> {
     }
 
     columnChildren.add(buildMenuHeader(context));
-    columnChildren.add(_menuDisplayController);
+    columnChildren.add(_menuDisplay);
 
     return new Scaffold(
         appBar: new AppBar(
