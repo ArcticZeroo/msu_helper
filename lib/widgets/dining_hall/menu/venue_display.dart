@@ -68,7 +68,6 @@ class VenueDisplayState extends Reloadable<VenueDisplay> {
   @override
   void initState() {
     super.initState();
-    print('Venue should start as collapsed=${MenuDisplayControllerWidget.isVenueCollapsed(widget.venue)}');
     collapsibleCard = new CollapsibleCard(
       title: new WrappableWidget(
           new Column(
