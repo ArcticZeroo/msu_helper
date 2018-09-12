@@ -52,6 +52,6 @@ class SettingsConfig {
 
   static const List<SettingData> allSettings = const [
     favoriteDiningHall, collapseDiningHallHours, showVenueDescriptions, collapseVenuesByDefault,
-    showHallHours, intelligentVenueOrdering
+    showHallHours, intelligentVenueOrdering, skipPreloadAutomatically
   ];
 }
