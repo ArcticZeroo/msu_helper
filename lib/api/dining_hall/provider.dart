@@ -333,3 +333,7 @@ Future<DiningHallMenu> retrieveMenu(DiningHall diningHall, MenuDate date, Meal m
 
   return menuCache.get(key);
 }
+
+bool isMenuCached({ DiningHall diningHall, MenuDate date, Meal meal }) {
+  return menuCache.hasValid(serializeToKey(diningHall, date, meal));
+}
