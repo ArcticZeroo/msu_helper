@@ -8,7 +8,7 @@ import 'package:msu_helper/api/dining_hall/time.dart';
 import 'package:msu_helper/api/request.dart';
 import 'package:msu_helper/api/timed_cache.dart';
 import 'package:msu_helper/config/expire_time.dart';
-import 'package:msu_helper/config/page_route.dart';
+import 'package:msu_helper/config/page_route_config.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:synchronized/synchronized.dart';
 
@@ -83,7 +83,7 @@ Future<List<DiningHall>> retrieveDiningListFromDatabase() async {
 }
 
 Future<List<DiningHall>> retrieveDiningListFromWeb() async {
-  String url = PageRoute.getDining(PageRoute.LIST);
+  String url = PageRouteConfig.getDining(PageRouteConfig.LIST);
 
   List<dynamic> response = await makeRestRequest(url);
 
@@ -129,7 +129,7 @@ DiningHallMenu _diningHallMenuFromJson(Map<String, dynamic> json, DiningHall din
 Future<DiningHallMenu> retrieveMenuFromWeb(DiningHall diningHall, MenuDate date, Meal meal) async {
   String dateString = date.getFormatted();
 
-  String url = PageRoute.join([PageRoute.getDining(PageRoute.MENU), diningHall.searchName, dateString, meal.ordinal.toString()]);
+  String url = PageRouteConfig.join([PageRouteConfig.getDining(PageRouteConfig.MENU), diningHall.searchName, dateString, meal.ordinal.toString()]);
 
   Map<String, dynamic> response = (await makeRestRequest(url)) as Map<String, dynamic>;
 
@@ -174,7 +174,7 @@ Future<DiningHallMenu> retrieveMenuFromWeb(DiningHall diningHall, MenuDate date,
 Future<Map<DiningHall, List<DiningHallMenu>>> retrieveMenusForDayFromWeb(MenuDate date) async {
   String dateString = date.getFormatted();
 
-  String url = PageRoute.join([PageRoute.getDining(PageRoute.MENU), 'all', dateString]);
+  String url = PageRouteConfig.join([PageRouteConfig.getDining(PageRouteConfig.MENU), 'all', dateString]);
 
   Map<String, dynamic> response = (await makeRestRequest(url)) as Map<String, dynamic>;
 

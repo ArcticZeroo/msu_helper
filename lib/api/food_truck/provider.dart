@@ -7,14 +7,14 @@ import 'package:msu_helper/api/request.dart';
 import 'package:msu_helper/api/timed_cache.dart';
 import 'package:msu_helper/config/expire_time.dart';
 import 'package:msu_helper/config/identifier.dart';
-import 'package:msu_helper/config/page_route.dart';
+import 'package:msu_helper/config/page_route_config.dart';
 import 'package:synchronized/synchronized.dart';
 
 TimedCacheEntry<List<FoodTruckStop>> truckStopCache;
 Lock foodTruckLock = new Lock();
 
 Future<List<FoodTruckStop>> retrieveStopsFromWeb() async {
-  String url = PageRoute.getFoodTruck(PageRoute.LIST);
+  String url = PageRouteConfig.getFoodTruck(PageRouteConfig.LIST);
 
   List<dynamic> response = await makeRestRequest(url);
 

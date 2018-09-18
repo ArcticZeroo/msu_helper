@@ -1,6 +1,7 @@
-class PageRoute {
+class PageRouteConfig {
   // Root paths
   static const String ROOT = 'https://frozor.io';
+  // static const String ROOT = 'http://localhost';
   static const String API = 'api';
   static const String MSU = 'msu';
 
@@ -13,12 +14,15 @@ class PageRoute {
   static const String LIST = 'list';
   static const String MENU = 'menu';
 
+  // User-facing pages to link them
+  static const String USER_MOVIES_RHA = "http://rha.msu.edu/programs/campus-center-cinemas.html";
+
   static String join(List<String> pieces) {
     return pieces.join('/');
   }
 
   static String getMsuApi() {
-    return join([PageRoute.ROOT, PageRoute.API, PageRoute.MSU]);
+    return join([PageRouteConfig.ROOT, PageRouteConfig.API, PageRouteConfig.MSU]);
   }
 
   static String getApiRoute(String route, String end) {
@@ -26,14 +30,14 @@ class PageRoute {
   }
 
   static String getDining(String end) {
-    return getApiRoute(PageRoute.DINING, end);
+    return getApiRoute(PageRouteConfig.DINING, end);
   }
 
   static String getFoodTruck(String end) {
-    return getApiRoute(PageRoute.FOOD_TRUCK, end);
+    return getApiRoute(PageRouteConfig.FOOD_TRUCK, end);
   }
 
   static String getMovieNight(String end) {
-    return getApiRoute(PageRoute.MOVIE_NIGHT, end);
+    return getApiRoute(PageRouteConfig.MOVIE_NIGHT, end);
   }
 }
