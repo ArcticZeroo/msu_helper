@@ -6,15 +6,16 @@ part of 'food_truck_stop.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-FoodTruckStop _$FoodTruckStopFromJson(Map<String, dynamic> json) =>
-    new FoodTruckStop(
-        place: json['place'] as String,
-        location: json['location'] == null
-            ? null
-            : new Point.fromJson(json['location'] as Map<String, dynamic>),
-        start: json['start'] as int,
-        end: json['end'] as int,
-        isCancelled: json['isCancelled'] as bool);
+FoodTruckStop _$FoodTruckStopFromJson(Map<String, dynamic> json) {
+  return new FoodTruckStop(
+      place: json['place'] as String,
+      location: json['location'] == null
+          ? null
+          : new Point.fromJson(json['location'] as Map<String, dynamic>),
+      start: json['start'] as int,
+      end: json['end'] as int,
+      isCancelled: json['isCancelled'] as bool);
+}
 
 abstract class _$FoodTruckStopSerializerMixin {
   String get place;

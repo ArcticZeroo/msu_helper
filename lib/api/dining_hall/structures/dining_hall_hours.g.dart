@@ -6,21 +6,20 @@ part of 'dining_hall_hours.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-DiningHallHours _$DiningHallHoursFromJson(Map<String, dynamic> json) =>
-    new DiningHallHours(
-        extra: json['extra'] as String,
-        closeTimesRaw: json['closeTimes'] == null
-            ? null
-            : new Map<String, num>.from(json['closeTimes'] as Map),
-        openTimesRaw: json['openTimes'] == null
-            ? null
-            : new Map<String, num>.from(json['openTimes'] as Map),
-        closed: json['closed'] as bool,
-        begin: (json['begin'] as num)?.toDouble(),
-        end: (json['end'] as num)?.toDouble(),
-        limitedMenuBegin: (json['limitedMenuBegin'] as num)?.toDouble(),
-        grillClosesAt: (json['grillClosesAt'] as num)?.toDouble(),
-        mealOrdinal: json['meal'] as int);
+DiningHallHours _$DiningHallHoursFromJson(Map<String, dynamic> json) {
+  return new DiningHallHours(
+      extra: json['extra'] as String,
+      closeTimesRaw: (json['closeTimes'] as Map<String, dynamic>)
+          ?.map((k, e) => new MapEntry(k, e as num)),
+      openTimesRaw: (json['openTimes'] as Map<String, dynamic>)
+          ?.map((k, e) => new MapEntry(k, e as num)),
+      closed: json['closed'] as bool,
+      begin: (json['begin'] as num)?.toDouble(),
+      end: (json['end'] as num)?.toDouble(),
+      limitedMenuBegin: (json['limitedMenuBegin'] as num)?.toDouble(),
+      grillClosesAt: (json['grillClosesAt'] as num)?.toDouble(),
+      mealOrdinal: json['meal'] as int);
+}
 
 abstract class _$DiningHallHoursSerializerMixin {
   bool get closed;

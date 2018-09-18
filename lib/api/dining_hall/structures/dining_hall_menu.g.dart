@@ -6,14 +6,15 @@ part of 'dining_hall_menu.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-DiningHallMenu _$DiningHallMenuFromJson(Map<String, dynamic> json) =>
-    new DiningHallMenu(
-        closed: json['closed'] as bool,
-        venues: (json['venues'] as List)
-            ?.map((e) => e == null
-                ? null
-                : new DiningHallVenue.fromJson(e as Map<String, dynamic>))
-            ?.toList());
+DiningHallMenu _$DiningHallMenuFromJson(Map<String, dynamic> json) {
+  return new DiningHallMenu(
+      closed: json['closed'] as bool,
+      venues: (json['venues'] as List)
+          ?.map((e) => e == null
+              ? null
+              : new DiningHallVenue.fromJson(e as Map<String, dynamic>))
+          ?.toList());
+}
 
 abstract class _$DiningHallMenuSerializerMixin {
   bool get closed;

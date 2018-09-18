@@ -6,8 +6,10 @@ part of 'point.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Point _$PointFromJson(Map<String, dynamic> json) =>
-    new Point((json['x'] as num)?.toDouble(), (json['y'] as num)?.toDouble());
+Point _$PointFromJson(Map<String, dynamic> json) {
+  return new Point(
+      (json['x'] as num)?.toDouble(), (json['y'] as num)?.toDouble());
+}
 
 abstract class _$PointSerializerMixin {
   double get x;

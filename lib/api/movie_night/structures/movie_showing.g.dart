@@ -6,8 +6,9 @@ part of 'movie_showing.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-MovieShowing _$MovieShowingFromJson(Map<String, dynamic> json) =>
-    new MovieShowing(json['location'] as String, json['date'] as int);
+MovieShowing _$MovieShowingFromJson(Map<String, dynamic> json) {
+  return new MovieShowing(json['location'] as String, json['date'] as int);
+}
 
 abstract class _$MovieShowingSerializerMixin {
   String get location;
