@@ -12,7 +12,7 @@ class ErrorCardWidget extends StatelessWidget {
         padding: const EdgeInsets.all(32.0),
         child: new Text(text, style: new TextStyle(color: Colors.white)),
         decoration: new BoxDecoration(
-            color: Colors.deepOrange,
+            color: Colors.red[900],
             borderRadius: const BorderRadius.all(const Radius.circular(8.0))
         ),
       ),
