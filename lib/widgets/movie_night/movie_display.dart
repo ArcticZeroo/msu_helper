@@ -14,9 +14,9 @@ class MovieDisplay extends StatelessWidget {
   final Widget mediumSpacer = new Container(height: 8.0);
   final Widget smallSpacer = new Container(height: 4.0);
   final int timesPerRow = 2;
-  
+
   MovieDisplay(this.movie);
-  
+
   Widget buildBody() {
     List<Widget> children = [];
 
@@ -132,7 +132,7 @@ class MovieDisplay extends StatelessWidget {
             new Icon(Icons.movie, color: Colors.white),
             new Text(movie.title,
                 textAlign: TextAlign.center,
-                style: MaterialCard.titleStyle.copyWith(color: Colors.white)),
+                style: MaterialCard.titleStyle.copyWith(fontSize: 22.0, color: Colors.white)),
             buildNumberIndicator(movie.showings.length)
           ],
         ),
@@ -154,7 +154,7 @@ class MovieDisplay extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: MaterialCard.titleStyle.copyWith(
                     color: Colors.white,
-                    fontSize: MaterialCard.titleStyle.fontSize - 4.0)
+                    fontSize: MaterialCard.titleStyle.fontSize - 6.0)
             ),
             buildNumberIndicator(showings)
           ],
@@ -239,8 +239,19 @@ class MovieDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Widget> columnChildren = <Widget>[];
 
-    for (var entry in movie.groupedShowings.entries) {
-      columnChildren.add(buildLocationShowingsCard(entry.key, entry.value));
+    if (!movie.isSpecial) {
+      for (var entry in movie.groupedShowings.entries) {
+        columnChildren.add(buildLocationShowingsCard(entry.key, entry.value));
+      }
+    } else {
+      columnChildren.add(buildMiniCard(
+          Colors.green[200],
+          new Text('No movie showings found. It may be a special showing, like a pre-screening.'),
+          cardBorderRadius: const BorderRadius.only(
+              bottomLeft: borderRadius,
+              bottomRight: borderRadius
+          )
+      ));
     }
 
     return new Container(

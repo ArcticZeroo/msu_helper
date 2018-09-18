@@ -33,11 +33,16 @@ class Movie extends Object with _$MovieSerializerMixin {
   final String title;
   final List<MovieShowing> showings;
   final List<String> locations;
+
+  @JsonKey(name: 'special')
+  final bool isSpecial;
+
   @JsonKey(fromJson: groupedShowingsFromJson, toJson: groupedShowingsToJson)
   final Map<String, List<DateTime>> groupedShowings;
+
   MovieShowing nextShowing;
 
-  Movie(String title, this.showings, this.locations, this.groupedShowings)
+  Movie(String title, this.showings, this.locations, this.groupedShowings, this.isSpecial)
     : this.title = title.trim();
 
   factory Movie.fromJson(Map<String, dynamic> json) => _$MovieFromJson(json);
@@ -45,6 +50,10 @@ class Movie extends Object with _$MovieSerializerMixin {
   static MovieShowing findLatestShowing(List<Movie> fromMovies) {
     MovieShowing latestShowing;
     for (Movie movie in fromMovies) {
+      if (movie.showings == null || movie.showings.isEmpty) {
+        continue;
+      }
+
       // Copy it so we don't modify the original ref
       var showings = List.of(movie.showings);
 
