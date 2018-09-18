@@ -3,7 +3,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:msu_helper/api/movie_night/structures/movie.dart';
 import 'package:msu_helper/api/movie_night/structures/movie_showing.dart';
+import 'package:msu_helper/config/page_route_config.dart';
 import 'package:msu_helper/util/DateUtil.dart';
+import 'package:msu_helper/util/UrlUtil.dart';
 import 'package:msu_helper/widgets/collapsible/collapsible_card.dart';
 import 'package:msu_helper/widgets/collapsible/collapsible_custom.dart';
 import 'package:msu_helper/widgets/material_card.dart';
@@ -114,12 +116,18 @@ class MovieDisplay extends StatelessWidget {
     );
   }
 
-  Widget buildNumberIndicator(int count, [Color textColor]) {
+  Widget buildCircularIndicator(Widget child) {
     return new CircleAvatar(
       maxRadius: 12.0,
       backgroundColor: Colors.white,
-      child: new Text(count.toString(),
-          style: new TextStyle(color: textColor, fontWeight: FontWeight.w800)),
+      child: child,
+    );
+  }
+
+  Widget buildNumberIndicator(int count, [Color textColor]) {
+    return buildCircularIndicator(
+        new Text(count.toString(),
+            style: new TextStyle(color: textColor, fontWeight: FontWeight.w800))
     );
   }
 
@@ -133,7 +141,7 @@ class MovieDisplay extends StatelessWidget {
             new Text(movie.title,
                 textAlign: TextAlign.center,
                 style: MaterialCard.titleStyle.copyWith(fontSize: 22.0, color: Colors.white)),
-            buildNumberIndicator(movie.showings.length)
+            movie.isSpecial ? buildCircularIndicator(new Icon(Icons.star)) : buildNumberIndicator(movie.showings.length)
           ],
         ),
         cardBorderRadius: const BorderRadius.only(
@@ -216,22 +224,22 @@ class MovieDisplay extends StatelessWidget {
         .toList(growable: false);
 
     return new Column(
-      children: [
-        buildLocationCard(location, showings.length),
-        buildMiniCard(
-            Colors.green[200],
-            new Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: weekdayChildren,
-            ),
-            cardBorderRadius: const BorderRadius.only(
-                bottomLeft: borderRadius,
-                bottomRight: borderRadius
-            )
-        )
-      ],
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.stretch
+        children: [
+          buildLocationCard(location, showings.length),
+          buildMiniCard(
+              Colors.green[200],
+              new Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: weekdayChildren,
+              ),
+              cardBorderRadius: const BorderRadius.only(
+                  bottomLeft: borderRadius,
+                  bottomRight: borderRadius
+              )
+          )
+        ],
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch
     );
   }
 
@@ -246,7 +254,15 @@ class MovieDisplay extends StatelessWidget {
     } else {
       columnChildren.add(buildMiniCard(
           Colors.green[200],
-          new Text('No movie showings found. It may be a special showing, like a pre-screening.'),
+          new Column(
+            children: <Widget>[
+              new Text('This is a special showing! Visit the RHA website for more information.', textAlign: TextAlign.center),
+              new FlatButton(
+                  onPressed: () => UrlUtil.openUrl(PageRouteConfig.USER_MOVIES_RHA),
+                  child: new Text('Tap to visit the RHA website')
+              )
+            ],
+          ),
           cardBorderRadius: const BorderRadius.only(
               bottomLeft: borderRadius,
               bottomRight: borderRadius
@@ -260,8 +276,8 @@ class MovieDisplay extends StatelessWidget {
         isEnabled: true,
         title: buildTitleCard(),
         body: new Column(
-          children: columnChildren
-      ),
+            children: columnChildren
+        ),
       ),
     );
   }
