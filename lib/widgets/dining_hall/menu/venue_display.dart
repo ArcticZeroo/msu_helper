@@ -9,6 +9,7 @@ import 'package:msu_helper/widgets/collapsible/collapsible_card.dart';
 import 'package:msu_helper/widgets/dining_hall/menu/menu_display.dart';
 import 'package:msu_helper/widgets/material_card.dart';
 import 'package:msu_helper/widgets/wrappable_widget.dart';
+
 import '../../../api/settings/provider.dart' as settingsProvider;
 
 class VenueDisplay extends StatefulWidget {

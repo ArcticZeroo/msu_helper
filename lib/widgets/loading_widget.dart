@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:msu_helper/widgets/material_card.dart';
 
 class LoadingWidget extends StatelessWidget {
   final String name;

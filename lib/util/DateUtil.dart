@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:msu_helper/util/ListUtil.dart';
 import 'package:msu_helper/util/NumberUtil.dart';
 import 'package:msu_helper/util/TextUtil.dart';
 

@@ -1,12 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:msu_helper/api/movie_night/structures/movie.dart';
-import 'package:msu_helper/api/movie_night/structures/movie_showing.dart';
 import 'package:msu_helper/config/page_route_config.dart';
 import 'package:msu_helper/util/DateUtil.dart';
 import 'package:msu_helper/util/UrlUtil.dart';
-import 'package:msu_helper/widgets/collapsible/collapsible_card.dart';
 import 'package:msu_helper/widgets/collapsible/collapsible_custom.dart';
 import 'package:msu_helper/widgets/material_card.dart';
 

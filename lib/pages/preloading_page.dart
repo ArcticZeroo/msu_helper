@@ -1,19 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:msu_helper/api/dining_hall/provider.dart' as diningHallProvider;
+import 'package:msu_helper/api/dining_hall/time.dart';
+import 'package:msu_helper/api/food_truck/provider.dart' as foodTruckProvider;
+import 'package:msu_helper/api/movie_night/provider.dart' as movieNightProvider;
+import 'package:msu_helper/api/settings/provider.dart' as settingsProvider;
 import 'package:msu_helper/config/identifier.dart';
 import 'package:msu_helper/config/settings_config.dart';
-import 'package:msu_helper/widgets/material_card.dart';
 import 'package:msu_helper/widgets/preloading/preload_widget.dart';
-
-import 'package:msu_helper/api/dining_hall/meal.dart';
-import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
-import 'package:msu_helper/api/dining_hall/time.dart';
-
-import 'package:msu_helper/api/settings/provider.dart' as settingsProvider;
-import 'package:msu_helper/api/food_truck/provider.dart' as foodTruckProvider;
-import 'package:msu_helper/api/dining_hall/provider.dart' as diningHallProvider;
-import 'package:msu_helper/api/movie_night/provider.dart' as movieNightProvider;
 import 'package:msu_helper/widgets/visibility_toggle.dart';
 
 class PreloadingPage extends StatelessWidget {

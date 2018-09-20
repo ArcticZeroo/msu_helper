@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:msu_helper/widgets/preloading/preload_widget.dart';
 
 class PreloadingStatusWidget extends StatelessWidget {
   final double _iconSize = 24.0;

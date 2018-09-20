@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
 import 'package:msu_helper/api/settings/setting_data.dart';
+
 import '../../api/settings/provider.dart' as settingsProvider;
 
 class BooleanSettingWidget extends StatelessWidget {

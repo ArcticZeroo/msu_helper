@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:msu_helper/api/movie_night/structures/movie.dart';
 import 'package:msu_helper/api/movie_night/provider.dart' as movieProvider;
+import 'package:msu_helper/api/movie_night/structures/movie.dart';
 import 'package:msu_helper/widgets/error_card.dart';
 import 'package:msu_helper/widgets/loading_widget.dart';
 import 'package:msu_helper/widgets/material_card.dart';

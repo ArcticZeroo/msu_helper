@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:msu_helper/api/database.dart';
 import 'package:msu_helper/api/food_truck/structures/food_truck_stop.dart';
 import 'package:msu_helper/api/json_cache/provider.dart' as jsonCache;
 import 'package:msu_helper/api/request.dart';

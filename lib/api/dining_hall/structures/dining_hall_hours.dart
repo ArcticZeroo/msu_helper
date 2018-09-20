@@ -3,7 +3,6 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:msu_helper/api/dining_hall/meal.dart';
 import 'package:msu_helper/util/DateUtil.dart';
 import 'package:msu_helper/util/MapUtil.dart';
-import 'package:msu_helper/util/NumberUtil.dart';
 
 part './dining_hall_hours.g.dart';
 

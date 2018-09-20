@@ -1,16 +1,9 @@
-import 'dart:async';
-
 import 'package:json_annotation/json_annotation.dart';
 import 'package:msu_helper/api/dining_hall/meal.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_hours.dart';
-import 'package:msu_helper/api/dining_hall/structures/dining_hall_menu.dart';
-import 'package:msu_helper/api/dining_hall/structures/dining_hall_venue.dart';
-import 'package:msu_helper/api/dining_hall/structures/food_item.dart';
 import 'package:msu_helper/api/dining_hall/time.dart';
 import 'package:msu_helper/util/DateUtil.dart';
 import 'package:msu_helper/util/UrlUtil.dart';
-
-import '../provider.dart' as diningHallProvider;
 
 part './dining_hall.g.dart';
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:msu_helper/pages/preloading_page.dart';
 
-import './util/TextUtil.dart';
 import './pages/main_page.dart';
+import './util/TextUtil.dart';
 
 void main() {
   runApp(new MsuHelperApp());

@@ -2,18 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:msu_helper/api/dining_hall/meal.dart';
+import 'package:msu_helper/api/dining_hall/provider.dart' as diningHallProvider;
 import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_menu.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_venue.dart';
 import 'package:msu_helper/api/dining_hall/structures/food_item.dart';
 import 'package:msu_helper/api/dining_hall/time.dart';
+import 'package:msu_helper/api/settings/provider.dart' as settingsProvider;
 import 'package:msu_helper/config/settings_config.dart';
 import 'package:msu_helper/widgets/dining_hall/menu/venue_display.dart';
 import 'package:msu_helper/widgets/error_card.dart';
 import 'package:msu_helper/widgets/loading_widget.dart';
-
-import 'package:msu_helper/api/settings/provider.dart' as settingsProvider;
-import 'package:msu_helper/api/dining_hall/provider.dart' as diningHallProvider;
 
 
 class MenuDisplay extends StatelessWidget {

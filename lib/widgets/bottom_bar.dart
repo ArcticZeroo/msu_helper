@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:msu_helper/api/page_data.dart';
 
 typedef void SetStateCallback(void fn());

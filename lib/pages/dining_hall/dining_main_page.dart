@@ -5,13 +5,11 @@ import 'package:msu_helper/api/dining_hall/controller.dart';
 import 'package:msu_helper/api/dining_hall/provider.dart';
 import 'package:msu_helper/api/dining_hall/relevant.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
-import 'package:msu_helper/api/dining_hall/structures/dining_hall_venue.dart';
 import 'package:msu_helper/api/reloadable.dart';
 import 'package:msu_helper/api/settings/provider.dart';
 import 'package:msu_helper/pages/dining_hall/dining_hall_page.dart';
 import 'package:msu_helper/util/ListUtil.dart';
-import 'package:msu_helper/widgets/material_card.dart';
-import '../../api/settings/provider.dart' as settingsProvider;
+
 import '../../config/settings_config.dart';
 
 class DiningMainPage extends StatefulWidget {

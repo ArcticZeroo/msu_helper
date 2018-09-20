@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:msu_helper/api/dining_hall/provider.dart' as diningHallProvider;
 import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/food_truck/enum/stop_state.dart';
 import 'package:msu_helper/api/point.dart';
 import 'package:msu_helper/util/UrlUtil.dart';
-import 'package:msu_helper/api/dining_hall/provider.dart' as diningHallProvider;
 
 part './food_truck_stop.g.dart';
 

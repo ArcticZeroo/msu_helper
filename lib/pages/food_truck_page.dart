@@ -1,11 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:msu_helper/api/food_truck/provider.dart' as foodTruckProvider;
 import 'package:msu_helper/api/food_truck/structures/food_truck_stop.dart';
-import 'package:msu_helper/util/DateUtil.dart';
-import 'package:msu_helper/util/TextUtil.dart';
 import 'package:msu_helper/widgets/error_card.dart';
 import 'package:msu_helper/widgets/food_truck/stop_display.dart';
 import 'package:msu_helper/widgets/loading_widget.dart';

@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:msu_helper/api/food_truck/structures/food_truck_stop.dart';
 import 'package:msu_helper/api/food_truck/controller.dart' as foodTruckController;
 import 'package:msu_helper/api/food_truck/provider.dart' as foodTruckProvider;
+import 'package:msu_helper/api/food_truck/structures/food_truck_stop.dart';
 import 'package:msu_helper/api/reloadable.dart';
 import 'package:msu_helper/pages/home_page.dart';
 import 'package:msu_helper/util/DateUtil.dart';

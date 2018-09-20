@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:msu_helper/api/settings/setting_data.dart';
 import 'package:msu_helper/config/settings_config.dart';
 import 'package:msu_helper/widgets/material_card.dart';
-import 'package:msu_helper/widgets/settings/favorite_dining_hall.dart';
 import 'package:msu_helper/widgets/settings/boolean_setting.dart';
+import 'package:msu_helper/widgets/settings/favorite_dining_hall.dart';
 
 class SettingsPage extends StatefulWidget {
   static const String reloadableCategory = 'settings_dependent';
