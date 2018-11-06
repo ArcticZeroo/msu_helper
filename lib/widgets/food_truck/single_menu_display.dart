@@ -30,7 +30,7 @@ class SingleMenuDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CollapsibleCard(
-      title: new Text(TextUtil.capitalize(menu.title), style: MaterialCard.titleStyle),
+      title: new Text(menu.title.split(' ').map(TextUtil.capitalize).join(' '), style: MaterialCard.titleStyle),
       body: Column(
         children: menu.items.map(_buildMenuItem).toList(),
       ),
