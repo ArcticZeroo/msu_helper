@@ -20,6 +20,7 @@ class PreloadingPage extends StatelessWidget {
 
     primaryLoaders[Identifier.settings] = new PreloadingWidget('Your Settings', settingsProvider.loadAllSettings);
     primaryLoaders[Identifier.foodTruck] = new PreloadingWidget('Food Truck Stops', foodTruckProvider.retrieveStops);
+    primaryLoaders[Identifier.foodTruckMenu] = new PreloadingWidget('Food Truck Menus', foodTruckProvider.retrieveMenus);
     primaryLoaders[Identifier.movieNight] = new PreloadingWidget('Movie Night Listings', movieNightProvider.retrieveMovies);
     primaryLoaders[Identifier.diningHall] = new PreloadingWidget('Available Dining Halls + Hours', diningHallProvider.retrieveDiningList);
 
