@@ -8,7 +8,7 @@ part of 'food_truck_menu.dart';
 
 FoodTruckMenu _$FoodTruckMenuFromJson(Map<String, dynamic> json) {
   return new FoodTruckMenu(
-      name: json['name'] as String,
+      title: json['title'] as String,
       items: (json['items'] as List)
           ?.map((e) => e == null
               ? null
@@ -17,8 +17,8 @@ FoodTruckMenu _$FoodTruckMenuFromJson(Map<String, dynamic> json) {
 }
 
 abstract class _$FoodTruckMenuSerializerMixin {
-  String get name;
+  String get title;
   List<FoodTruckMenuItem> get items;
   Map<String, dynamic> toJson() =>
-      <String, dynamic>{'name': name, 'items': items};
+      <String, dynamic>{'title': title, 'items': items};
 }

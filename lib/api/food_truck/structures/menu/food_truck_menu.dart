@@ -5,8 +5,10 @@ part './food_truck_menu.g.dart';
 
 @JsonSerializable()
 class FoodTruckMenu extends Object with _$FoodTruckMenuSerializerMixin {
-  final String name;
+  final String title;
   final List<FoodTruckMenuItem> items;
 
-  FoodTruckMenu({this.name, this.items});
+  FoodTruckMenu({this.title, this.items});
+
+  factory FoodTruckMenu.fromJson(Map<String, dynamic> json) => _$FoodTruckMenuFromJson(json);
 }
