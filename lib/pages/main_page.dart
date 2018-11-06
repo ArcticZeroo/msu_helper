@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:msu_helper/api/page_data.dart';
 import 'package:msu_helper/api/reloadable.dart';
-import 'package:msu_helper/pages/dining_hall/dining_main_page.dart';
+import 'package:msu_helper/pages/dining_hall/dining_list_page.dart';
 import 'package:msu_helper/pages/food_truck_page.dart';
 import 'package:msu_helper/pages/home_page.dart';
 import 'package:msu_helper/pages/movie_night_page.dart';

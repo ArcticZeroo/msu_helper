@@ -14,8 +14,10 @@ import '../../../api/settings/provider.dart' as settingsProvider;
 
 class VenueDisplay extends StatefulWidget {
   final DiningHallVenue venue;
+  final List<FoodItem> menu;
 
-  VenueDisplay(this.venue);
+  VenueDisplay(this.venue, [overrideMenu])
+      : menu = (overrideMenu == null) ? venue.menu : overrideMenu;
 
   @override
   State<StatefulWidget> createState() => new VenueDisplayState();
@@ -60,7 +62,7 @@ class VenueDisplayState extends Reloadable<VenueDisplay> {
     return new Container(
         padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
         child: new Column(
-          children: widget.venue.menu.map(buildFoodItem).toList(),
+          children: widget.menu.map(buildFoodItem).toList(),
         )
     );
   }

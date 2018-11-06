@@ -50,8 +50,28 @@ class SettingsConfig {
           'If preload is skipped, some pages may take extra time to load.'
   );
 
+  static const SettingData filterVeganFoods = const BooleanSetting(
+      key: 'filter_veganFood',
+      title: 'Vegan Food',
+      defaultValue: false
+  );
+
+  static const SettingData filterVegetarianFoods = const BooleanSetting(
+      key: 'filter_vegetarianFood',
+      title: 'Vegetarian Food',
+      defaultValue: false
+  );
+
+  static const SettingData filterGlutenFreeFoods = const BooleanSetting(
+      key: 'filter_glutenFreeFood',
+      title: 'Gluten Free Food',
+      description: 'Note: This will just check for items without wheat reported in ingredients. May be inaccurate.',
+      defaultValue: false
+  );
+
   static const List<SettingData> allSettings = const [
     favoriteDiningHall, collapseDiningHallHours, showVenueDescriptions, collapseVenuesByDefault,
-    showHallHours, intelligentVenueOrdering, skipPreloadAutomatically
+    showHallHours, intelligentVenueOrdering, skipPreloadAutomatically,
+    filterVeganFoods, filterGlutenFreeFoods, filterVeganFoods
   ];
 }

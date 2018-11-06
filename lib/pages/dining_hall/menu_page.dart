@@ -38,7 +38,7 @@ class HallInfoPageState extends State<HallInfoPage> {
     _menuDisplay = new MenuDisplay(
       diningHall: widget.diningHall,
       meal: _selectedMeal,
-      menuDate: _selectedDate,
+      menuDate: _selectedDate
     );
   }
 
