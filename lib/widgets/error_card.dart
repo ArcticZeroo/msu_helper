@@ -9,7 +9,7 @@ class ErrorCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Center(
       child:  new Container(
-        padding: const EdgeInsets.all(32.0),
+        padding: const EdgeInsets.all(16.0),
         child: new Text(text, style: new TextStyle(color: Colors.white)),
         decoration: new BoxDecoration(
             color: Colors.red[900],
