@@ -6,30 +6,32 @@ import '../../api/settings/provider.dart' as settingsProvider;
 class BooleanSettingWidget extends StatelessWidget {
   final SettingData data;
   final Icon icon;
+  final bool isCheckbox;
 
-  BooleanSettingWidget(this.data, this.icon);
+  BooleanSettingWidget(this.data, this.icon, [this.isCheckbox = false]);
 
   @override
   Widget build(BuildContext context) {
     return new ListTile(
       leading: icon,
       title: new Text(data.title),
-      subtitle: new Text(data.description),
-      trailing: new BooleanSettingSwitch(data),
+      subtitle: data.description == null ? null : new Text(data.description),
+      trailing: new BooleanSettingSwitch(data, isCheckbox),
     );
   }
 }
 
 class BooleanSettingSwitch extends StatefulWidget {
   final SettingData data;
+  final bool isCheckbox;
 
-  BooleanSettingSwitch(this.data);
+  BooleanSettingSwitch(this.data, this.isCheckbox);
 
   @override
-  State<StatefulWidget> createState() => new _VenueDescriptions();
+  State<StatefulWidget> createState() => new _SwitchState();
 }
 
-class _VenueDescriptions extends State<BooleanSettingSwitch> {
+class _SwitchState extends State<BooleanSettingSwitch> {
   bool value;
 
   @override
@@ -39,28 +41,27 @@ class _VenueDescriptions extends State<BooleanSettingSwitch> {
     value = settingsProvider.getCached(widget.data);
   }
 
+  void onValueChanged(bool newValue) {
+    widget.data.save(newValue)
+        .then((_) {
+      print('Saved setting for key ${widget.data.key}');
+    })
+        .catchError((error) {
+      print('Could not save setting ${widget.data.key}');
+      print(error);
+
+      if (error is Error) {
+        print(error.stackTrace);
+      }
+    });
+
+    setState(() {
+      value = newValue;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return new Switch(
-        value: value,
-        onChanged: (bool newValue) {
-          widget.data.save(newValue)
-          .then((_) {
-            print('Saved setting for key ${widget.data.key}');
-          })
-          .catchError((error) {
-            print('Could not save setting ${widget.data.key}');
-            print(error);
-
-            if (error is Error) {
-              print(error.stackTrace);
-            }
-          });
-
-          setState(() {
-            value = newValue;
-          });
-        }
-    );
+    return widget.isCheckbox ? new Checkbox(value: value, onChanged: onValueChanged) : new Switch(value: value, onChanged: onValueChanged);
   }
 }
