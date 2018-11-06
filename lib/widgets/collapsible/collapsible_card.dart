@@ -10,7 +10,9 @@ class CollapsibleCard extends StatefulWidget {
 
   CollapsibleCard({
     Key key,
+    @required
     this.title,
+    @required
     this.body,
     this.backgroundColor,
     this.arrowColor,
