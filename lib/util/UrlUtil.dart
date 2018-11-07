@@ -14,14 +14,14 @@ class UrlUtil {
   }
 
   static openMapsCustom(urlEnding) {
-    return openUrl('https://maps.google.com/$urlEnding');
+    return openUrl('https://maps.google.com/?q=$urlEnding');
   }
 
   static openMapsToLocation(loc) {
-    return openMapsCustom('?q=$loc');
+    return openMapsCustom(loc);
   }
 
   static openMapsToCoordinates(double x, double y) {
-    return openMapsCustom('?q=$x,$y');
+    return openMapsCustom('$x,$y');
   }
 }

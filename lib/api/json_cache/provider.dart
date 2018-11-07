@@ -70,11 +70,11 @@ Future saveJsonToDb(String key, dynamic object) async {
 }
 
 Future retrieveJsonFromWebAndSave(String key, String url, [Duration timeout = const Duration(milliseconds: 10*1000)]) async {
-    var data = await makeRestRequest(url).timeout(timeout);
+    dynamic data = await makeRestRequest(url).timeout(timeout);
 
     await saveJsonToDb(key, data);
 
-    return json.decode(data);
+    return data;
 }
 
 Future retrieveJson({
@@ -87,7 +87,7 @@ Future retrieveJson({
     try {
         data = await retrieveJsonFromDb(key, expireTime);
     } catch (e) {
-        print('Could not get json from db...');
+        print('Could not get json from db... $e');
     }
 
     if (data != null) {
