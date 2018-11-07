@@ -13,8 +13,9 @@ part './food_truck_stop.g.dart';
 class FoodTruckStop extends Object with _$FoodTruckStopSerializerMixin {
   final String place;
   final String mapsLocation;
-  final Point location;
   final bool isCancelled;
+  @JsonKey(name: 'location')
+  final Point _location;
 
   final DateTime startDate;
   final DateTime endDate;
@@ -24,7 +25,7 @@ class FoodTruckStop extends Object with _$FoodTruckStopSerializerMixin {
 
   String get shortName => mapsLocation.toLowerCase().startsWith('the') ? mapsLocation : 'the $mapsLocation';
 
-  FoodTruckStop({this.place, this.location, this.start, this.end, this.isCancelled})
+  FoodTruckStop(this.place, this.start, this.end, this.isCancelled, [this._location])
       : this.startDate = DateTime.fromMillisecondsSinceEpoch(start),
         this.endDate = DateTime.fromMillisecondsSinceEpoch(end),
         this.mapsLocation = place.contains('near') ? place.split('near')[1].trim() : place;
@@ -32,8 +33,8 @@ class FoodTruckStop extends Object with _$FoodTruckStopSerializerMixin {
   factory FoodTruckStop.fromJson(Map<String, dynamic> json) => _$FoodTruckStopFromJson(json);
 
   Future openMaps() async {
-    if (!(location ?? new Point()).isNull) {
-      UrlUtil.openMapsToCoordinates(location.x, location.y);
+    if (!location.isNull) {
+      await UrlUtil.openMapsToCoordinates(location.x, location.y);
       return;
     }
 
@@ -64,6 +65,8 @@ class FoodTruckStop extends Object with _$FoodTruckStopSerializerMixin {
 
     return now.day == startDate.day && now.month == startDate.month && now.year == startDate.year;
   }
+
+  Point get location => _location ?? Point();
   
   FoodTruckStopState get currentState {
     if (isCancelled) {
