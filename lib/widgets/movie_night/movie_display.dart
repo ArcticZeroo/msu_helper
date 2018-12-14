@@ -43,8 +43,8 @@ class MovieDisplay extends StatelessWidget {
         showingsForWeekday.sort((a, b) => a.compareTo(b));
 
         locationChildren.add(new Text(
-            '${DateUtil.formatDateFully(showingsForWeekday.first)}: ${showingsForWeekday.map(DateUtil.toTimeString).join(', ')}',
-            style: MaterialCard.subtitleStyle.copyWith(color: Colors.grey[200])
+          '${DateUtil.formatDateFully(showingsForWeekday.first)}: ${showingsForWeekday.map(DateUtil.toTimeString).join(', ')}',
+          style: MaterialCard.subtitleStyle.copyWith(color: Colors.grey[200])
         ));
       }
 
@@ -74,41 +74,41 @@ class MovieDisplay extends StatelessWidget {
 
   /**
    * new CollapsibleCard(
-      backgroundColor: Colors.green[700],
-      arrowColor: Colors.white,
-      title: new Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-      new Icon(Icons.movie, color: Colors.grey[200]),
-      new Container(width: 12.0),
-      new Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-      new Text(movie.title,
-      style: MaterialCard.titleStyle.copyWith(color: Colors.white)),
-      new Text('${movie.showings.length} showing${movie.showings.length == 1 ? '' : 's'} listed',
-      style: MaterialCard.subtitleStyle.copyWith(color: Colors.grey[300]))
-      ],
-      )
-      ],
-      ),
-      body: buildBody()
-      )
+    backgroundColor: Colors.green[700],
+    arrowColor: Colors.white,
+    title: new Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: <Widget>[
+    new Icon(Icons.movie, color: Colors.grey[200]),
+    new Container(width: 12.0),
+    new Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: <Widget>[
+    new Text(movie.title,
+    style: MaterialCard.titleStyle.copyWith(color: Colors.white)),
+    new Text('${movie.showings.length} showing${movie.showings.length == 1 ? '' : 's'} listed',
+    style: MaterialCard.subtitleStyle.copyWith(color: Colors.grey[300]))
+    ],
+    )
+    ],
+    ),
+    body: buildBody()
+    )
    */
 
   BoxDecoration getRoundedBox(Color color, [BorderRadius boxBorderRadius]) {
     return new BoxDecoration(
-        color: color,
-        borderRadius: boxBorderRadius
+      color: color,
+      borderRadius: boxBorderRadius
     );
   }
 
   Widget buildMiniCard(Color color, Widget child, {BorderRadius cardBorderRadius = const BorderRadius.all(borderRadius), double width}) {
     return new Container(
-        padding: const EdgeInsets.all(8.0),
-        decoration: getRoundedBox(color, cardBorderRadius),
-        child: child,
-        width: width
+      padding: const EdgeInsets.all(8.0),
+      decoration: getRoundedBox(color, cardBorderRadius),
+      child: child,
+      width: width
     );
   }
 
@@ -122,48 +122,54 @@ class MovieDisplay extends StatelessWidget {
 
   Widget buildNumberIndicator(int count, [Color textColor]) {
     return buildCircularIndicator(
-        new Text(count.toString(),
-            style: new TextStyle(color: textColor, fontWeight: FontWeight.w800))
+      new Text(count.toString(),
+        style: new TextStyle(color: textColor, fontWeight: FontWeight.w800))
     );
   }
 
   Widget buildTitleCard() {
     return buildMiniCard(
-        Colors.green[700],
-        new Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            new Icon(Icons.movie, color: Colors.white),
-            new Text(movie.title,
-                textAlign: TextAlign.center,
-                style: MaterialCard.titleStyle.copyWith(fontSize: 22.0, color: Colors.white)),
-            movie.isSpecial ? buildCircularIndicator(new Icon(Icons.star)) : buildNumberIndicator(movie.showings.length)
-          ],
-        ),
-        cardBorderRadius: const BorderRadius.only(
-            topLeft: borderRadius,
-            topRight: borderRadius
-        )
+      Colors.green[700],
+      new Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Icon(Icons.movie, color: Colors.white),
+          Expanded(
+            child: Text(
+              movie.title,
+              textAlign: TextAlign.center,
+              style: MaterialCard.titleStyle.copyWith(fontSize: 22.0, color: Colors.white)
+            ),
+          ),
+          movie.isSpecial ? buildCircularIndicator(new Icon(Icons.star)) : buildNumberIndicator(movie.showings.length)
+        ],
+      ),
+      cardBorderRadius: const BorderRadius.only(
+        topLeft: borderRadius,
+        topRight: borderRadius
+      )
     );
   }
 
   Widget buildLocationCard(String location, int showings) {
     return buildMiniCard(
-        Colors.green,
-        new Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            new Icon(Icons.location_on, color: Colors.white),
-            new Text(location,
-                textAlign: TextAlign.center,
-                style: MaterialCard.titleStyle.copyWith(
-                    color: Colors.white,
-                    fontSize: MaterialCard.titleStyle.fontSize - 6.0)
+      Colors.green,
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Icon(Icons.location_on, color: Colors.white),
+          Expanded(
+            child: Text(location,
+              textAlign: TextAlign.center,
+              style: MaterialCard.titleStyle.copyWith(
+                color: Colors.white,
+                fontSize: MaterialCard.titleStyle.fontSize - 6.0)
             ),
-            buildNumberIndicator(showings)
-          ],
-        ),
-        cardBorderRadius: const BorderRadius.only()
+          ),
+          buildNumberIndicator(showings)
+        ],
+      ),
+      cardBorderRadius: const BorderRadius.only()
     );
   }
 
@@ -175,21 +181,21 @@ class MovieDisplay extends StatelessWidget {
       children: <Widget>[
         smallSpacer,
         buildMiniCard(
-            Colors.green[200],
-            new Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                new Icon(Icons.date_range),
-                new Text(DateUtil.formatDateFully(day),
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      fontSize: 15.0,
-                      fontWeight: FontWeight.w600
-                  ),
+          Colors.green[200],
+          new Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              new Icon(Icons.date_range),
+              new Text(DateUtil.formatDateFully(day),
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.w600
                 ),
-                buildNumberIndicator(days.length)
-              ],
-            )
+              ),
+              buildNumberIndicator(days.length)
+            ],
+          )
         )
       ],
     );
@@ -201,14 +207,14 @@ class MovieDisplay extends StatelessWidget {
 
   Widget buildWeekdayRow(List<DateTime> dates) {
     return new Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          new Text(
-              DateUtil.formatDateFully(dates.first),
-              style: new TextStyle(fontWeight: FontWeight.w700)
-          ),
-          new Text(dates.map(DateUtil.toTimeString).join(', '))
-        ]
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        new Text(
+          DateUtil.formatDateFully(dates.first),
+          style: new TextStyle(fontWeight: FontWeight.w700)
+        ),
+        new Text(dates.map(DateUtil.toTimeString).join(', '))
+      ]
     );
   }
 
@@ -216,26 +222,26 @@ class MovieDisplay extends StatelessWidget {
     var groupedShowings = DateUtil.groupByWeekday(showings);
 
     List<Widget> weekdayChildren = groupedShowings.values
-        .map(buildWeekdayRow)
-        .toList(growable: false);
+      .map(buildWeekdayRow)
+      .toList(growable: false);
 
-    return new Column(
-        children: [
-          buildLocationCard(location, showings.length),
-          buildMiniCard(
-              Colors.green[200],
-              new Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: weekdayChildren,
-              ),
-              cardBorderRadius: const BorderRadius.only(
-                  bottomLeft: borderRadius,
-                  bottomRight: borderRadius
-              )
+    return Column(
+      children: [
+        buildLocationCard(location, showings.length),
+        buildMiniCard(
+          Colors.green[200],
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: weekdayChildren,
+          ),
+          cardBorderRadius: const BorderRadius.only(
+            bottomLeft: borderRadius,
+            bottomRight: borderRadius
           )
-        ],
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.stretch
+        )
+      ],
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch
     );
   }
 
@@ -249,30 +255,30 @@ class MovieDisplay extends StatelessWidget {
       }
     } else {
       columnChildren.add(buildMiniCard(
-          Colors.green[200],
-          new Column(
-            children: <Widget>[
-              new Text('This is a special showing! Visit the RHA website for more information.', textAlign: TextAlign.center),
-              new FlatButton(
-                  onPressed: () => UrlUtil.openUrl(PageRouteConfig.USER_MOVIES_RHA),
-                  child: new Text('Tap to visit the RHA website')
-              )
-            ],
-          ),
-          cardBorderRadius: const BorderRadius.only(
-              bottomLeft: borderRadius,
-              bottomRight: borderRadius
-          )
+        Colors.green[200],
+        new Column(
+          children: <Widget>[
+            new Text('This is a special showing! Visit the RHA website for more information.', textAlign: TextAlign.center),
+            new FlatButton(
+              onPressed: () => UrlUtil.openUrl(PageRouteConfig.USER_MOVIES_RHA),
+              child: new Text('Tap to visit the RHA website')
+            )
+          ],
+        ),
+        cardBorderRadius: const BorderRadius.only(
+          bottomLeft: borderRadius,
+          bottomRight: borderRadius
+        )
       ));
     }
 
-    return new Container(
+    return Container(
       padding: const EdgeInsets.all(8.0),
-      child: new CollapsibleCustom(
+      child: CollapsibleCustom(
         isEnabled: true,
         title: buildTitleCard(),
-        body: new Column(
-            children: columnChildren
+        body: Column(
+          children: columnChildren
         ),
       ),
     );
