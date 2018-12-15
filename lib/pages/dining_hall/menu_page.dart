@@ -27,28 +27,8 @@ class HallInfoPage extends StatefulWidget {
 }
 
 class HallInfoPageState extends State<HallInfoPage> {
-  Widget _menuDisplay;
   Meal _selectedMeal;
   MenuDate _selectedDate;
-
-  void createMenuDisplay() {
-    if (getHoursForMeal().closed) {
-      _menuDisplay = new ErrorCardWidget('The dining hall is closed for this mealtime.');
-      return;
-    }
-
-    _menuDisplay = new MenuDisplay(MenuSelection(
-      diningHall: widget.diningHall,
-      meal: _selectedMeal,
-      date: _selectedDate
-    ));
-  }
-
-  void updateMenuDisplay() {
-    setState(() {
-      createMenuDisplay();
-    });
-  }
 
   List<DiningHallHours> getHoursForDay() {
     return widget.diningHall.getHoursForDay(_selectedDate);
@@ -62,13 +42,24 @@ class HallInfoPageState extends State<HallInfoPage> {
     return getHoursForDay()[meal.ordinal];
   }
 
+  Widget buildMenuDisplay() {
+    if (getHoursForMeal().closed) {
+      return ErrorCardWidget('The dining hall is closed for this mealtime.');
+    }
+
+    return MenuDisplay(MenuSelection(
+      diningHall: widget.diningHall,
+      meal: _selectedMeal,
+      date: _selectedDate
+    ));
+  }
+
   @override
   void initState() {
     super.initState();
 
     _selectedDate = MenuDate.now();
     _selectedMeal = widget.diningHall.getBestMealToday();
-    createMenuDisplay();
   }
 
   @override
@@ -76,7 +67,7 @@ class HallInfoPageState extends State<HallInfoPage> {
     List<Widget> columnChildren = [];
 
     if (settingsProvider.getCached(SettingsConfig.showHallHours)) {
-      columnChildren.add(new HoursTable(widget.diningHall));
+      columnChildren.add(HoursTable(widget.diningHall));
     }
 
     columnChildren.add(MenuPageHeader(
@@ -94,7 +85,7 @@ class HallInfoPageState extends State<HallInfoPage> {
         });
       }
     ));
-    columnChildren.add(_menuDisplay);
+    columnChildren.add(buildMenuDisplay());
 
     return new Scaffold(
         appBar: AppBar(

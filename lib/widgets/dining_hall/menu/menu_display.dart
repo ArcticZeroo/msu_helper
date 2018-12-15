@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:msu_helper/api/dining_hall/meal.dart';
+import 'package:msu_helper/api/dining_hall/missing_menu_exception.dart';
 import 'package:msu_helper/api/dining_hall/provider.dart' as diningHallProvider;
 import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_menu.dart';
@@ -76,12 +77,8 @@ class _MenuDisplayState extends State<MenuDisplay> {
     Future<List<DiningHallVenue>> retrieveSortedMenu() async {
         DiningHallMenu menu = await diningHallProvider.retrieveMenu(widget.menuSelection);
 
-        if (menu == null) {
-            throw new Exception('null menu was retrieved');
-        }
-
-        if (menu.venues == null || menu.venues.isEmpty) {
-            throw new Exception('venues for menu are null or empty');
+        if (menu == null || menu.venues == null || menu.venues.isEmpty) {
+            throw new MissingMenuException(widget.menuSelection);
         }
 
         List<DiningHallVenue> sortedVenues = await sortVenues(menu);
@@ -148,7 +145,7 @@ class _MenuDisplayState extends State<MenuDisplay> {
 
     @override
     Widget build(BuildContext context) {
-        return FutureBuilder(
+        return FutureBuilder<List<DiningHallVenue>>(
             future: retrieveSortedMenu(),
             builder: (ctx, snapshot) {
                 if (snapshot.connectionState != ConnectionState.done) {
@@ -161,6 +158,15 @@ class _MenuDisplayState extends State<MenuDisplay> {
                     }
                     print(snapshot.error);
 
+                    if (snapshot.error is MissingMenuException) {
+                      return Column(
+                        children: <Widget>[
+                          ErrorCardWidget('This menu is not posted'),
+                          buildRetryButton()
+                        ],
+                      );
+                    }
+
                     return Column(
                         children: <Widget>[
                             ErrorCardWidget('Could not load menu.'),
@@ -169,20 +175,7 @@ class _MenuDisplayState extends State<MenuDisplay> {
                     );
                 }
 
-                List<DiningHallVenue> venues = snapshot.data as List<DiningHallVenue>;
-
-                try {
-                  return buildMenuWidget(venues);
-                } catch (_) {
-                  return Column(
-                    children: <Widget>[
-                      MaterialCard(
-                        body: Text('Test'),
-                      ),
-                      buildRetryButton()
-                    ],
-                  );
-                }
+                return buildMenuWidget(snapshot.data);
             },
         );
     }
