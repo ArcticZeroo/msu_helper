@@ -9,6 +9,8 @@ import 'package:msu_helper/api/reloadable.dart';
 import 'package:msu_helper/api/settings/provider.dart';
 import 'package:msu_helper/pages/dining_hall/menu_page.dart';
 import 'package:msu_helper/util/ListUtil.dart';
+import 'package:msu_helper/widgets/dining_hall/list_item.dart';
+import 'package:msu_helper/widgets/loading_widget.dart';
 
 import '../../config/settings_config.dart';
 
@@ -50,97 +52,44 @@ class DiningMainPageState extends Reloadable<DiningMainPage> {
     });
   }
 
-  Widget buildDiningHallButton(DiningHall diningHall) {
-    return new InkWell(
-      child: new Container(
-        decoration: new BoxDecoration(
-            color: Colors.green[300],
-          boxShadow: [
-            new BoxShadow(
-              color: Colors.black12,
-              offset: const Offset(0.0, 1.0),
-              blurRadius: 4.0
-            )
-          ]
-        ),
-        padding: const EdgeInsets.all(8.0),
-        margin: const EdgeInsets.all(8.0),
-        child: new Column(
-          children: ListUtil.add(
-              [new Container(
-                margin: const EdgeInsets.only(bottom: 12.0),
-                child: new Center(
-                    child: new Text(diningHall.hallName,
-                        style: new TextStyle(
-                            fontSize: 16.0,
-                            color: Colors.black87,
-                            fontWeight: FontWeight.w500
-                        )
-                    )),
-              )],
-              getSuperRelevantLines(diningHall).map((s) => new Center(child: new Text(s))).toList()
-          ),
-        ),
-      ),
-      onTap: () {
-        Navigator.push(
-            context,
-            new MaterialPageRoute(builder: (context) => new HallInfoPage(diningHall))
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     if (failed) {
-      return new Center(
-        child: new Text('Could not load dining hall information.'),
+      return Center(
+        child: Text('Could not load dining hall information.'),
       );
     }
 
     if (diningHalls == null) {
-      return new Center(
-        child: new Text('Loading dining halls...'),
+      return LoadingWidget(
+        name: 'Dining Halls'
       );
     }
 
     List<Widget> children = <Widget>[
-      new Container(
+      Container(
         padding: const EdgeInsets.all(12.0),
-        child: new Center(child: new Text('Tap a dining hall to view its menu/hours!')),
+        child: Center(
+          child: Text('Tap a dining hall to view its menu/hours!')
+        ),
       ),
     ];
 
     if (favoriteHall != null) {
-      children.add(new Column(
-        children: <Widget>[
-          new Divider(),
-          new Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              new Container(
-                padding: const EdgeInsets.all(6.0),
-                child: new Icon(Icons.star, color: Colors.yellow),
-              ),
-              new Text('Favorite Hall')
-            ],
-          ),
-          buildDiningHallButton(favoriteHall),
-          new Divider()
-        ],
-      ));
+      children.add(FavoriteDiningHallListItem(favoriteHall));
     }
 
-    children.add(new Expanded(
-        child: new GridView.count(
+    children.add(Expanded(
+        child: GridView.count(
           crossAxisCount: 2,
           childAspectRatio: 1.8,
-          children: diningHalls.map(buildDiningHallButton).toList(),
+          children: diningHalls
+            .map((hall) => DiningHallListItem(hall))
+            .toList(),
         )
     ));
 
-    return new Column(
+    return Column(
       children: children,
     );
   }
