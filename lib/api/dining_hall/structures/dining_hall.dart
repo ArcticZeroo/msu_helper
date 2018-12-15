@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:msu_helper/api/dining_hall/meal.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_hours.dart';
@@ -40,6 +41,12 @@ class DiningHall extends Object with _$DiningHallSerializerMixin {
 
   DiningHallHours getHoursForMeal(MenuDate date, Meal meal) {
     return getHoursForDay(date)[meal.ordinal];
+  }
+
+  Meal getBestMealToday() {
+    DiningHallHours mostRelevantHours = MenuDate.getFirstRelevant(getHoursForDay(MenuDate.now()), TimeOfDay.now());
+
+    return mostRelevantHours?.meal ?? Meal.lunch;
   }
 
   void openInMaps() {

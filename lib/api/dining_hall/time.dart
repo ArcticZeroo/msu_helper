@@ -8,7 +8,7 @@ import 'package:msu_helper/util/DateUtil.dart';
 class MenuDate {
   DateTime _time;
 
-  MenuDate([DateTime time]) {
+  MenuDate(DateTime time) {
     _time = time ?? DateTime.now();
   }
 
@@ -21,16 +21,16 @@ class MenuDate {
     return time.day == now.day && time.month == now.month && time.year == now.year;
   }
 
-  void forward() {
-    _time = _time.add(Duration(days: 1));
+  MenuDate forward() {
+    return new MenuDate(_time.add(Duration(days: 1)));
   }
 
-  void back() {
-    _time = _time.subtract(Duration(days: 1));
+  MenuDate back() {
+    return new MenuDate(_time.subtract(Duration(days: 1)));
   }
 
-  void now() {
-    _time = DateTime.now();
+  static MenuDate now() {
+    return new MenuDate(DateTime.now());
   }
 
   static DiningHallHours getFirstRelevant(List<DiningHallHours> hoursOnDay, TimeOfDay timeOfDay) {

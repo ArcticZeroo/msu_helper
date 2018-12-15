@@ -7,17 +7,17 @@ import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_menu.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_venue.dart';
 import 'package:msu_helper/api/dining_hall/structures/food_item.dart';
+import 'package:msu_helper/api/dining_hall/structures/menu_selection.dart';
 import 'package:msu_helper/api/dining_hall/time.dart';
 import 'package:msu_helper/api/settings/provider.dart' as settingsProvider;
 import 'package:msu_helper/config/settings_config.dart';
 import 'package:msu_helper/widgets/dining_hall/menu/venue_display.dart';
 import 'package:msu_helper/widgets/error_card.dart';
 import 'package:msu_helper/widgets/loading_widget.dart';
+import 'package:msu_helper/widgets/material_card.dart';
 
 class MenuDisplay extends StatefulWidget {
-    final DiningHall diningHall;
-    final MenuDate menuDate;
-    final Meal meal;
+    final MenuSelection menuSelection;
 
     static Map<String, bool> venueCollapseState = {};
 
@@ -43,7 +43,7 @@ class MenuDisplay extends StatefulWidget {
         venueCollapseState[venueName] = value ?? !(isVenueCollapsed(venue));
     }
 
-    MenuDisplay({Key key, this.diningHall, this.menuDate, this.meal}) : super(key: key);
+    MenuDisplay(this.menuSelection);
 
     @override
     State<StatefulWidget> createState() => new _MenuDisplayState();
@@ -57,7 +57,7 @@ class _MenuDisplayState extends State<MenuDisplay> {
             return venues;
         }
 
-        DiningHallMenu comparisonMenu = await DiningHallMenu.getComparisonMenu(widget.diningHall, widget.menuDate, widget.meal);
+        DiningHallMenu comparisonMenu = await DiningHallMenu.getComparisonMenu(widget.menuSelection);
 
         if (comparisonMenu == null) {
             return venues;
@@ -74,7 +74,7 @@ class _MenuDisplayState extends State<MenuDisplay> {
     }
 
     Future<List<DiningHallVenue>> retrieveSortedMenu() async {
-        DiningHallMenu menu = await diningHallProvider.retrieveMenu(widget.diningHall, widget.menuDate, widget.meal);
+        DiningHallMenu menu = await diningHallProvider.retrieveMenu(widget.menuSelection);
 
         if (menu == null) {
             throw new Exception('null menu was retrieved');
@@ -144,13 +144,15 @@ class _MenuDisplayState extends State<MenuDisplay> {
         return Column(children: children);
     }
 
+    Widget buildRetryButton() => FlatButton(child: Text('Retry'), onPressed: () => setState(() {}));
+
     @override
     Widget build(BuildContext context) {
-        return new FutureBuilder(
+        return FutureBuilder(
             future: retrieveSortedMenu(),
             builder: (ctx, snapshot) {
                 if (snapshot.connectionState != ConnectionState.done) {
-                    return new LoadingWidget(name: 'menu');
+                    return LoadingWidget(name: 'menu');
                 }
 
                 if (snapshot.hasError) {
@@ -162,14 +164,25 @@ class _MenuDisplayState extends State<MenuDisplay> {
                     return Column(
                         children: <Widget>[
                             ErrorCardWidget('Could not load menu.'),
-                            FlatButton(child: new Text('Retry'), onPressed: () => setState(() {}))
+                            buildRetryButton()
                         ],
                     );
                 }
 
                 List<DiningHallVenue> venues = snapshot.data as List<DiningHallVenue>;
 
-                return buildMenuWidget(venues);
+                try {
+                  return buildMenuWidget(venues);
+                } catch (_) {
+                  return Column(
+                    children: <Widget>[
+                      MaterialCard(
+                        body: Text('Test'),
+                      ),
+                      buildRetryButton()
+                    ],
+                  );
+                }
             },
         );
     }

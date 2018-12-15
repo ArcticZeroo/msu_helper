@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:msu_helper/api/database.dart';
 import 'package:msu_helper/api/dining_hall/meal.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_menu.dart';
+import 'package:msu_helper/api/dining_hall/structures/menu_selection.dart';
 import 'package:msu_helper/api/dining_hall/time.dart';
 import 'package:msu_helper/api/request.dart';
 import 'package:msu_helper/api/timed_cache.dart';
@@ -21,42 +22,34 @@ Lock diningHallListLock = new Lock();
 final int expireTime = ExpireTime.THIRTY_MINUTES * 2;
 
 TimedCache<String, DiningHallMenu> menuCache = new TimedCache((String key) async {
-  MenuMetadata deserialized = await deserializeFromKey(key);
+  MenuSelection deserialized = await deserializeFromKey(key);
 
-  TimedCacheEntry<DiningHallMenu> fromDb = await retrieveMenuFromDatabase(deserialized.diningHall, deserialized.menuDate, deserialized.meal);
+  TimedCacheEntry<DiningHallMenu> fromDb = await retrieveMenuFromDatabase(deserialized.diningHall, deserialized.date, deserialized.meal);
 
   if (fromDb != null && fromDb.isValid()) {
     // If the cached menu entry says it's closed,
     // only consider it invalid if the dining hall
     // doesn't seem to suggest it should be closed
     // (and therefore requires a refresh)
-    if (fromDb.value.closed && !deserialized.diningHall.getHoursForMeal(deserialized.menuDate, deserialized.meal).closed) {
+    if (fromDb.value.closed && !deserialized.diningHall.getHoursForMeal(deserialized.date, deserialized.meal).closed) {
 
     } else {
       return fromDb;
     }
   }
 
-  DiningHallMenu menu = await retrieveMenuFromWeb(deserialized.diningHall, deserialized.menuDate, deserialized.meal);
+  DiningHallMenu menu = await retrieveMenuFromWeb(deserialized.diningHall, deserialized.date, deserialized.meal);
 
-  await saveMenuToDb(deserialized.diningHall, deserialized.menuDate, deserialized.meal, menu);
+  await saveMenuToDb(deserialized.diningHall, deserialized.date, deserialized.meal, menu);
 
   return new TimedCacheEntry(menu, expireTime: expireTime);
 }, 60*60*1000);
 
-class MenuMetadata {
-  final DiningHall diningHall;
-  final MenuDate menuDate;
-  final Meal meal;
-
-  MenuMetadata(this.diningHall, this.menuDate, this.meal);
+String serializeToKey(MenuSelection menuSelection) {
+  return [menuSelection.diningHall.searchName, menuSelection.date.getFormatted(), menuSelection.meal.ordinal.toString()].join('|');
 }
 
-String serializeToKey(DiningHall diningHall, MenuDate time, Meal meal) {
-  return [diningHall.searchName, time.getFormatted(), meal.ordinal.toString()].join('|');
-}
-
-Future<MenuMetadata> deserializeFromKey(String key) async {
+Future<MenuSelection> deserializeFromKey(String key) async {
   List<String> split = key.split('|');
 
   // Don't handle the orElse, since a serialized key should never
@@ -65,7 +58,11 @@ Future<MenuMetadata> deserializeFromKey(String key) async {
   MenuDate menuDate = MenuDate.fromFormatted(split[1]);
   Meal meal = Meal.fromOrdinal(int.parse(split[2]));
 
-  return new MenuMetadata(diningHall, menuDate, meal);
+  return MenuSelection(
+    diningHall: diningHall,
+    meal: meal,
+    date: menuDate
+  );
 }
 
 List<DiningHall> diningListFromJson(List<dynamic> parsedJson) {
@@ -238,7 +235,7 @@ Future saveManyMenusToDbAndCache(Map<DiningHall, List<DiningHallMenu>> diningHal
       String menuJson = json.encode(menu);
 
       values.add('($searchName, $dateString, $i, $retrieved, $menuJson)');
-      menuCache.put(serializeToKey(diningHall, date, Meal.fromOrdinal(i)), menu, added: retrieved);
+      menuCache.put(serializeToKey(MenuSelection(diningHall: diningHall, date: date, meal: Meal.fromOrdinal(i))), menu, added: retrieved);
     }
   }
 
@@ -328,12 +325,8 @@ Future removeOldMenus() async {
       whereArgs: [ExpireTime.getLastTime(ExpireTime.DAY)]);
 }
 
-Future<DiningHallMenu> retrieveMenu(DiningHall diningHall, MenuDate date, Meal meal) async {
-  String key = serializeToKey(diningHall, date, meal);
+Future<DiningHallMenu> retrieveMenu(MenuSelection menuSelection) => menuCache.get(serializeToKey(menuSelection));
 
-  return menuCache.get(key);
-}
-
-bool isMenuCached({ DiningHall diningHall, MenuDate date, Meal meal }) {
-  return menuCache.hasValid(serializeToKey(diningHall, date, meal));
+bool isMenuCached(MenuSelection menuSelection) {
+  return menuCache.hasValid(serializeToKey(menuSelection));
 }

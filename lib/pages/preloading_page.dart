@@ -51,9 +51,7 @@ class PreloadingPage extends StatelessWidget {
         print('---------------');
     }
 
-    Future preloadMenusForDay(MenuDate date) async {
-        var menuDate = new MenuDate(date.time);
-
+    Future preloadMenusForDay(MenuDate menuDate) async {
         print('Preloading menus for ${menuDate.weekday} from the web');
 
         try {
@@ -68,14 +66,14 @@ class PreloadingPage extends StatelessWidget {
     Future preloadHallMenus() async {
         print('Preloading secondary data...');
 
-        MenuDate menuDate = new MenuDate();
+        MenuDate menuDate = MenuDate.now();
         List<Future> menuFutures = <Future>[];
 
         // For the next 3 days in the week (more can be loaded in demand)
         for (int i = 0; i < 3; i++) {
             menuFutures.add(preloadMenusForDay(menuDate));
 
-            menuDate.forward();
+            menuDate = menuDate.forward();
         }
 
         try {
@@ -133,7 +131,7 @@ class PreloadingPage extends StatelessWidget {
 
         var goHome = () {
             if (hasGoneHome) {
-                return false;
+                return;
             }
             openHomePage(context);
             hasGoneHome = true;

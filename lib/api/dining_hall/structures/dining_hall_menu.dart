@@ -5,6 +5,7 @@ import 'package:msu_helper/api/dining_hall/meal.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_venue.dart';
 import 'package:msu_helper/api/dining_hall/structures/food_item.dart';
+import 'package:msu_helper/api/dining_hall/structures/menu_selection.dart';
 import 'package:msu_helper/api/dining_hall/time.dart';
 import 'package:msu_helper/util/DateUtil.dart';
 
@@ -34,26 +35,26 @@ class DiningHallMenu extends Object with _$DiningHallMenuSerializerMixin {
     );
   }
 
-  static Future<DiningHallMenu> getComparisonMenu(DiningHall diningHall, MenuDate originalDate, Meal meal) {
-    MenuDate newDate = new MenuDate(originalDate.time);
+  static Future<DiningHallMenu> getComparisonMenu(MenuSelection menuSelection) {
+    MenuDate newDate = new MenuDate(menuSelection.date.time);
 
-    if (originalDate.isToday) {
-      newDate.forward();
+    if (menuSelection.date.isToday) {
+      newDate = newDate.forward();
     } else {
-      newDate.now();
+      newDate = MenuDate.now();
     }
 
     for (int i = 2; i < 7; i++) {
-      if (diningHall.getHoursForMeal(newDate, meal).closed) {
-        print('The dining hall is closed for ${meal.name} on ${DateUtil.getWeekday(newDate.time)}');
+      if (menuSelection.diningHall.getHoursForMeal(newDate, menuSelection.meal).closed) {
+        print('The dining hall is closed for ${menuSelection.meal.name} on ${DateUtil.getWeekday(newDate.time)}');
         newDate.forward();
       } else {
-        print('The dining hall is open for ${meal.name} on ${DateUtil.getWeekday(newDate.time)}');
+        print('The dining hall is open for ${menuSelection.meal.name} on ${DateUtil.getWeekday(newDate.time)}');
         break;
       }
     }
 
-    return diningHallProvider.retrieveMenu(diningHall, newDate, meal);
+    return diningHallProvider.retrieveMenu(menuSelection.copyWith(date: newDate));
   }
 
   static Map<DiningHallVenue, List<FoodItem>> findUniqueItems(DiningHallMenu original, DiningHallMenu comparison) {

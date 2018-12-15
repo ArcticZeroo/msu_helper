@@ -3,12 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:msu_helper/api/dining_hall/controller.dart';
 import 'package:msu_helper/api/dining_hall/provider.dart';
-import 'package:msu_helper/api/dining_hall/relevant.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/reloadable.dart';
 import 'package:msu_helper/api/settings/provider.dart';
-import 'package:msu_helper/pages/dining_hall/menu_page.dart';
-import 'package:msu_helper/util/ListUtil.dart';
 import 'package:msu_helper/widgets/dining_hall/list_item.dart';
 import 'package:msu_helper/widgets/loading_widget.dart';
 
@@ -54,6 +51,7 @@ class DiningMainPageState extends Reloadable<DiningMainPage> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: Refactor into future builder
     if (failed) {
       return Center(
         child: Text('Could not load dining hall information.'),

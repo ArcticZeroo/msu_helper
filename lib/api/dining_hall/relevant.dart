@@ -10,8 +10,9 @@ String formatOpenNext(MenuDate menuDate, DiningHallHours mealHours) {
       'at ${DateUtil.formatTimeOfDay(mealHours.beginTime)}';
 }
 
-List<String>getSuperRelevantLines(DiningHall diningHall) {
-  MenuDate menuDate = new MenuDate();
+// TODO: Wtf is this method?
+List<String> getSuperRelevantLines(DiningHall diningHall) {
+  MenuDate menuDate = MenuDate.now();
   List<DiningHallHours> hoursToday = menuDate.getDayHours(diningHall);
   List<String> text = [];
 

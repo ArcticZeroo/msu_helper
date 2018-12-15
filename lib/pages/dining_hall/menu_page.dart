@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:msu_helper/api/dining_hall/meal.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall.dart';
 import 'package:msu_helper/api/dining_hall/structures/dining_hall_hours.dart';
+import 'package:msu_helper/api/dining_hall/structures/menu_selection.dart';
 import 'package:msu_helper/api/dining_hall/time.dart';
 import 'package:msu_helper/config/settings_config.dart';
 import 'package:msu_helper/util/DateUtil.dart';
 import 'package:msu_helper/util/UrlUtil.dart';
 import 'package:msu_helper/widgets/dining_hall/hours_table.dart';
 import 'package:msu_helper/widgets/dining_hall/menu/menu_display.dart';
+import 'package:msu_helper/widgets/dining_hall/menu/menu_page_header.dart';
 import 'package:msu_helper/widgets/error_card.dart';
 import 'package:msu_helper/widgets/material_card.dart';
 
@@ -26,8 +28,8 @@ class HallInfoPage extends StatefulWidget {
 
 class HallInfoPageState extends State<HallInfoPage> {
   Widget _menuDisplay;
-  MenuDate _selectedDate = new MenuDate();
   Meal _selectedMeal;
+  MenuDate _selectedDate;
 
   void createMenuDisplay() {
     if (getHoursForMeal().closed) {
@@ -35,28 +37,17 @@ class HallInfoPageState extends State<HallInfoPage> {
       return;
     }
 
-    _menuDisplay = new MenuDisplay(
+    _menuDisplay = new MenuDisplay(MenuSelection(
       diningHall: widget.diningHall,
       meal: _selectedMeal,
-      menuDate: _selectedDate
-    );
+      date: _selectedDate
+    ));
   }
 
   void updateMenuDisplay() {
     setState(() {
       createMenuDisplay();
     });
-  }
-
-  Future<DateTime> selectTime(BuildContext context) async {
-    final DateTime dateTime = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime.now().subtract(Duration(days: 1)),
-        lastDate: DateTime.now().add(Duration(days: 7))
-    );
-
-    return dateTime;
   }
 
   List<DiningHallHours> getHoursForDay() {
@@ -71,164 +62,12 @@ class HallInfoPageState extends State<HallInfoPage> {
     return getHoursForDay()[meal.ordinal];
   }
 
-  Meal findBestMealToday() {
-    DiningHallHours mostRelevantHours = MenuDate.getFirstRelevant(getHoursForDay(), TimeOfDay.now());
-
-    return mostRelevantHours?.meal ?? Meal.lunch;
-  }
-
-  Widget buildMenuHeader(BuildContext context) {
-    List<Widget> children = [];
-
-    children.add(new Text('Date: ${DateUtil.formatDateFully(_selectedDate.time)}'));
-    children.add(new Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        new IconButton(
-            icon: new Icon(Icons.arrow_back, color: Colors.lightGreen[900],),
-            onPressed: () {
-              _selectedDate.back();
-              updateMenuDisplay();
-            }),
-        new FlatButton(
-            onPressed: () {
-              _selectedDate.now();
-              updateMenuDisplay();
-            },
-            child: new Text('Go To Today', style: new TextStyle(color: Colors.green[700]))
-        ),
-        new IconButton(
-            icon: new Icon(Icons.arrow_forward, color: Colors.lightGreen[900]),
-            onPressed: () {
-              _selectedDate.forward();
-              updateMenuDisplay();
-            }),
-      ],
-    ));
-    children.add(new Center(
-        child: new InkWell(
-          onTap: () async {
-            DateTime selected = await selectTime(context);
-
-            if (selected != null) {
-              _selectedDate = new MenuDate(selected);
-              updateMenuDisplay();
-            }
-          },
-          child: new Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              new Container(
-                  padding: const EdgeInsets.all(6.0),
-                  child: new Icon(Icons.today, color: Colors.green[800])
-              ),
-              new Text('Select Date', style: new TextStyle(color: Colors.green[900]),)
-            ],
-          ),
-        )
-    ));
-    children.add(new Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        new Container(
-            child: new Text('Meal:', style: new TextStyle(color: Colors.green[800])),
-            margin: const EdgeInsets.only(right: 8.0)
-        ),
-        new DropdownButton<Meal>(
-            value: _selectedMeal,
-            items: Meal.asList().map((meal) => new DropdownMenuItem(
-                child: new Text(meal.name, style: new TextStyle(color: Colors.lightGreen[900])),
-                value: meal)
-            ).toList(),
-            onChanged: (Meal selected) {
-              if (_selectedMeal.ordinal == selected.ordinal) {
-                return;
-              }
-
-              _selectedMeal = selected;
-              updateMenuDisplay();
-            }
-        )
-      ],
-    ));
-
-    DiningHallHours hoursForMeal = getHoursForMeal();
-
-    if (hoursForMeal.closed) {
-      //TODO: Fix this!
-      /*if (_menuForMeal != null && !_menuForMeal.closed) {
-        children.add(new Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            new Container(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: new Icon(Icons.warning, color: Colors.deepOrange),
-            ),
-            new WrappableWidget(new Text('The dining hall\'s schedule suggests that it is closed for this meal time.'))
-          ],
-        ));
-      }*/
-    } else {
-      List<String> mealServingText = [];
-      String startString = DateUtil.formatTimeOfDay(hoursForMeal.beginTime);
-      String endString = DateUtil.formatTimeOfDay(hoursForMeal.endTime);
-
-      if (hoursForMeal.isNow()) {
-        mealServingText.add('This meal is currently being served from $startString to $endString');
-      } else {
-        mealServingText.add('This meal will be served from $startString to $endString');
-      }
-
-      if (hoursForMeal.limitedMenuBegin != null && hoursForMeal.limitedMenuBegin != -1) {
-        if (hoursForMeal.isLimitedMenu) {
-          mealServingText.add('This meal is served with a limited menu.');
-        } else {
-          mealServingText.add('This meal serves limited menu from ${DateUtil.formatTimeOfDay(hoursForMeal.limitedMenuTime)} to $endString');
-        }
-      }
-
-      if (hoursForMeal.grillClosesAt != null && hoursForMeal.grillClosesAt != -1) {
-        if (hoursForMeal.isGrillClosed) {
-          mealServingText.add('The grill is closed during this meal.');
-        } else {
-          mealServingText.add('The grill closes during this meal from ${DateUtil.formatTimeOfDay(hoursForMeal.limitedMenuTime)} to $endString');
-        }
-      }
-
-      if (hoursForMeal.closeTimes != null && hoursForMeal.closeTimes.length != 0) {
-        for (var closingName in hoursForMeal.closeTimes.keys) {
-          mealServingText.add('$closingName will close at ${DateUtil.formatTimeOfDay(hoursForMeal.closeTimes[closingName])}');
-        }
-      }
-
-      if (hoursForMeal.openTimes != null && hoursForMeal.openTimes.length != 0) {
-        for (var openingName in hoursForMeal.openTimes.keys) {
-          mealServingText.add('$openingName will open at ${DateUtil.formatTimeOfDay(hoursForMeal.openTimes[openingName])}');
-        }
-      }
-
-      children.add(new Column(
-        children: mealServingText.map((s) => new Text(s)).toList(),
-      ));
-    }
-
-    return new Container(
-      margin: const EdgeInsets.symmetric(vertical: 16.0),
-      child: new MaterialCard(
-        backgroundColor: Colors.green[100],
-        body: new Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: children,
-        ),
-      ),
-    );
-  }
-
   @override
   void initState() {
     super.initState();
 
-    _selectedMeal = findBestMealToday();
+    _selectedDate = MenuDate.now();
+    _selectedMeal = widget.diningHall.getBestMealToday();
     createMenuDisplay();
   }
 
@@ -240,14 +79,28 @@ class HallInfoPageState extends State<HallInfoPage> {
       columnChildren.add(new HoursTable(widget.diningHall));
     }
 
-    columnChildren.add(buildMenuHeader(context));
+    columnChildren.add(MenuPageHeader(
+      diningHall: widget.diningHall,
+      initialDate: _selectedDate,
+      initialMeal: _selectedMeal,
+      onDateChange: (MenuDate date) {
+        setState(() {
+          _selectedDate = date;
+        });
+      },
+      onMealChange: (Meal meal) {
+        setState(() {
+          _selectedMeal = meal;
+        });
+      }
+    ));
     columnChildren.add(_menuDisplay);
 
     return new Scaffold(
-        appBar: new AppBar(
-          title: new Text('${widget.diningHall.hallName} - Menu/Hours'),
+        appBar: AppBar(
+          title: Text('${widget.diningHall.hallName} - Menu/Hours'),
           actions: <Widget>[
-            new IconButton(
+            IconButton(
                 icon: const Icon(Icons.location_on),
                 onPressed: () {
                   UrlUtil.openMapsToLocation(widget.diningHall.hallName);
@@ -256,7 +109,7 @@ class HallInfoPageState extends State<HallInfoPage> {
             )
           ],
         ),
-        body: new ListView(children: columnChildren)
+        body: ListView(children: columnChildren)
     );
   }
 }
