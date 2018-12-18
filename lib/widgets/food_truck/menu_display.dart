@@ -6,7 +6,7 @@ import 'package:msu_helper/widgets/error_card.dart';
 import 'package:msu_helper/widgets/food_truck/single_menu_display.dart';
 import 'package:msu_helper/widgets/loading_widget.dart';
 
-class MenuDisplay extends StatelessWidget {
+class FoodTruckMenuDisplay extends StatelessWidget {
     @override
     Widget build(BuildContext context) {
         return new FutureBuilder<List<FoodTruckMenu>>(
