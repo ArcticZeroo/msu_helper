@@ -7,6 +7,7 @@ import 'package:msu_helper/widgets/error_card.dart';
 import 'package:msu_helper/widgets/loading_widget.dart';
 import 'package:msu_helper/widgets/material_card.dart';
 import 'package:msu_helper/widgets/movie_night/movie_display.dart';
+import 'package:msu_helper/widgets/movie_night/movie_list_title.dart';
 
 class MovieNightPage extends StatefulWidget {
   @override
@@ -31,7 +32,7 @@ class MovieNightPageState extends State<MovieNightPage> {
   Widget buildPageDisplay(List<Movie> movies) {
     List<Widget> columnChildren = [];
 
-    if (movies.length == 0) {
+    if (movies.isEmpty) {
       columnChildren.add(new MaterialCard(
           title: new Text('No movies are posted.'),
           subtitle: new Text('Check back later?')));
@@ -47,6 +48,8 @@ class MovieNightPageState extends State<MovieNightPage> {
 
     DateTime latestShowing = Movie.findLatestShowing(movies)?.date;
 
+    // We check for latestShowing == null because if there is no latest showing I guess
+    // we just assume they haven't been posted in a long time
     bool hasBeenAtLeastOneWeek = (latestShowing == null) ||
         DateTime.now().difference(latestShowing).inDays >= 7;
 
@@ -63,10 +66,7 @@ class MovieNightPageState extends State<MovieNightPage> {
       title = "This Week's Movies";
     }
 
-    columnChildren.add(new Container(
-        padding: const EdgeInsets.only(top: 16.0),
-        child: new Center(
-            child: new Text(title, style: MaterialCard.titleStyle))));
+    columnChildren.add(MovieListTitle(title));
     columnChildren.addAll(movies.map(buildMovie));
 
     return new Center(
