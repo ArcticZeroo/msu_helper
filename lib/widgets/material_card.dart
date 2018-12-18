@@ -46,9 +46,10 @@ class MaterialCard extends StatelessWidget {
     EdgeInsets actionsPadding = const EdgeInsets.all(8.0);
 
     if (title != null || subtitle != null) {
-      columnChildren.add(new Container(
+      columnChildren.add(Container(
         padding: headerPadding,
-        child: new Column(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[title, subtitle].where(ObjectUtil.notNull).toList(),
         ),
@@ -60,37 +61,36 @@ class MaterialCard extends StatelessWidget {
     if (actions != null && actions.length != 0) {
       desiredBodyPadding = desiredBodyPadding.copyWith(top: 16.0);
 
-      columnChildren.add(new Container(
+      columnChildren.add(Container(
         padding: const EdgeInsets.all(8.0),
-        child: new Row(
-          children: actions.map((action) {
-            return new Container(
-              padding: actionsPadding,
-              child: action,
-            );
-          }).toList(),
+        child: Row(
+          children: actions.map((action) => Container(
+            padding: actionsPadding,
+            child: action,
+          )).toList(),
         ),
       ));
     }
 
     if (body != null) {
-      columnChildren.add(new Container(
+      columnChildren.add(Container(
         padding: desiredBodyPadding,
-        child: body,
+        child: body
       ));
     }
 
-    Widget cardChild = new Container(
+    Widget cardChild = Container(
       padding: cardPadding,
-      child: new Column(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: columnChildren,
       ),
     );
 
-    return new Card(
+    return Card(
       color: backgroundColor,
-      child: new InkWell(
+      child: InkWell(
           onTap: onTap,
           child: cardChild
       ),
