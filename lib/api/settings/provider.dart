@@ -82,7 +82,7 @@ Future<T> retrieveSetting<T>(SettingData<T> data) async {
       whereArgs: [data.key]
   );
 
-  if (rows == null || rows.length == 0) {
+  if (rows == null || rows.isEmpty) {
     if (data.defaultValue == null) {
       return null;
     }
@@ -135,7 +135,7 @@ Future loadAllSettings() async {
 
   List<Map<String, dynamic>> rows = await db.rawQuery('SELECT * FROM ${TableName.userSettings}');
 
-  if (rows == null || rows.length == 0) {
+  if (rows == null || rows.isEmpty) {
     return;
   }
 

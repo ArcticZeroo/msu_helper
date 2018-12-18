@@ -127,7 +127,7 @@ class HoursTableState extends State<HoursTable> {
           extra.add(mealHours.extra);
         }
 
-        if (extra.length == 0) {
+        if (extra.isEmpty) {
           columnRows.add(new Text(main,
               textAlign: TextAlign.left,
               style: contentTextStyle

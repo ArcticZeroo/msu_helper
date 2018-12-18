@@ -42,7 +42,7 @@ class FoodTruckMiniWidgetState extends Reloadable<FoodTruckMiniWidget> {
       return;
     }
 
-    if (stops == null || stops.length == 0) {
+    if (stops == null || stops.isEmpty) {
       setState(() {
         text = ['No stops listed today.'];
       });

@@ -49,7 +49,7 @@ class MovieNightMiniWidgetState extends Reloadable<MovieNightMiniWidget> {
                 orElse: () => null
             ) != null).toList();
 
-    if (moviesNotPassed.length == 0) {
+    if (moviesNotPassed.isEmpty) {
       if (Movie.NOT_YET_POSTED_DAYS.contains(now.weekday)) {
         setState(() {
           text = ['Movie showtimes haven\'t been posted for this week.'];

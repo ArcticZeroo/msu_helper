@@ -20,7 +20,7 @@ Future retrieveJsonFromDb(String key, [num expireTime = ExpireTime.THIRTY_MINUTE
         List<Map<String, dynamic>> rows = await db.query(TableName.jsonCache,
             where: 'name = ?', whereArgs: [key]);
 
-        if (rows.length == 0) {
+        if (rows.isEmpty) {
             return null;
         }
 

@@ -15,7 +15,7 @@ Future makeRestRequest(String url, [Duration timeout = const Duration(seconds: 1
     throw new Exception('Request to $url unsuccessful: ${res.statusCode}');
   }
 
-  if (res.body.length == 0) {
+  if (res.body.isEmpty) {
     throw new Exception('Empty response.');
   }
 

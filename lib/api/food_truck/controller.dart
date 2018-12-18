@@ -6,7 +6,7 @@ import 'package:msu_helper/api/food_truck/structures/food_truck_stop.dart';
 Future<FoodTruckStop> retrieveMostRelevant() async {
   List<FoodTruckStop> stops = await retrieveStops();
 
-  if (stops == null || stops.length == 0) {
+  if (stops == null || stops.isEmpty) {
     return null;
   }
 
@@ -23,7 +23,7 @@ Future<FoodTruckStop> retrieveMostRelevant() async {
   // Remove all stops where the end has already passed
   stops.removeWhere((stop) => stop.endDate.isBefore(now) || stop.endDate.isAtSameMomentAs(now));
 
-  if (stops.length == 0) {
+  if (stops.isEmpty) {
     return null;
   }
 

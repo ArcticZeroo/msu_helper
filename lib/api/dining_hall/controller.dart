@@ -8,7 +8,7 @@ import 'package:msu_helper/config/settings_config.dart';
 Future<DiningHall> fromSearchName(String searchName) async {
   List<DiningHall> diningHalls = await retrieveDiningList();
 
-  if (diningHalls == null || diningHalls.length == 0) {
+  if (diningHalls == null || diningHalls.isEmpty) {
     return null;
   }
 

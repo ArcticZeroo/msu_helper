@@ -58,7 +58,7 @@ class MaterialCard extends StatelessWidget {
 
     EdgeInsets desiredBodyPadding = bodyPadding;
 
-    if (actions != null && actions.length != 0) {
+    if (actions != null && actions.isNotEmpty) {
       desiredBodyPadding = desiredBodyPadding.copyWith(top: 16.0);
 
       columnChildren.add(Container(

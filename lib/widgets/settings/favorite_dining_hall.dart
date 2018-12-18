@@ -57,7 +57,7 @@ class _FavoriteDiningHallState extends State<FavoriteDiningHall> {
       return new Text('Unable to load dining halls.');
     }
 
-    if (diningHalls == null || diningHalls.length == 0) {
+    if (diningHalls == null || diningHalls.isEmpty) {
       return new Text('Loading dining halls...');
     }
 

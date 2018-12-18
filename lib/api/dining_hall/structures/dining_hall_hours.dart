@@ -92,7 +92,7 @@ class DiningHallHours extends Object with _$DiningHallHoursSerializerMixin {
   }
 
   static bool isFullyClosed(List<DiningHallHours> hours) {
-    return hours.where((mealHours) => !mealHours.closed).toList().length == 0;
+    return hours.where((mealHours) => !mealHours.closed).toList().isEmpty;
   }
 
   @override

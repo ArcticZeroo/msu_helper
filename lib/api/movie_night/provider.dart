@@ -23,7 +23,7 @@ Future<List<Movie>> retrieveMoviesFromWeb() async {
 Future<List<Movie>> retrieveMoviesFromWebAndSave() async {
   List<Movie> fromWeb = await retrieveMoviesFromWeb();
 
-  if (fromWeb != null && fromWeb.length != 0) {
+  if (fromWeb != null && fromWeb.isNotEmpty) {
     setCached(fromWeb);
 
     await jsonCache.saveJsonToDb(Identifier.movieNight, fromWeb);
@@ -56,7 +56,7 @@ Future<List<Movie>> retrieveMovies() async {
 
     List<Movie> fromDb = await retrieveMoviesFromDb();
 
-    if (fromDb != null && fromDb.length != 0) {
+    if (fromDb != null && fromDb.isNotEmpty) {
       setCached(fromDb);
       return List.unmodifiable(fromDb);
     }

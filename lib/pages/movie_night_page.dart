@@ -54,7 +54,7 @@ class MovieNightPageState extends State<MovieNightPage> {
         DateTime.now().difference(latestShowing).inDays >= 7;
 
     String title;
-    if (moviesNotPassed.length == 0 &&
+    if (moviesNotPassed.isEmpty &&
         (Movie.NOT_YET_POSTED_DAYS.contains(now.weekday) ||
             hasBeenAtLeastOneWeek)) {
       if (hasBeenAtLeastOneWeek) {

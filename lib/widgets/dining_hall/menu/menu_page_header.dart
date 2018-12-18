@@ -188,13 +188,13 @@ class MenuPageHeaderState extends State<MenuPageHeader> {
         }
       }
 
-      if (hoursForMeal.closeTimes != null && hoursForMeal.closeTimes.length != 0) {
+      if (hoursForMeal.closeTimes != null && hoursForMeal.closeTimes.isNotEmpty) {
         for (var closingName in hoursForMeal.closeTimes.keys) {
           mealServingText.add('$closingName will close at ${DateUtil.formatTimeOfDay(hoursForMeal.closeTimes[closingName])}');
         }
       }
 
-      if (hoursForMeal.openTimes != null && hoursForMeal.openTimes.length != 0) {
+      if (hoursForMeal.openTimes != null && hoursForMeal.openTimes.isNotEmpty) {
         for (var openingName in hoursForMeal.openTimes.keys) {
           mealServingText.add('$openingName will open at ${DateUtil.formatTimeOfDay(hoursForMeal.openTimes[openingName])}');
         }

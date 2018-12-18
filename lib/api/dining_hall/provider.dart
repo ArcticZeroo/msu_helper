@@ -97,7 +97,7 @@ Future<List<DiningHall>> retrieveDiningListFromWebAndSave() async {
 
 Future<List<DiningHall>> retrieveDiningList() async {
   return diningHallListLock.synchronized(() async {
-    if (hallCache != null && hallCache.length != 0) {
+    if (hallCache != null && hallCache.isNotEmpty) {
       return hallCache;
     }
 
@@ -253,7 +253,7 @@ Future<TimedCacheEntry<DiningHallMenu>> retrieveMenuFromDatabase(DiningHall dini
       where: where,
       whereArgs: whereArgs);
 
-  if (results.length == 0) {
+  if (results.isEmpty) {
     return null;
   }
 

@@ -25,7 +25,7 @@ Future<List<FoodTruckStop>> retrieveStopsFromWeb() async {
 Future<List<FoodTruckStop>> retrieveStopsFromWebAndSave() async {
     List<FoodTruckStop> fromWeb = await retrieveStopsFromWeb();
 
-    if (fromWeb != null && fromWeb.length != 0) {
+    if (fromWeb != null && fromWeb.isNotEmpty) {
         setCached(fromWeb);
 
         await jsonCache.saveJsonToDb(Identifier.foodTruck, fromWeb);
@@ -73,7 +73,7 @@ Future<List<FoodTruckStop>> retrieveStops() async {
 
         List<FoodTruckStop> fromDb = await retrieveStopsFromDb();
 
-        if (fromDb != null && fromDb.length != 0) {
+        if (fromDb != null && fromDb.isNotEmpty) {
             return setAndGetCache(fromDb);
         }
 

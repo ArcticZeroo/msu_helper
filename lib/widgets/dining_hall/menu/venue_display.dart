@@ -44,7 +44,7 @@ class VenueDisplayState extends Reloadable<VenueDisplay> {
   Widget buildFoodItem(FoodItem foodItem) {
     return new ListTile(
       title: new Text(foodItem.name),
-      subtitle: foodItem.allergens.length == 0 ? null : new Text('Contains: ${foodItem.allergens.join(', ')}'),
+      subtitle: foodItem.allergens.isEmpty ? null : new Text('Contains: ${foodItem.allergens.join(', ')}'),
       trailing: new Row(
         mainAxisSize: MainAxisSize.min,
         children: foodItem.preferences.map((a) => new Container(
