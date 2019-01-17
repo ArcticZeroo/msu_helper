@@ -12,200 +12,205 @@ import 'package:msu_helper/widgets/preloading/preload_widget.dart';
 import 'package:msu_helper/widgets/visibility_toggle.dart';
 
 class PreloadingPage extends StatelessWidget {
-    final Map<String, PreloadingWidget> primaryLoaders = {};
-    final Map<String, PreloadingWidget> secondaryLoaders = {};
+  final Map<String, PreloadingWidget> primaryLoaders = {};
+  final Map<String, PreloadingWidget> secondaryLoaders = {};
 
-    PreloadingPage() {
-        settingsProvider.populate();
+  PreloadingPage() {
+    settingsProvider.populate();
 
-        primaryLoaders[Identifier.settings] = new PreloadingWidget('Your Settings', settingsProvider.loadAllSettings);
-        primaryLoaders[Identifier.foodTruck] = new PreloadingWidget('Food Truck Stops', foodTruckProvider.retrieveStops);
-        primaryLoaders[Identifier.foodTruckMenu] = new PreloadingWidget('Food Truck Menus', foodTruckProvider.retrieveMenus);
-        primaryLoaders[Identifier.movieNight] = new PreloadingWidget('Movie Night Listings', movieNightProvider.retrieveMovies);
-        primaryLoaders[Identifier.diningHall] = new PreloadingWidget('Available Dining Halls + Hours', diningHallProvider.retrieveDiningList);
+    primaryLoaders[Identifier.settings] =
+        new PreloadingWidget('Your Settings', settingsProvider.loadAllSettings);
+    primaryLoaders[Identifier.foodTruck] = new PreloadingWidget(
+        'Food Truck Stops', foodTruckProvider.retrieveStops);
+    primaryLoaders[Identifier.foodTruckMenu] = new PreloadingWidget(
+        'Food Truck Menus', foodTruckProvider.retrieveMenus);
+    primaryLoaders[Identifier.movieNight] = new PreloadingWidget(
+        'Movie Night Listings', movieNightProvider.retrieveMovies);
+    primaryLoaders[Identifier.diningHall] = new PreloadingWidget(
+        'Available Dining Halls + Hours',
+        diningHallProvider.retrieveDiningList);
 
-        secondaryLoaders[Identifier.diningHall] = new PreloadingWidget('Dining Hall Menus', preloadHallMenus);
+    secondaryLoaders[Identifier.diningHall] =
+        new PreloadingWidget('Dining Hall Menus', preloadHallMenus);
+  }
+
+  Future preloadPrimary() async {
+    print('---------------');
+    print('Primary preload initializing...');
+
+    List<Future> loaders = [];
+
+    for (String name in primaryLoaders.keys) {
+      loaders.add(primaryLoaders[name].start());
     }
 
-    Future preloadPrimary() async {
-        print('---------------');
-        print('Primary preload initializing...');
+    try {
+      await Future.wait(loaders);
+    } catch (e) {
+      print('Could not load a primary loader');
 
-        for (String name in primaryLoaders.keys) {
-            print('Preloading data for $name...');
-
-            try {
-                await primaryLoaders[name].start();
-            } catch (e) {
-                print('Could not load data for $name: $e');
-
-                if (e is Error) {
-                    print(e.stackTrace);
-                }
-            }
-
-            print('Preloaded $name');
-        }
-
-        print('Primary preload complete');
-        print('---------------');
+      if (e is Error) {
+        print(e.stackTrace);
+      } else {
+        print(e.toString());
+      }
     }
 
-    Future preloadMenusForDay(MenuDate menuDate) async {
-        print('Preloading menus for ${menuDate.weekday} from the web');
+    print('Primary preload complete');
+    print('---------------');
+  }
 
-        try {
-            await diningHallProvider.retrieveMenusForDayFromWeb(menuDate);
-        } catch (e) {
-            throw e;
-        }
+  Future preloadMenusForDay(MenuDate menuDate) async {
+    print('Preloading menus for ${menuDate.weekday} from the web');
 
-        print('Preloaded menus for ${menuDate.weekday}');
+    try {
+      await diningHallProvider.retrieveMenusForDayFromWeb(menuDate);
+    } catch (e) {
+      throw e;
     }
 
-    Future preloadHallMenus() async {
-        print('Preloading secondary data...');
+    print('Preloaded menus for ${menuDate.weekday}');
+  }
 
-        MenuDate menuDate = MenuDate.now();
-        List<Future> menuFutures = <Future>[];
+  Future preloadHallMenus() async {
+    print('Preloading secondary data...');
 
-        // For the next 3 days in the week (more can be loaded in demand)
-        for (int i = 0; i < 3; i++) {
-            menuFutures.add(preloadMenusForDay(menuDate));
+    MenuDate menuDate = MenuDate.now();
+    List<Future> menuFutures = <Future>[];
 
-            menuDate = menuDate.forward();
-        }
+    // For the next 3 days in the week (more can be loaded in demand)
+    for (int i = 0; i < 3; i++) {
+      menuFutures.add(preloadMenusForDay(menuDate));
 
-        try {
-            await Future.wait(menuFutures);
-
-            print('Preloaded all menus');
-        } catch (e) {
-            print('Could not preload menus:');
-
-            if (e is Error) {
-                print(e.stackTrace);
-            } else {
-                print(e.toString());
-            }
-
-            menuFutures.forEach((future) => future.timeout(new Duration()));
-        }
-
-        print('Preloaded all dining hall menus.');
+      menuDate = menuDate.forward();
     }
 
-    Future preloadSecondary() async {
-        print('---------------');
-        print('Secondary preload initializing...');
+    try {
+      await Future.wait(menuFutures);
 
-        try {
-            await secondaryLoaders[Identifier.diningHall].start();
-        } catch (e) {
-            print('Loading of dining hall menus failed: $e');
-        }
+      print('Preloaded all menus');
+    } catch (e) {
+      print('Could not preload menus:');
 
-        print('Secondary preload complete');
-        print('---------------');
+      if (e is Error) {
+        print(e.stackTrace);
+      } else {
+        print(e.toString());
+      }
+
+      menuFutures.forEach((future) => future.timeout(new Duration()));
     }
 
-    Future preload() async {
-        await preloadPrimary();
+    print('Preloaded all dining hall menus.');
+  }
 
-        try {
-            await primaryLoaders[Identifier.diningHall].future.value;
-        } catch (e) {
-            return;
-        }
+  Future preloadSecondary() async {
+    print('---------------');
+    print('Secondary preload initializing...');
 
-        await preloadSecondary();
+    try {
+      await secondaryLoaders[Identifier.diningHall].start();
+    } catch (e) {
+      print('Loading of dining hall menus failed: $e');
     }
 
-    void openHomePage(BuildContext context) {
-        Navigator.of(context).pushReplacementNamed('home');
+    print('Secondary preload complete');
+    print('---------------');
+  }
+
+  Future preload() async {
+    await preloadPrimary();
+
+    try {
+      await primaryLoaders[Identifier.diningHall].future.value;
+    } catch (e) {
+      return;
     }
 
-    @override
-    Widget build(BuildContext context) {
-        bool hasGoneHome = false;
+    await preloadSecondary();
+  }
 
-        var goHome = () {
-            if (hasGoneHome) {
-                return;
-            }
-            openHomePage(context);
-            hasGoneHome = true;
-        };
+  void openHomePage(BuildContext context) {
+    Navigator.of(context).pushReplacementNamed('home');
+  }
 
-        VisibilityToggleWidget skipButton = new VisibilityToggleWidget(
-            child: new RaisedButton(
-                color: Colors.blue,
-                child: new Text('Skip'),
-                onPressed: goHome,
-                textColor: Colors.white
-            ),
-            isInitiallyVisible: false
-        );
+  @override
+  Widget build(BuildContext context) {
+    bool hasGoneHome = false;
 
-        List<Widget> columnChildren = <Widget>[
+    var goHome = () {
+      if (hasGoneHome) {
+        return;
+      }
+      openHomePage(context);
+      hasGoneHome = true;
+    };
+
+    VisibilityToggleWidget skipButton = new VisibilityToggleWidget(
+        child: new RaisedButton(
+            color: Colors.blue,
+            child: new Text('Skip'),
+            onPressed: goHome,
+            textColor: Colors.white),
+        isInitiallyVisible: false);
+
+    List<Widget> columnChildren = <Widget>[
+      new Container(
+        decoration: new BoxDecoration(
+            color: Colors.green[600],
+            borderRadius: const BorderRadius.all(const Radius.circular(6.0))),
+        padding: const EdgeInsets.all(16.0),
+        margin: const EdgeInsets.only(bottom: 16.0),
+        child: new Column(
+          children: <Widget>[
+            new Text('Pre-loading data...',
+                style: new TextStyle(fontSize: 22.0, color: Colors.white)),
             new Container(
-                decoration: new BoxDecoration(
-                    color: Colors.green[600],
-                    borderRadius: const BorderRadius.all(const Radius.circular(6.0))
-                ),
-                padding: const EdgeInsets.all(16.0),
-                margin: const EdgeInsets.only(bottom: 16.0),
-                child: new Column(
-                    children: <Widget>[
-                        new Text('Pre-loading data...', style: new TextStyle(fontSize: 22.0, color: Colors.white)),
-                        new Container(
-                            margin: const EdgeInsets.only(top: 4.0),
-                            child: new Text('Shouldn\'t be long!', style: new TextStyle(color: Colors.grey[200])),
-                        )
-                    ],
-                ),
-            ),
-            new Card(
-                child: new Column(
-                    children: <Widget>[]
-                        ..addAll(primaryLoaders.values)
-                        ..addAll(secondaryLoaders.values)
-                ),
-            ),
-            skipButton
-        ];
+              margin: const EdgeInsets.only(top: 4.0),
+              child: new Text('Shouldn\'t be long!',
+                  style: new TextStyle(color: Colors.grey[200])),
+            )
+          ],
+        ),
+      ),
+      new Card(
+        child: new Column(
+            children: <Widget>[]
+              ..addAll(primaryLoaders.values)
+              ..addAll(secondaryLoaders.values)),
+      ),
+      skipButton
+    ];
 
-        primaryLoaders[Identifier.settings].future.addListener(() {
-            Future settingsFuture = primaryLoaders[Identifier.settings].future.value;
+    primaryLoaders[Identifier.settings].future.addListener(() {
+      Future settingsFuture = primaryLoaders[Identifier.settings].future.value;
 
-            settingsFuture.then((v) {
-                if (settingsProvider
-                    .getCached(SettingsConfig.skipPreloadAutomatically)) {
-                    goHome();
-                } else {
-                    skipButton.isVisible = true;
-                }
+      settingsFuture.then((v) {
+        if (settingsProvider
+            .getCached(SettingsConfig.skipPreloadAutomatically)) {
+          goHome();
+        } else {
+          skipButton.isVisible = true;
+        }
 
-                return v;
-            });
-        });
+        return v;
+      });
+    });
 
-        preload()
-            .timeout(new Duration(seconds: 15))
-            .whenComplete(goHome);
+    preload().timeout(new Duration(seconds: 15)).whenComplete(goHome);
 
-        return new Scaffold(
-            body: new Container(
-                decoration: new BoxDecoration(color: Colors.grey[200]),
-                child: new Center(
-                    child: new Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: columnChildren,
-                    ),
-                ),
-                padding: const EdgeInsets.all(16.0),
-            ),
-        );
-    }
+    return new Scaffold(
+      body: new Container(
+        decoration: new BoxDecoration(color: Colors.grey[200]),
+        child: new Center(
+          child: new Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: columnChildren,
+          ),
+        ),
+        padding: const EdgeInsets.all(16.0),
+      ),
+    );
+  }
 }
