@@ -119,15 +119,19 @@ class PreloadingPage extends StatelessWidget {
   }
 
   Future preload() async {
-    await preloadPrimary();
+    Future primaryPreloadFuture = preloadPrimary();
 
     try {
       await primaryLoaders[Identifier.diningHall].future.value;
     } catch (e) {
+      // If dining halls did not load, just finish waiting for the rest,
+      // and then we can skip the menu loading
+      print('Dining halls failed to load, waiting for rest to finish');
+      await primaryPreloadFuture;
       return;
     }
 
-    await preloadSecondary();
+    await Future.wait([primaryPreloadFuture, preloadSecondary()]);
   }
 
   void openHomePage(BuildContext context) {
