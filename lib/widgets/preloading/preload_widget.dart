@@ -30,6 +30,10 @@ class PreloadingWidget extends StatefulWidget {
 
 class PreloadingWidgetState extends State<PreloadingWidget> {
   void reload() {
+    if (!this.mounted) {
+      return;
+    }
+
     setState(() {});
   }
 
